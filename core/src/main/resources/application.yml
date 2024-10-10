@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: core
+  profiles:
+    active: local
