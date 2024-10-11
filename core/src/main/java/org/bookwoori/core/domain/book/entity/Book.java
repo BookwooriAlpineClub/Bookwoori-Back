@@ -38,7 +38,7 @@ public class Book {
     @NotNull
     private int pageCount;
 
-    @Column(name = "isbn", updatable = false)
+    @Column(name = "isbn", updatable = false, unique = true)
     @NotNull
     private String isbn;
 
