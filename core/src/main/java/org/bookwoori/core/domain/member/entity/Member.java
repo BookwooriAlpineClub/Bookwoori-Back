@@ -27,7 +27,7 @@ public class Member extends BaseTimeEntity {
     @NotNull
     private String nickname;
 
-    @Column(name = "profile_image")
+    @Column(name = "profile_image", columnDefinition = "TEXT")
     private String profileImg;
 
     @Column(name = "grade")

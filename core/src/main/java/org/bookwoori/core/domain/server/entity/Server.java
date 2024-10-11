@@ -34,10 +34,10 @@ public class Server extends BaseTimeEntity {
     @NotNull
     private String name;
 
-    @Column(name = "server_image")
+    @Column(name = "server_image", columnDefinition = "TEXT")
     private String serverImg;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @OneToMany(mappedBy = "server", cascade = CascadeType.ALL)

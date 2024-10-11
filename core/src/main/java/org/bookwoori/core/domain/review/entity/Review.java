@@ -28,10 +28,10 @@ public class Review extends BaseTimeEntity {
     private Long reviewId;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "record_id",updatable = false)
+    @JoinColumn(name = "record_id", updatable = false)
     @NotNull
     private Record record;
 
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 }

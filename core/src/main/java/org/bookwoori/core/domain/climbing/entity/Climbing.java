@@ -48,7 +48,7 @@ public class Climbing extends BaseTimeEntity {
     @NotNull
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "start_date")

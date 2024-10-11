@@ -42,9 +42,9 @@ public class Book {
     @NotNull
     private String isbn;
 
-    @Column(name = "cover_image")
+    @Column(name = "cover_image", columnDefinition = "TEXT")
     private String coverImg;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 }
