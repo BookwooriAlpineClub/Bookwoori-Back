@@ -30,12 +30,4 @@ public class JwtService {
         memberRepository.save(member);  // 업데이트된 토큰 저장
     }
 
-//    // Refresh Token 저장 또는 업데이트
-//    @Transactional
-//    public void saveOrUpdateRefreshToken(Member member, String refreshToken) {
-//        member.updateRefreshToken(refreshToken);
-//        log.info("saveOrUpdateRefreshToken 접근");
-//        log.info(refreshToken);
-//        memberRepository.save(member);  // 업데이트된 리프레시 토큰 저장
-//    }
 }

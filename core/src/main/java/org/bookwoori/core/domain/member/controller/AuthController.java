@@ -26,9 +26,5 @@ public class AuthController {
     public ResponseEntity<?> loginSuccess(@Valid LoginResponse loginResponse) {
         return ResponseEntity.ok(loginResponse);
     }
-
-    // 로그아웃
-
-    // 리프레시 토큰 재발급
     
 }
