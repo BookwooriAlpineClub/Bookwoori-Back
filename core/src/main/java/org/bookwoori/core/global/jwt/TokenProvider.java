@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.exception.TokenException;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,11 +92,11 @@ public class TokenProvider {
         return builder.compact();
     }
 
-    private Long extractKakaoId(Authentication authentication) {
+    private Long extractKakaoId(Authentication authentication) throws CustomException {
         if (authentication.getPrincipal() instanceof OAuth2User oAuth2User) {
             return Long.valueOf(oAuth2User.getAttributes().get("id").toString());  // 카카오에서 전달된 ID
         }
-        throw new IllegalArgumentException("OAuth2User로부터 카카오 ID를 추출할 수 없습니다."); // Custom 에러로 수정
+        throw new TokenException(ErrorCode.MEMBER_NOT_FOUND);
     }
 
     public Authentication getAuthentication(String token) {
