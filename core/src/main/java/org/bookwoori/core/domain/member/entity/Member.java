@@ -19,9 +19,9 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", updatable = false)
     private Long memberId;
 
-    @Column(name = "kakao_member_id", updatable = false, unique = true)
+    @Column(name = "kakao_id", updatable = false, unique = true)
     @NotNull
-    private Long kakaoMemberId;
+    private Long kakaoId;
 
     @Column(name = "nickname", unique = true)
     @NotNull
@@ -44,13 +44,20 @@ public class Member extends BaseTimeEntity {
     @NotNull
     private int totalPage;
 
+    @Column(name = "access_token")
+    private String accessToken;
+
     @Builder
-    public Member(Long kakaoMemberId, String nickname, String profileImg) {
-        this.kakaoMemberId = kakaoMemberId;
+    public Member(Long kakaoId, String nickname, String profileImg) {
+        this.kakaoId = kakaoId;
         this.nickname = nickname;
         this.profileImg = profileImg;
         this.grade = Grade.Dongsan;
         this.status = Status.ACTIVE;
         this.totalPage = 0;
+    }
+
+    public void updateAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 }
