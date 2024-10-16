@@ -8,7 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class ErrorDto {
-
     private String timestamp;
     private int status;
     private int code;
