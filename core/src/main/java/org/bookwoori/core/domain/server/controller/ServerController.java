@@ -7,9 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.facade.ServerFacade;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,8 +23,8 @@ public class ServerController {
     private final ServerFacade serverFacade;
 
     @Operation(summary = "모임 서버 생성", description = "모임 서버를 생성합니다.")
-    @PostMapping
-    public ResponseEntity<?> createServer(@RequestBody @Valid ServerCreateRequestDto requestDto) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createServer(@Valid @ModelAttribute ServerCreateRequestDto requestDto) {
         serverFacade.createServer(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
