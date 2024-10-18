@@ -35,9 +35,11 @@ public enum ErrorCode {
      */
 
     // Member (3000 ~ 3099)
-    MEMBER_NOT_FOUND(404, 3000, "사용자를 찾을 수 없습니다.")
+    MEMBER_NOT_FOUND(404, 3000, "사용자를 찾을 수 없습니다."),
+    SERVER_OWNER_NOT_FOUND(404, 3001, "서버 주인을 찾을 수 없습니다."),
 
     // Server (3100 ~ 3199)
+    SERVER_NOT_FOUND(404, 3100, "서버를 찾을 수 없습니다.")
 
     // Category (3200 ~ 3299)
 

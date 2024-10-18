@@ -7,6 +7,7 @@ import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
+import org.bookwoori.core.domain.server.dto.response.ServerResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
@@ -43,6 +44,14 @@ public class ServerFacade {
         //DEFAULT 카테고리/채널 생성 및 저장
         Category category = categoryService.makeDefaultCategory(server);
         channelService.makeDefaultChannels(category);
-
     }
+
+    public ServerResponseDto getServerDetails(Long serverId) {
+        Server server = serverService.getServerById(serverId);
+        Member owner = serverMemberService.getOwner(server);
+        int memberCount = serverMemberService.getMemberCount(server);
+
+        return ServerResponseDto.from(server, owner.getNickname(), memberCount);
+    }
+
 }
