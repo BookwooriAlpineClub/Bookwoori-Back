@@ -1,9 +1,7 @@
-package org.bookwoori.core.domain.member.entity;
+package org.bookwoori.core.domain.climbingMember.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,32 +13,34 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.bookwoori.core.domain.server.entity.Server;
+import org.bookwoori.core.domain.climbing.entity.Climbing;
+import org.bookwoori.core.domain.member.entity.Member;
 
 @Entity
-@Table(name = "server_member")
+@Table(name = "climbing_member")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ServerMember {
+public class ClimbingMember {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "server_member_id", updatable = false)
-    private Long serverMemberId;
+    @Column(name = "climbing_member_id", updatable = false)
+    private Long climbingMemberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "climbing_id", updatable = false)
+    @NotNull
+    private Climbing climbing;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", updatable = false)
     @NotNull
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "server_id")
+    @Column(name = "has_shared")
     @NotNull
-    private Server server;
+    private boolean hasShared;
 
-    @Column(name = "role")
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private ServerRole role;
-
+    @Column(name = "memo")
+    private String memo;
 }
