@@ -37,7 +37,7 @@ public class ServerFacade {
         serverService.saveServer(server);
 
         //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
-        Member member = memberService.getMemberById(1L);
+        Member member = memberService.getCurrentMember();
         //서버장을 ServerMember 테이블에 추가
         serverMemberService.saveServerMember(member, server, ServerRole.OWNER);
 
