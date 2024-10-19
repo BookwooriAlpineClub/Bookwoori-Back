@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
+
     private final MemberService memberService;
 
     @GetMapping("/success")
     public ResponseEntity<?> loginSuccess(@Valid LoginResponse loginResponse) {
         return ResponseEntity.ok(loginResponse);
     }
-    
+
 }

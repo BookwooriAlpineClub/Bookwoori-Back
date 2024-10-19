@@ -20,13 +20,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class MemberService {
+
     private final MemberRepository memberRepository;
+
+    @Transactional(readOnly = true)
+    public Member getMemberById(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+        });
+    }
 
     @Transactional(readOnly = true)
     public Member getCurrentMember() throws CustomException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Member member = memberRepository.findByKakaoId(Long.valueOf(authentication.getName()))
-                .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
+            .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
         return member;
     }
 }

@@ -17,12 +17,14 @@ import java.time.LocalDateTime;
 @Component
 @RequiredArgsConstructor
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
     private final ObjectMapper objectMapper;
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+        AuthenticationException authException) throws IOException, ServletException {
         Object exception = request.getAttribute("exception");
-        if(exception instanceof ErrorCode){
+        if (exception instanceof ErrorCode) {
             ErrorCode errorCode = (ErrorCode) exception;
             setResponse(request, response, errorCode);
             return;
@@ -30,16 +32,17 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
     }
 
-    private void setResponse(HttpServletRequest request, HttpServletResponse response, ErrorCode errorCode) throws IOException {
+    private void setResponse(HttpServletRequest request, HttpServletResponse response,
+        ErrorCode errorCode) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         ErrorDto errorDto = ErrorDto.builder()
-                .timestamp(LocalDateTime.now().toString())
-                .status(errorCode.getStatus())
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .path(request.getRequestURI())
-                .build();
+            .timestamp(LocalDateTime.now().toString())
+            .status(errorCode.getStatus())
+            .code(errorCode.getCode())
+            .message(errorCode.getMessage())
+            .path(request.getRequestURI())
+            .build();
         String jsonString = objectMapper.writeValueAsString(errorDto);
         response.getWriter().println(jsonString);
     }

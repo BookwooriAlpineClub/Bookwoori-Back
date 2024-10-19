@@ -11,14 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class JwtService {
+
     private final MemberRepository memberRepository;
 
     @Transactional
     public Member getOrCreateMemberByKakaoId(Long kakaoId) {
         return memberRepository.findByKakaoId(kakaoId)
-                .orElse(Member.builder()
-                        .kakaoId(kakaoId)
-                        .build());
+            .orElse(Member.builder()
+                .kakaoId(kakaoId)
+                .build());
     }
 
     // Access Token 저장 또는 업데이트

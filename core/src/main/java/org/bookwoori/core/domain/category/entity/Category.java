@@ -16,6 +16,8 @@ import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.domain.channel.entity.Channel;
@@ -25,6 +27,8 @@ import org.bookwoori.core.domain.server.entity.Server;
 @Table(name = "category")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Category {
 
     @Id
@@ -33,8 +37,7 @@ public class Category {
     private Long categoryId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "server_id", updatable = false)
-    @NotNull
+    @JoinColumn(name = "server_id")
     private Server server;
 
     @Column(name = "name")
@@ -48,6 +51,10 @@ public class Category {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "next_category_id")
     private Category nextNode;
+
+    @Column(name = "is_default")
+    @NotNull
+    private boolean isDefault;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Channel> channels = new ArrayList<>();
