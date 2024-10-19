@@ -44,7 +44,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
                 .requestMatchers("/error", "/favicon.ico",
-                        "/swagger-ui/**", "/swagger-ui.html")
+                        "/swagger-ui/**", "/swagger-ui.html", "/v3/api/docs", "/v3/api/docs/**")
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
