@@ -27,7 +27,9 @@ public class MemberService {
         return memberRepository.findById(memberId).orElseThrow(() -> {
             throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         });
-      
+    }
+
+    @Transactional(readOnly = true)
     public Member getCurrentMember() throws CustomException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Member member = memberRepository.findByKakaoId(Long.valueOf(authentication.getName()))
