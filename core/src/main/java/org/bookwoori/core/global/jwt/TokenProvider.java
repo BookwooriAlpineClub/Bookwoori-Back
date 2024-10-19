@@ -29,8 +29,10 @@ import java.util.stream.Collectors;
 @Component
 public class TokenProvider {
 
-    @Value("${jwt.secret.access}") private String accessSecret;
-    @Value("${jwt.secret.refresh}") private String refreshSecret;
+    @Value("${jwt.secret.access}")
+    private String accessSecret;
+    @Value("${jwt.secret.refresh}")
+    private String refreshSecret;
     private SecretKey accessKey;
     private SecretKey refreshKey;
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
@@ -56,7 +58,8 @@ public class TokenProvider {
             return currentToken;
         }
 
-        String newAccessToken = generateToken(kakaoId, authentication.getAuthorities(), ACCESS_TOKEN_EXPIRE_TIME, accessKey, "access");
+        String newAccessToken = generateToken(kakaoId, authentication.getAuthorities(),
+            ACCESS_TOKEN_EXPIRE_TIME, accessKey, "access");
         jwtService.saveOrUpdateAccessToken(member, newAccessToken);
         return newAccessToken;
     }
@@ -65,24 +68,26 @@ public class TokenProvider {
         Long kakaoId = extractKakaoId(authentication);
 
         // refreshToken을 새로 생성하여 저장
-        String refreshToken = generateToken(kakaoId, Collections.emptyList(), REFRESH_TOKEN_EXPIRE_TIME, refreshKey, "refresh");
+        String refreshToken = generateToken(kakaoId, Collections.emptyList(),
+            REFRESH_TOKEN_EXPIRE_TIME, refreshKey, "refresh");
         return refreshToken;
     }
 
-    private String generateToken(Long kakaoId, Collection<? extends GrantedAuthority> authorities, long tokenExpireTime, SecretKey key, String tokenType) {
+    private String generateToken(Long kakaoId, Collection<? extends GrantedAuthority> authorities,
+        long tokenExpireTime, SecretKey key, String tokenType) {
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + tokenExpireTime);
 
         String authorityList = authorities.stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining());
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.joining());
 
         JwtBuilder builder = Jwts.builder()
-                .subject(String.valueOf(kakaoId))  // 토큰에 카카오 ID를 subject로 설정
-                .claim(KEY_TYPE, tokenType)  // 토큰 타입 (access / refresh)
-                .issuedAt(now)
-                .setExpiration(expiredDate)
-                .signWith(key, SignatureAlgorithm.HS512);
+            .subject(String.valueOf(kakaoId))  // 토큰에 카카오 ID를 subject로 설정
+            .claim(KEY_TYPE, tokenType)  // 토큰 타입 (access / refresh)
+            .issuedAt(now)
+            .setExpiration(expiredDate)
+            .signWith(key, SignatureAlgorithm.HS512);
 
         // 만약 권한 정보가 존재한다면, 액세스 토큰에만 추가
         if (!authorityList.isEmpty() && "access".equals(tokenType)) {
@@ -124,9 +129,9 @@ public class TokenProvider {
     private Claims parseClaims(String token) {
         try {
             return Jwts.parser()
-                    .setSigningKey(token.contains("refresh") ? refreshKey : accessKey)
-                    .build()
-                    .parseClaimsJws(token).getBody();
+                .setSigningKey(token.contains("refresh") ? refreshKey : accessKey)
+                .build()
+                .parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         } catch (JwtException e) {

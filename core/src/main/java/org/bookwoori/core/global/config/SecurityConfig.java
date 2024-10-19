@@ -34,6 +34,7 @@ import java.util.Arrays;
 @EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     private final OAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -52,9 +53,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",
-                "http://localhost:8080"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
+            "http://localhost:3000",
+            "http://localhost:8080"));
+        configuration.setAllowedMethods(
+            Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.addAllowedHeader("*");
         configuration.addExposedHeader("Authorization");
         configuration.setAllowCredentials(true);
@@ -70,35 +72,38 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
 //                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .logout(AbstractHttpConfigurer::disable)
-                // jwt
-                .addFilterBefore(jwtAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new TokenExceptionFilter(), jwtAuthenticationFilter.getClass()) // 토큰 예외 핸들링
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/success","/signup", "/login", "/token").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/playlists/**").permitAll()
-                        .anyRequest().authenticated())
-                // 인증 예외 핸들링
-                .exceptionHandling((exceptions) -> exceptions
-                        .authenticationEntryPoint(customAuthenticationEntryPoint)
-                        .accessDeniedHandler(customAccessDeniedHandler))
-                // oauth2
-                .oauth2Login(oauth -> oauth
-                        .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-                        .successHandler(oAuth2SuccessHandler));
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .sessionManagement(
+                config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .logout(AbstractHttpConfigurer::disable)
+            // jwt
+            .addFilterBefore(jwtAuthenticationFilter,
+                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new TokenExceptionFilter(),
+                jwtAuthenticationFilter.getClass()) // 토큰 예외 핸들링
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/success", "/signup", "/login", "/token").permitAll()
+                .requestMatchers(HttpMethod.GET, "/playlists/**").permitAll()
+                .anyRequest().authenticated())
+            // 인증 예외 핸들링
+            .exceptionHandling((exceptions) -> exceptions
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler))
+            // oauth2
+            .oauth2Login(oauth -> oauth
+                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
+                .successHandler(oAuth2SuccessHandler));
 //                        .failureHandler(oAuth2FailureHandler))
 //                .logout(logout -> logout
 //                        .logoutUrl("/logout")

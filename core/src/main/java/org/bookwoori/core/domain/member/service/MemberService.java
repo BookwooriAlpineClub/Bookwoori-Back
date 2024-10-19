@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class MemberService {
+
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
@@ -33,7 +34,7 @@ public class MemberService {
     public Member getCurrentMember() throws CustomException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Member member = memberRepository.findByKakaoId(Long.valueOf(authentication.getName()))
-                .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
+            .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
         return member;
     }
 }
