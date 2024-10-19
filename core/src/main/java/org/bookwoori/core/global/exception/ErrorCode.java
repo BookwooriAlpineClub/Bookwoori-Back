@@ -26,6 +26,9 @@ public enum ErrorCode {
 
     UNAUTHORIZED(401, 2000, "인증 정보가 누락되거나 잘못되었습니다."),
     ACCESS_DENIED(403, 2001, "접근 권한이 없습니다."),
+    INVALID_JWT_SIGNATURE(401, 2003, "잘못된 JWT 서명입니다."),
+    INVALID_TOKEN(401, 2100, "잘못된 액세스 토큰입니다."),
+    NO_COOKIE(404,2101 , "쿠키가 존재하지 않습니다."),
     EXPIRED_ACCESS_TOKEN(401, 2200, "만료된 액세스 토큰입니다."),
     EXPIRED_REFRESH_TOKEN(401, 2300, "만료된 리프레쉬 토큰입니다."),
 
@@ -52,8 +55,9 @@ public enum ErrorCode {
     // Record (3600 ~ 3699)
 
     // Review (3700 ~ 3799)
-
     ;
+
+
 
     private final int status;
     private final int code;
