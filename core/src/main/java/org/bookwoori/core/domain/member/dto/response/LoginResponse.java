@@ -1,4 +1,4 @@
-package org.bookwoori.core.domain.member.dto;
+package org.bookwoori.core.domain.member.dto.response;
 
 import jakarta.validation.constraints.NotBlank;
 
