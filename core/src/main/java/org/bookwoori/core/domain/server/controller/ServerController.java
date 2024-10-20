@@ -38,4 +38,10 @@ public class ServerController {
         return ResponseEntity.ok(serverFacade.getServerDetails(serverId));
     }
 
+    @Operation(summary = "서버 멤버 목록 조회", description = "해당 서버에 속한 멤버 목록을 조회합니다.")
+    @GetMapping("/{serverId}/members")
+    public ResponseEntity<?> getServerMemberList(@RequestParam final Long serverId) {
+        return ResponseEntity.ok(serverFacade.getServerMemberList(serverId));
+    }
+
 }
