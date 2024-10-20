@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,4 +60,10 @@ public class Category {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Channel> channels = new ArrayList<>();
 
+    public void setBeforeNode(Category category) {
+        this.beforeNode = category;
+        if (!Objects.isNull(category)) {
+            category.nextNode = this;
+        }
+    }
 }
