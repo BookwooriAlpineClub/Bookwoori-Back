@@ -1,8 +1,11 @@
 package org.bookwoori.core.domain.serverMember.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.server.entity.Server;
+import org.bookwoori.core.domain.serverMember.dto.ServerMemberDto;
 import org.bookwoori.core.domain.serverMember.entity.ServerMember;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
 import org.bookwoori.core.domain.serverMember.repository.ServerMemberRepository;
@@ -36,6 +39,13 @@ public class ServerMemberService {
     @Transactional(readOnly = true)
     public int getMemberCount(Server server) {
         return serverMemberRepository.countByServer(server);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ServerMemberDto> getAllMembersByServer(Server server) {
+        return serverMemberRepository.findAllByServer(server).stream().map(
+                serverMember -> ServerMemberDto.from(serverMember.getMember(), serverMember.getRole()))
+            .collect(Collectors.toList());
     }
 
 }

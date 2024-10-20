@@ -7,6 +7,7 @@ import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
+import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
@@ -33,7 +34,7 @@ public class ServerFacade {
 
         //서버 저장
         Server server = requestDto.toEntity(
-            s3Util.uploadImage(requestDto.getServerImg(), "server"));
+            s3Util.uploadImage(requestDto.serverImg(), "server"));
         serverService.saveServer(server);
 
         //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
@@ -54,4 +55,8 @@ public class ServerFacade {
         return ServerResponseDto.from(server, owner.getNickname(), memberCount);
     }
 
+    public ServerMemberListResponseDto getServerMemberList(Long serverId) {
+        Server server = serverService.getServerById(serverId);
+        return new ServerMemberListResponseDto(serverMemberService.getAllMembersByServer(server));
+    }
 }
