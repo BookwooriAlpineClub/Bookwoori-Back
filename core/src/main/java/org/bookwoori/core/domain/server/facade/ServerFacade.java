@@ -33,7 +33,7 @@ public class ServerFacade {
 
         //서버 저장
         Server server = requestDto.toEntity(
-            s3Util.uploadImage(requestDto.getServerImg(), "server"));
+            s3Util.uploadImage(requestDto.serverImg(), "server"));
         serverService.saveServer(server);
 
         //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요

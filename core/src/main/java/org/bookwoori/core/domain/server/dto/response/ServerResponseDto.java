@@ -7,18 +7,15 @@ import lombok.Builder;
 import lombok.Getter;
 import org.bookwoori.core.domain.server.entity.Server;
 
-@Getter
-@AllArgsConstructor
 @Builder
-public class ServerResponseDto {
-
-    private String name;
-    private String serverImg;
-    private String owner;
-    private int memberCount;
+public record ServerResponseDto(
+    String name,
+    String serverImg,
+    String owner,
+    int memberCount,
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime createdAt;
-    private String description;
+    LocalDateTime createdAt,
+    String description) {
 
     public static ServerResponseDto from(Server server, String owner, int memberCount) {
         return ServerResponseDto.builder()
