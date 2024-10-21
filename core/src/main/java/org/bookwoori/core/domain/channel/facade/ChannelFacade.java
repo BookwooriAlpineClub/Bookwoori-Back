@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.category.entity.Category;
 import org.bookwoori.core.domain.category.service.CategoryService;
 import org.bookwoori.core.domain.channel.dto.request.ChannelCreateRequestDto;
+import org.bookwoori.core.domain.channel.dto.request.ChannelUpdateRequestDto;
 import org.bookwoori.core.domain.channel.entity.Channel;
 import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.springframework.stereotype.Component;
@@ -23,5 +24,11 @@ public class ChannelFacade {
         Channel beforeChannel = channelService.getLastNodeByCategory(category);
         channel.setBeforeNode(beforeChannel);
         channelService.saveChannel(channel);
+    }
+
+    @Transactional
+    public void updateChannelName(Long channelId, ChannelUpdateRequestDto requestDto) {
+        Channel channel = channelService.getChannelById(channelId);
+        channel.modifyName(requestDto.name());
     }
 }

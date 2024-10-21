@@ -69,4 +69,8 @@ public class Channel extends BaseTimeEntity {
         channel.beforeNode = this;
     }
 
+    public void modifyName(String name) {
+        this.name = name;
+    }
+
 }

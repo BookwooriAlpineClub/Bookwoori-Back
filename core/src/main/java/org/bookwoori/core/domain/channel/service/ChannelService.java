@@ -5,6 +5,8 @@ import org.bookwoori.core.domain.category.entity.Category;
 import org.bookwoori.core.domain.channel.entity.Channel;
 import org.bookwoori.core.domain.channel.entity.ChannelType;
 import org.bookwoori.core.domain.channel.repository.ChannelRepository;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,5 +39,11 @@ public class ChannelService {
     @Transactional(readOnly = true)
     public Channel getLastNodeByCategory(Category category) {
         return channelRepository.findChannelByCategoryAndNextNodeIsNull(category).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Channel getChannelById(Long channelId) {
+        return channelRepository.findById(channelId)
+            .orElseThrow(() -> new CustomException(ErrorCode.CHANNEL_NOT_FOUND));
     }
 }
