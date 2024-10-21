@@ -31,9 +31,8 @@ public class ServerMemberService {
 
     @Transactional(readOnly = true)
     public Member getOwner(Server server) {
-        return serverMemberRepository.findOwnerByServer(server).orElseThrow(() -> {
-            throw new CustomException(ErrorCode.SERVER_OWNER_NOT_FOUND);
-        });
+        return serverMemberRepository.findOwnerByServer(server)
+            .orElseThrow(() -> new CustomException(ErrorCode.SERVER_OWNER_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)

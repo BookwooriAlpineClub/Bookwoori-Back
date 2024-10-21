@@ -20,8 +20,7 @@ public class ServerService {
 
     @Transactional(readOnly = true)
     public Server getServerById(Long serverId) {
-        return serverRepository.findById(serverId).orElseThrow(()->{
-            throw new CustomException(ErrorCode.SERVER_NOT_FOUND);
-        });
+        return serverRepository.findById(serverId)
+            .orElseThrow(() -> new CustomException(ErrorCode.SERVER_NOT_FOUND));
     }
 }
