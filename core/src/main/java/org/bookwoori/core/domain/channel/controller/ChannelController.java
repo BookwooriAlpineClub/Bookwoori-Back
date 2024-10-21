@@ -1,7 +1,13 @@
 package org.bookwoori.core.domain.channel.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.core.domain.channel.dto.request.ChannelCreateRequestDto;
+import org.bookwoori.core.domain.channel.facade.ChannelFacade;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,4 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/channels")
 public class ChannelController {
 
+    private final ChannelFacade channelFacade;
+
+    @Operation(summary = "채널 생성", description = "채팅/음성 채널을 생성합니다.")
+    @PostMapping
+    public ResponseEntity<?> createChannel(ChannelCreateRequestDto requestDto) {
+        channelFacade.createChannel(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }

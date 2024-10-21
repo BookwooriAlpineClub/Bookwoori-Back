@@ -6,12 +6,17 @@ import org.bookwoori.core.domain.channel.entity.Channel;
 import org.bookwoori.core.domain.channel.entity.ChannelType;
 import org.bookwoori.core.domain.channel.repository.ChannelRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class ChannelService {
 
     private final ChannelRepository channelRepository;
+
+    public Channel saveChannel(Channel channel) {
+        return channelRepository.save(channel);
+    }
 
     public void makeDefaultChannels(Category category) {
         Channel chatChannel = Channel.builder()
@@ -27,5 +32,10 @@ public class ChannelService {
         chatChannel.setNextNode(voiceChannel);
         channelRepository.save(chatChannel);
         channelRepository.save(voiceChannel);
+    }
+
+    @Transactional(readOnly = true)
+    public Channel getLastNodeByCategory(Category category) {
+        return channelRepository.findChannelByCategoryAndNextNodeIsNull(category).orElse(null);
     }
 }
