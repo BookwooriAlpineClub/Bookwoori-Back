@@ -42,9 +42,10 @@ public enum ErrorCode {
     SERVER_OWNER_NOT_FOUND(404, 3001, "서버 주인을 찾을 수 없습니다."),
 
     // Server (3100 ~ 3199)
-    SERVER_NOT_FOUND(404, 3100, "서버를 찾을 수 없습니다.")
+    SERVER_NOT_FOUND(404, 3100, "서버를 찾을 수 없습니다."),
 
     // Category (3200 ~ 3299)
+    CATEGORY_NOT_FOUND(404, 3200, "카테고리를 찾을 수 없습니다.")
 
     // Channel (3300 ~ 3399)
 

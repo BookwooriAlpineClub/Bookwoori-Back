@@ -66,4 +66,8 @@ public class Category {
             category.nextNode = this;
         }
     }
+
+    public void modifyName(String name) {
+        this.name = name;
+    }
 }

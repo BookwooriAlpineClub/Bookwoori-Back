@@ -5,9 +5,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.category.dto.request.CategoryCreateRequestDto;
+import org.bookwoori.core.domain.category.dto.request.CategoryUpdateRequestDto;
 import org.bookwoori.core.domain.category.facade.CategoryFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +30,13 @@ public class CategoryController {
         @Valid @RequestBody CategoryCreateRequestDto requestDto) {
         categoryFacade.createCategory(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(summary = "카테고리 이름 변경", description = "카테고리 이름을 변경합니다.")
+    @PatchMapping("/{categoryId}/name")
+    public ResponseEntity<?> updateCategoryName(@PathVariable final Long categoryId,
+        @Valid @RequestBody CategoryUpdateRequestDto requestDto) {
+        categoryFacade.updateCategoryName(categoryId, requestDto);
+        return ResponseEntity.ok().build();
     }
 }

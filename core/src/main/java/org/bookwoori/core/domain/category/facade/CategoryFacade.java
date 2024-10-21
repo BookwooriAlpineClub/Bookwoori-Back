@@ -2,6 +2,7 @@ package org.bookwoori.core.domain.category.facade;
 
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.category.dto.request.CategoryCreateRequestDto;
+import org.bookwoori.core.domain.category.dto.request.CategoryUpdateRequestDto;
 import org.bookwoori.core.domain.category.entity.Category;
 import org.bookwoori.core.domain.category.service.CategoryService;
 import org.bookwoori.core.domain.server.entity.Server;
@@ -25,4 +26,9 @@ public class CategoryFacade {
         categoryService.saveCategory(category);
     }
 
+    @Transactional
+    public void updateCategoryName(Long categoryId, CategoryUpdateRequestDto requestDto) {
+        Category category = categoryService.getCategoryById(categoryId);
+        category.modifyName(requestDto.name());
+    }
 }
