@@ -64,11 +64,6 @@ public class Channel extends BaseTimeEntity {
         }
     }
 
-    public void setNextNode(Channel channel) {
-        this.nextNode = channel;
-        channel.beforeNode = this;
-    }
-
     public void modifyName(String name) {
         this.name = name;
     }
