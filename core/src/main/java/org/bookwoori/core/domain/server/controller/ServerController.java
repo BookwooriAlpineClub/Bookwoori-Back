@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,13 +35,13 @@ public class ServerController {
 
     @Operation(summary = "서버 정보 조회", description = "특정 서버의 정보를 조회합니다.")
     @GetMapping("/{serverId}")
-    public ResponseEntity<?> getServerDetails(@RequestParam final Long serverId) {
+    public ResponseEntity<?> getServerDetails(@PathVariable final Long serverId) {
         return ResponseEntity.ok(serverFacade.getServerDetails(serverId));
     }
 
     @Operation(summary = "서버 멤버 목록 조회", description = "해당 서버에 속한 멤버 목록을 조회합니다.")
     @GetMapping("/{serverId}/members")
-    public ResponseEntity<?> getServerMemberList(@RequestParam final Long serverId) {
+    public ResponseEntity<?> getServerMemberList(@PathVariable final Long serverId) {
         return ResponseEntity.ok(serverFacade.getServerMemberList(serverId));
     }
 
