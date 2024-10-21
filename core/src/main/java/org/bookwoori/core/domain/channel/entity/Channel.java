@@ -14,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,9 +57,15 @@ public class Channel extends BaseTimeEntity {
     @JoinColumn(name = "next_channel_id")
     private Channel nextNode;
 
-    public void setNextNode(Channel channel){
-        this.nextNode = channel;
-        channel.beforeNode = this;
+    public void setBeforeNode(Channel channel) {
+        this.beforeNode = channel;
+        if (!Objects.isNull(channel)) {
+            channel.nextNode = this;
+        }
+    }
+
+    public void modifyName(String name) {
+        this.name = name;
     }
 
 }
