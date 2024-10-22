@@ -1,12 +1,18 @@
 package org.bookwoori.core.domain.server.facade;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.bookwoori.core.domain.category.dto.response.CategoryResponseDto;
 import org.bookwoori.core.domain.category.entity.Category;
 import org.bookwoori.core.domain.category.service.CategoryService;
+import org.bookwoori.core.domain.channel.dto.response.ChannelResponseDto;
 import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
+import org.bookwoori.core.domain.server.dto.response.ServerCategoryListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
@@ -19,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class ServerFacade {
 
     private final S3Util s3Util;
@@ -58,5 +65,17 @@ public class ServerFacade {
     public ServerMemberListResponseDto getServerMemberList(Long serverId) {
         Server server = serverService.getServerById(serverId);
         return new ServerMemberListResponseDto(serverMemberService.getAllMembersByServer(server));
+    }
+
+    public ServerCategoryListResponseDto getServerCategoryList(Long serverId) {
+        Server server = serverService.getServerById(serverId);
+        List<Category> categories = categoryService.getCategoriesByServer(server);
+        List<CategoryResponseDto> categoryDtoList = categories.stream()
+            .map(category -> {
+                List<ChannelResponseDto> channelDtoList = category.getChannels().stream()
+                    .map(ChannelResponseDto::from).toList();
+                return CategoryResponseDto.from(category, channelDtoList);
+            }).collect(Collectors.toList());
+        return new ServerCategoryListResponseDto(categoryDtoList);
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -43,6 +42,12 @@ public class ServerController {
     @GetMapping("/{serverId}/members")
     public ResponseEntity<?> getServerMemberList(@PathVariable final Long serverId) {
         return ResponseEntity.ok(serverFacade.getServerMemberList(serverId));
+    }
+
+    @Operation(summary = "채널 목록 조회", description = "해당 서버의 채널 및 카테고리 목록을 조회합니다.")
+    @GetMapping("/{serverId}/categories")
+    public ResponseEntity<?> getCategoryList(@PathVariable final Long serverId) {
+        return ResponseEntity.ok(serverFacade.getServerCategoryList(serverId));
     }
 
 }
