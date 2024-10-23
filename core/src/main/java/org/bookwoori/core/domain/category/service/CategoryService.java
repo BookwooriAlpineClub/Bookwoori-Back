@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.category.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.category.entity.Category;
 import org.bookwoori.core.domain.category.repository.CategoryRepository;
@@ -37,5 +38,9 @@ public class CategoryService {
     public Category getCategoryById(Long categoryId) {
         return categoryRepository.findById(categoryId)
             .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+    }
+
+    public List<Category> getCategoriesByServer(Server server) {
+        return categoryRepository.findCategoryByServer(server);
     }
 }
