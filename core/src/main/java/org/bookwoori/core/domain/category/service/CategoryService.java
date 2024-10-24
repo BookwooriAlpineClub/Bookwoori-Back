@@ -40,7 +40,7 @@ public class CategoryService {
             .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
-    public List<Category> getCategoriesByServer(Server server) {
+    public List<Category> getCategoriesWithChannels(Server server) {
         return categoryRepository.findCategoryByServer(server);
     }
 }
