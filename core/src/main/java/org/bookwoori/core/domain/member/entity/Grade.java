@@ -1,7 +1,11 @@
 package org.bookwoori.core.domain.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 
 @Getter
 @AllArgsConstructor
@@ -21,4 +25,13 @@ public enum Grade {
     private final int level;
     private final String mountain;
     private final int height;
+
+    @JsonCreator
+    public static Grade from(String s) {
+        try {
+            return Grade.valueOf(s.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
+        }
+    }
 }
