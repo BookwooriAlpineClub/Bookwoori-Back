@@ -35,9 +35,15 @@ public class ClimbingFacade {
         climbingMemberService.saveMember(currentMember, climbing, ClimbingRole.OWNER);
     }
 
-    public void updateClimbing(ClimbingChannelUpdateRequestDto requestDto) {
-        Climbing climbing = climbingService.getClimbingById(requestDto.climbingId());
+    public void updateClimbing(Long climbingId, ClimbingChannelUpdateRequestDto requestDto) {
+        Climbing climbing = climbingService.getClimbingById(climbingId);
         Book book = bookService.getBookById(requestDto.bookId());
         climbing.updateClimbing(book, requestDto.name(), requestDto.description(), requestDto.startDate(), requestDto.endDate());
+    }
+
+    public void joinClimbing(Long climbingId) {
+        Member currentMember = memberService.getCurrentMember();
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        climbingMemberService.saveMember(currentMember, climbing, ClimbingRole.MEMBER);
     }
 }

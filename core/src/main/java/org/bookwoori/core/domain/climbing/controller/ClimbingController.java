@@ -31,7 +31,14 @@ public class ClimbingController {
     @Operation(summary = "클라이밍 채널 편집", description = "클라이밍 채널을 편집합니다.")
     @PatchMapping("/{climbingId}")
     public ResponseEntity<?> updateClimbingChannel(@PathVariable("climbingId") final Long climbingId, @RequestBody @Valid ClimbingChannelUpdateRequestDto requestDto) {
-        climbingFacade.updateClimbing(requestDto);
+        climbingFacade.updateClimbing(climbingId, requestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "클라이밍 채널 참여", description = "클라이밍 채널에 참여합니다.")
+    @PatchMapping
+    public ResponseEntity<?> joinClimbingChannel(@PathVariable("climbingId") final Long climbingId) {
+        climbingFacade.joinClimbing(climbingId);
         return ResponseEntity.ok().build();
     }
 
