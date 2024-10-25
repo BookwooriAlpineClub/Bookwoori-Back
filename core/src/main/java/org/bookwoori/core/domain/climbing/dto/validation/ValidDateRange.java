@@ -15,7 +15,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ TYPE }) // 클래스 레벨에서 유효성 검사를 수행
 @Retention(RUNTIME)
 public @interface ValidDateRange {
-    String message() default "INVALID_DATE_RANGE";
+    String message() default "INVALID_INPUT_DATE";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
