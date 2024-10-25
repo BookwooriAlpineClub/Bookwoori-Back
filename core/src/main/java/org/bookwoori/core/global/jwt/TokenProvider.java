@@ -40,7 +40,6 @@ public class TokenProvider {
     private SecretKey refreshKey;
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
     public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
-    private final JwtService jwtService;
 
     @PostConstruct
     private void setSecretKey() {
