@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.core.domain.book.dto.response.BookDetailResponseDto;
 import org.bookwoori.core.domain.book.dto.response.BookResponseDto;
 import org.bookwoori.core.domain.book.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,8 @@ public class BookService {
 
   private final BookRepository bookRepository;
 
-  private static final String ALADIN_API_URL = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx";
+  private static final String ALADIN_API_URL_SEARCH = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx";
+  private static final String ALADIN_API_URL_LOOKUP = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx";
   private static final String TTB_KEY = "ttboesnimnos1216001"; // 알라딘 API Key
 
   @Autowired
@@ -25,8 +27,8 @@ public class BookService {
   @Autowired
   private ObjectMapper objectMapper;
 
-  public List<BookResponseDto> findBookByKeyword(String keyword) { // 도서 검색
-    String url = ALADIN_API_URL + "?ttbkey=" + TTB_KEY +
+  public List<BookResponseDto> findBooksByKeyword(String keyword) { // 도서 검색
+    String url = ALADIN_API_URL_SEARCH + "?ttbkey=" + TTB_KEY +
         "&Query=" + keyword +
         "&QueryType=Keyword" +
         "&MaxResults=100" +
@@ -62,4 +64,39 @@ public class BookService {
 
     return bookList;
   }
+
+
+  public BookDetailResponseDto findBookByIsbn(String isbn13) { // 상세정보 조회
+    String url = ALADIN_API_URL_LOOKUP + "?ttbkey=" + TTB_KEY +
+        "&itemIdType=ISBN13" +
+        "&ItemId=" + isbn13 +
+        "&output=js" +
+        "&Version=20131101";
+
+    String jsonResponse = restTemplate.getForObject(url, String.class);
+
+    try {
+      JsonNode root = objectMapper.readTree(jsonResponse);
+      JsonNode item = root.path("item").get(0);
+
+      if (item != null) {
+        String title = item.path("title").asText();
+        String author = item.path("author").asText();
+        String publisher = item.path("publisher").asText();
+        String pubDate = item.path("pubDate").asText();
+        Long itemPage = item.path("subInfo").path("itemPage").asLong();
+        String description = item.path("description").asText();
+        String cover = item.path("cover").asText();
+
+        return new BookDetailResponseDto(title, author, publisher, pubDate, itemPage, description,
+            isbn13, cover);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return null; // 데이터가 없거나 오류 발생 시 null 반환
+  }
+
+
 }
