@@ -44,6 +44,9 @@ public class Member extends BaseTimeEntity {
     @NotNull
     private int totalPage;
 
+    @Column(name = "access_token")
+    private String accessToken;
+
     @Builder
     public Member(Long kakaoId, String nickname, String profileImg) {
         this.kakaoId = kakaoId;

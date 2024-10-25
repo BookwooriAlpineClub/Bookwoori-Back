@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
@@ -58,4 +59,24 @@ public class Climbing extends BaseTimeEntity {
     @Column(name = "end_date")
     @NotNull
     private LocalDate endDate;
+
+    @Builder
+    public Climbing(Long climbingId, Server server, Book book, String name, String description, LocalDate startDate, LocalDate endDate) {
+        this.climbingId = climbingId;
+        this.server = server;
+        this.book = book;
+        this.status = ClimbingStatus.READY;
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public void updateClimbing(Book book, String name, String description, LocalDate startDate, LocalDate endDate){
+        this.book = book;
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
 }
