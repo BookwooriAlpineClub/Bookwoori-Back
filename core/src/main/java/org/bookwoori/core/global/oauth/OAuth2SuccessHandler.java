@@ -33,7 +33,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addHeader("Authorization", "Bearer " + accessToken);
 
         // refreshToken 발급 및 쿠키에 저장
-        String refreshToken = tokenProvider.generateRefreshToken(authentication);
+        Long kakoId = tokenProvider.extractKakaoId(authentication);
+        String refreshToken = tokenProvider.generateRefreshToken(kakoId);
         cookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, CookieUtil.REFRESH_TOKEN_MAX_AGE);
 
         // 리다이렉트 URL 설정 및 accessToken 전달

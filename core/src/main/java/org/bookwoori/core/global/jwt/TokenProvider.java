@@ -49,22 +49,20 @@ public class TokenProvider {
     }
 
     public String generateAccessToken(Authentication authentication) {
-        return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME, accessKey, "access");
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        Long kakaoId = extractKakaoId(authentication);
+        return generateToken(kakaoId, roles, ACCESS_TOKEN_EXPIRE_TIME, accessKey, "access");
     }
 
-    public String generateRefreshToken(Authentication authentication) {
-        return generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME, refreshKey, "refresh");
+    public String generateRefreshToken(Long kakaoId) {
+        return generateToken(kakaoId, Collections.emptyList(), REFRESH_TOKEN_EXPIRE_TIME, refreshKey, "refresh");
     }
 
-    private String generateToken(Authentication authentication, long tokenExpireTime, SecretKey key, String tokenType) {
-        Long kakaoId = extractKakaoId(authentication); // Authentication 객체에서 kakaoId 추출
+    private String generateToken(Long kakaoId, List<String> roles, long tokenExpireTime, SecretKey key, String tokenType) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + tokenExpireTime);
-
-        // 권한 목록 설정
-        String authorityList = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
 
         JwtBuilder builder = Jwts.builder()
                 .setSubject(String.valueOf(kakaoId))
@@ -73,9 +71,8 @@ public class TokenProvider {
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS512);
 
-        // 액세스 토큰에만 권한 정보 추가
-        if (!authorityList.isEmpty() && "access".equals(tokenType)) {
-            builder.claim("role", authorityList);
+        if (!roles.isEmpty() && "access".equals(tokenType)) {
+            builder.claim("role", String.join(",", roles));
         }
 
         return builder.compact();
@@ -85,11 +82,10 @@ public class TokenProvider {
         if (validateToken(refreshToken, true)) {
             Claims claims = parseClaims(refreshToken, refreshKey);
             Long kakaoId = Long.valueOf(claims.getSubject());
-            // 해당 사용자 ID로 새로운 Authentication 객체 생성
-            Authentication authentication = new UsernamePasswordAuthenticationToken(kakaoId, null, getAuthorities(claims));
             // 새 accessToken 및 refreshToken 생성
-            String newAccessToken = generateAccessToken(authentication);
-            String newRefreshToken = generateRefreshToken(authentication);
+            List<String> roles = getRolesFromClaims(claims);
+            String newAccessToken = generateToken(kakaoId, roles, ACCESS_TOKEN_EXPIRE_TIME, accessKey, "access");
+            String newRefreshToken = generateRefreshToken(kakaoId);
             // 결과를 Map에 담아 반환
             Map<String, String> tokens = new HashMap<>();
             tokens.put("accessToken", newAccessToken);
@@ -99,9 +95,9 @@ public class TokenProvider {
         throw new TokenException(ErrorCode.INVALID_TOKEN);
     }
 
-    private Long extractKakaoId(Authentication authentication) {
+    public Long extractKakaoId(Authentication authentication) {
         if (authentication.getPrincipal() instanceof OAuth2User oAuth2User) {
-            return Long.valueOf(oAuth2User.getAttributes().get("id").toString());  // 카카오 ID 추출
+            return Long.valueOf(oAuth2User.getAttributes().get("id").toString());
         }
         throw new TokenException(ErrorCode.MEMBER_NOT_FOUND);
     }
@@ -123,10 +119,15 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), token, authorities);
     }
 
-    private List<SimpleGrantedAuthority> getAuthorities(Claims claims) {
+    private List<String> getRolesFromClaims(Claims claims) {
         String roles = claims.get("role", String.class);
-        return roles == null ? List.of(new SimpleGrantedAuthority("ROLE_USER"))
-                : List.of(new SimpleGrantedAuthority(roles));
+        return roles == null ? List.of("ROLE_USER") : List.of(roles.split(","));
+    }
+
+    private List<SimpleGrantedAuthority> getAuthorities(Claims claims) {
+        return getRolesFromClaims(claims).stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     private Claims parseClaims(String token, SecretKey key) {
@@ -143,3 +144,5 @@ public class TokenProvider {
         }
     }
 }
+
+
