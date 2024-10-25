@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.dto.response.LoginResponseDto;
+import org.bookwoori.core.domain.member.facade.AuthFacade;
 import org.bookwoori.core.domain.member.service.AuthService;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.exception.TokenException;
@@ -24,7 +25,7 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
     private final TokenProvider tokenProvider;
-    private final AuthService authService;
+    private final AuthFacade authFacade;
 
     @Operation(summary = "로그인 성공", description = "카카오 로그인에 성공합니다.")
     @GetMapping("/success")
@@ -69,7 +70,7 @@ public class AuthController {
     @Operation(summary = "계정 삭제", description = "회원 상태를 INACTIVE로 변경하고 닉네임을 '(알 수 없음)'으로 변경합니다.")
     @PatchMapping("/delete")
     public ResponseEntity<?> deleteMember() {
-        authService.deleteMember();
+        authFacade.deleteMember();
         return ResponseEntity.ok().build();
     }
 
