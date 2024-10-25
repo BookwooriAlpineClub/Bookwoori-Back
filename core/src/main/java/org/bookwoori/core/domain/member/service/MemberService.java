@@ -44,5 +44,7 @@ public class MemberService {
                     .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_INACTIVE));
     }
 
-
+    public void saveMember(Member member) {
+        memberRepository.save(member);
+    }
 }
