@@ -25,4 +25,10 @@ public class ClimbingMemberService {
                 .build();
         climbingMemberRepository.save(climbingMember);
     }
+
+    public boolean isOwner(Member member, Climbing climbing) {
+        return climbingMemberRepository.findByMemberAndClimbing(member, climbing)
+                .map(climbingMember -> climbingMember.getRole() == ClimbingRole.OWNER)
+                .orElse(false);
+    }
 }

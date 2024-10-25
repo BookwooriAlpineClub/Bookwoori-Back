@@ -14,6 +14,8 @@ import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
 
 
@@ -36,8 +38,12 @@ public class ClimbingFacade {
     }
 
     public void updateClimbing(Long climbingId, ClimbingChannelUpdateRequestDto requestDto) {
+        Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
         Book book = bookService.getBookById(requestDto.bookId());
+        if (!climbingMemberService.isOwner(currentMember, climbing)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);  // OWNER만 편집 가능
+        }
         climbing.updateClimbing(book, requestDto.name(), requestDto.description(), requestDto.startDate(), requestDto.endDate());
     }
 
