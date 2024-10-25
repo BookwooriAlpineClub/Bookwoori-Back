@@ -25,14 +25,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-        FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = resolveToken(request);
+                                    FilterChain filterChain) throws ServletException, IOException {
 
+        String accessToken = resolveToken(request);
         // accessToken 검증
-        if (tokenProvider.validateToken(accessToken)) {
+        if (accessToken != null && tokenProvider.validateToken(accessToken, false)) {
             setAuthentication(accessToken);
-        } else { // accessToken이 유효하지 않은 경우 처리
-            handleInvalidToken(request, response, filterChain);
+        } else if (accessToken != null) {
+            // accessToken 만료 시 클라이언트에게 재발급 요청하도록 응답 설정
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access token expired. Please refresh aceeesToken&refreshToken.");
             return;
         }
 
@@ -44,27 +45,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    private void handleInvalidToken(HttpServletRequest request, HttpServletResponse response,
-        FilterChain filterChain) throws IOException, ServletException {
-        // 인증된 사용자 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            // 새로운 Access Token 발급
-            String newAccessToken = tokenProvider.generateAccessToken(authentication);
-            // 새로운 Access Token으로 인증 정보 업데이트
-            setAuthentication(newAccessToken);
-            // 응답 헤더에 새로운 Access Token 추가
-            response.setHeader(AUTHORIZATION, "Bearer " + newAccessToken);
-        }
-        filterChain.doFilter(request, response);
-    }
-
     private String resolveToken(HttpServletRequest request) {
         String token = request.getHeader(AUTHORIZATION);
-        if (ObjectUtils.isEmpty(token) || !token.startsWith("Bearer ")) {
-            return null;
-        }
-        return token.substring(7);
+        return (token != null && token.startsWith("Bearer ")) ? token.substring(7) : null;
     }
 }
+
 

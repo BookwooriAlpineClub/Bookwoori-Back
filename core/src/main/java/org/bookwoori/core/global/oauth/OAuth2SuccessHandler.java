@@ -30,34 +30,20 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException, ServletException {
         // accessToken 발급
         String accessToken = tokenProvider.generateAccessToken(authentication);
-
-        // 헤더 Authorization에 Bearer Token 담기
         response.addHeader("Authorization", "Bearer " + accessToken);
 
-        // refresh 토큰 발급 및 쿠키에 저장
+        // refreshToken 발급 및 쿠키에 저장
         String refreshToken = tokenProvider.generateRefreshToken(authentication);
         cookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, CookieUtil.REFRESH_TOKEN_MAX_AGE);
-
-        // PrincipalDetails를 사용하여 새로운 Authentication 객체 생성
-        if (authentication.getPrincipal() instanceof PrincipalDetails principalDetails) {
-            UsernamePasswordAuthenticationToken newAuth = new UsernamePasswordAuthenticationToken(
-                    principalDetails,
-                    null,
-                    principalDetails.getAuthorities()
-            );
-
-            // 새로운 Authentication 객체를 SecurityContext에 설정
-            SecurityContextHolder.getContext().setAuthentication(newAuth);
-        } else {
-            throw new IllegalArgumentException("Authentication principal is not of type PrincipalDetails");
-        }
 
         // 리다이렉트 URL 설정 및 accessToken 전달
         String redirectUrl = UriComponentsBuilder.fromUriString(URI)
                 .queryParam("accessToken", accessToken)
                 .build().toUriString();
 
+        // refreshToken -> /auth/refresh 엔드포인트로 요청
         response.sendRedirect(redirectUrl);
     }
 }
+
 
