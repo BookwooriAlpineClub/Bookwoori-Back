@@ -107,7 +107,7 @@ public class TokenProvider {
             Claims claims = parseClaims(token, isRefreshToken ? refreshKey : accessKey);
             return claims.getExpiration().after(new Date());
         } catch (ExpiredJwtException e) {
-            return false;
+            throw new TokenException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         } catch (JwtException e) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
         }
