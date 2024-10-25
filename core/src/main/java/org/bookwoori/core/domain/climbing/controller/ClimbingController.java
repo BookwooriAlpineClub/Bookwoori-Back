@@ -29,8 +29,8 @@ public class ClimbingController {
     }
 
     @Operation(summary = "클라이밍 채널 편집", description = "클라이밍 채널을 편집합니다.")
-    @PatchMapping
-    public ResponseEntity<?> updateClimbingChannel(@RequestBody @Valid ClimbingChannelUpdateRequestDto requestDto) {
+    @PatchMapping("/{climbingId}")
+    public ResponseEntity<?> updateClimbingChannel(@PathVariable("climbingId") final Long climbingId, @RequestBody @Valid ClimbingChannelUpdateRequestDto requestDto) {
         climbingFacade.updateClimbing(requestDto);
         return ResponseEntity.ok().build();
     }

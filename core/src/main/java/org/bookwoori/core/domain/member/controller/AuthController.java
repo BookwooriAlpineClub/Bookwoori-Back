@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.dto.response.LoginResponseDto;
 import org.bookwoori.core.domain.member.facade.AuthFacade;
-import org.bookwoori.core.domain.member.service.AuthService;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.exception.TokenException;
 import org.bookwoori.core.global.jwt.TokenProvider;

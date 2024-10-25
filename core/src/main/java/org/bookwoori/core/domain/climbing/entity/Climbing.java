@@ -79,4 +79,8 @@ public class Climbing extends BaseTimeEntity {
         this.startDate = startDate;
         this.endDate = endDate;
     }
+
+    public void updateStatus(ClimbingStatus climbingStatus) {
+        this.status = climbingStatus;
+    }
 }
