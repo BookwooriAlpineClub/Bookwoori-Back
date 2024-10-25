@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.member.entity.Status;
 import org.bookwoori.core.domain.member.repository.MemberRepository;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
@@ -20,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class MemberService {
-
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
@@ -36,4 +36,13 @@ public class MemberService {
             .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
         return member;
     }
+
+    @Transactional(readOnly = true)
+    public void getMemberStatus(Long kakaoId){
+        memberRepository.findByKakaoId(kakaoId)
+                .filter(member -> member.getStatus() != Status.INACTIVE)
+                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_INACTIVE));
+    }
+
+
 }
