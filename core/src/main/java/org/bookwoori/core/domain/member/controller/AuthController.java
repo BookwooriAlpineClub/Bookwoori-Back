@@ -37,7 +37,7 @@ public class AuthController {
     public ResponseEntity<?> refreshAccessToken(@CookieValue(name = "refreshToken") String refreshToken) {
         try {
             // accessToken과 refreshToken을 모두 재발급
-            Map<String, String> tokens = tokenProvider.refreshTokens(refreshToken);
+            Map<String, String> tokens = tokenProvider.renewAccessAndRefreshToken(refreshToken);
             String newAccessToken = tokens.get("accessToken");
             String newRefreshToken = tokens.get("refreshToken");
             // 새로운 refreshToken을 쿠키에 설정
