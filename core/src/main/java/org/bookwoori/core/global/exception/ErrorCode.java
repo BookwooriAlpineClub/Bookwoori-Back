@@ -55,6 +55,9 @@ public enum ErrorCode {
 
     // Book (3500 ~ 3599)
 
+    // Record (3600 ~ 3699)
+
+    // Review (3700 ~ 3799)
     ;
 
     private final int status;
