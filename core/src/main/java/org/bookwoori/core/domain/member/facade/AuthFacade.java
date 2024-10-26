@@ -1,17 +1,14 @@
-package org.bookwoori.core.domain.member.service;
+package org.bookwoori.core.domain.member.facade;
 
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.member.entity.Member;
-import org.bookwoori.core.domain.member.entity.Status;
-import org.bookwoori.core.global.exception.CustomException;
-import org.bookwoori.core.global.exception.ErrorCode;
-import org.springframework.stereotype.Service;
+import org.bookwoori.core.domain.member.service.MemberService;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional
+@Component
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthFacade {
     private final MemberService memberService;
 
     public void deleteMember(){
@@ -23,5 +20,4 @@ public class AuthService {
     public void getMemberStatus(Long kakaoId){
         memberService.getMemberStatus(kakaoId);
     }
-
 }

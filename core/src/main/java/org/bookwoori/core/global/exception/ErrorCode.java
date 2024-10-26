@@ -2,6 +2,7 @@ package org.bookwoori.core.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
@@ -52,12 +53,14 @@ public enum ErrorCode {
     CHANNEL_NOT_FOUND(404, 3300, "채널을 찾을 수 없습니다."),
 
     // Climbing (3400 ~ 3499)
+    CLIMBING_NOT_FOUND(404, 3400, "클라이밍 채널을 찾을 수 없습니다."),
+    ALREADY_JOINED_CLIMBING(409, 3401, "이미 참여하고 있는 클라이밍 채널입니다."),
 
     // Book (3500 ~ 3599)
+    BOOK_NOT_FOUND(404, 3500, "책을 찾을 수 없습니다."),
 
     // Record (3600 ~ 3699)
 
-    // Review (3700 ~ 3799)
     ;
 
     private final int status;

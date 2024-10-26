@@ -1,18 +1,8 @@
 package org.bookwoori.core.domain.climbingMember.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.member.entity.Member;
 
@@ -20,6 +10,8 @@ import org.bookwoori.core.domain.member.entity.Member;
 @Table(name = "climbing_member")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class ClimbingMember {
 
     @Id
@@ -43,4 +35,17 @@ public class ClimbingMember {
 
     @Column(name = "memo")
     private String memo;
+
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private ClimbingRole role;
+
+    public ClimbingMember(Member member, Climbing climbing, ClimbingRole role, boolean hasShared, String memo) {
+        this.member = member;
+        this.climbing = climbing;
+        this.role = role;
+        this.hasShared = hasShared;
+        this.memo = memo;
+    }
 }
