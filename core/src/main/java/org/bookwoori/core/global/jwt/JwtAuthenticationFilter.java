@@ -33,9 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // accessToken 검증
         if (accessToken != null && tokenProvider.validateToken(accessToken, false)) {
             setAuthentication(accessToken);
-        } else if (accessToken != null) {
-            // accessToken 만료 시 클라이언트에게 재발급 요청하도록 응답 설정
-            throw new TokenException(ErrorCode.EXPIRED_ACCESS_TOKEN);
         }
 
         filterChain.doFilter(request, response);
