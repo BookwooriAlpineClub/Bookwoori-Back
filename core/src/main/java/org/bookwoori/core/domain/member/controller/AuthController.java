@@ -2,6 +2,7 @@ package org.bookwoori.core.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.bookwoori.core.domain.member.dto.response.LoginResponseDto;
 import org.bookwoori.core.domain.member.facade.AuthFacade;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.exception.TokenException;
+import org.bookwoori.core.global.jwt.CookieUtil;
 import org.bookwoori.core.global.jwt.TokenProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -25,6 +27,7 @@ import java.util.Map;
 public class AuthController {
     private final TokenProvider tokenProvider;
     private final AuthFacade authFacade;
+    private final CookieUtil cookieUtil;
 
     @Operation(summary = "로그인 성공", description = "카카오 로그인에 성공합니다.")
     @GetMapping("/success")
@@ -34,28 +37,25 @@ public class AuthController {
 
     @Operation(summary = "토큰 재발급", description = "액세스 토큰 및 리프레쉬 토큰을 재발급합니다.")
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(@CookieValue(name = "refreshToken") String refreshToken) {
+    public ResponseEntity<?> refreshAccessToken(@CookieValue(name = "refreshToken") String refreshToken, HttpServletResponse response) {
         try {
             // accessToken과 refreshToken을 모두 재발급
             Map<String, String> tokens = tokenProvider.renewAccessAndRefreshToken(refreshToken);
             String newAccessToken = tokens.get("accessToken");
             String newRefreshToken = tokens.get("refreshToken");
-            // 새로운 refreshToken을 쿠키에 설정
-            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", newRefreshToken)
-                    .httpOnly(true)
-                    .secure(true)  // HTTPS 환경에서만 전송
-                    .path("/")
-                    .maxAge(TokenProvider.REFRESH_TOKEN_EXPIRE_TIME / 1000)  // 만료 시간 설정 (초 단위)
-                    .build();
-            // 응답: accessToken은 Authorization 헤더에, refreshToken은 쿠키에 설정
+
+            // 새로운 refreshToken을 쿠키에 설정 (CookieUtil 사용)
+            cookieUtil.addCookie(response, "refreshToken", newRefreshToken, CookieUtil.REFRESH_TOKEN_MAX_AGE);
+
+            // 응답: accessToken은 Authorization 헤더에 설정
             return ResponseEntity.ok()
                     .header("Authorization", "Bearer " + newAccessToken)
-                    .header("Set-Cookie", refreshTokenCookie.toString())
                     .body("New access and refresh tokens issued");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+            throw new TokenException(ErrorCode.INVALID_TOKEN);
         }
     }
+
 
     @Operation(summary = "로그아웃", description = "로그아웃 및 리프레쉬 토큰 삭제")
     @PostMapping("/logout")
