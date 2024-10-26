@@ -1,15 +1,21 @@
 package org.bookwoori.core.domain.member.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bookwoori.core.domain.member.dto.response.LoginResponse;
-import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.member.dto.response.LoginResponseDto;
+import org.bookwoori.core.domain.member.service.AuthService;
+import org.bookwoori.core.global.exception.ErrorCode;
+import org.bookwoori.core.global.exception.TokenException;
+import org.bookwoori.core.global.jwt.TokenProvider;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -17,12 +23,54 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
+    private final TokenProvider tokenProvider;
+    private final AuthService authService;
 
-    private final MemberService memberService;
-
+    @Operation(summary = "로그인 성공", description = "카카오 로그인에 성공합니다.")
     @GetMapping("/success")
-    public ResponseEntity<?> loginSuccess(@Valid LoginResponse loginResponse) {
-        return ResponseEntity.ok(loginResponse);
+    public ResponseEntity<?> loginSuccess(@Valid LoginResponseDto loginResponseDto) {
+        return ResponseEntity.ok(loginResponseDto);
+    }
+
+    @Operation(summary = "토큰 재발급", description = "액세스 토큰 및 리프레쉬 토큰을 재발급합니다.")
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshAccessToken(@CookieValue(name = "refreshToken") String refreshToken) {
+        try {
+            // accessToken과 refreshToken을 모두 재발급
+            Map<String, String> tokens = tokenProvider.renewAccessAndRefreshToken(refreshToken);
+            String newAccessToken = tokens.get("accessToken");
+            String newRefreshToken = tokens.get("refreshToken");
+            // 새로운 refreshToken을 쿠키에 설정
+            ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                    .httpOnly(true)
+                    .secure(true)  // HTTPS 환경에서만 전송
+                    .path("/")
+                    .maxAge(TokenProvider.REFRESH_TOKEN_EXPIRE_TIME / 1000)  // 만료 시간 설정 (초 단위)
+                    .build();
+            // 응답: accessToken은 Authorization 헤더에, refreshToken은 쿠키에 설정
+            return ResponseEntity.ok()
+                    .header("Authorization", "Bearer " + newAccessToken)
+                    .header("Set-Cookie", refreshTokenCookie.toString())
+                    .body("New access and refresh tokens issued");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+        }
+    }
+
+    @Operation(summary = "로그아웃", description = "로그아웃 및 리프레쉬 토큰 삭제")
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        if (refreshToken != null) {
+            throw new TokenException(ErrorCode.INVALID_TOKEN);
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "계정 삭제", description = "회원 상태를 INACTIVE로 변경하고 닉네임을 '(알 수 없음)'으로 변경합니다.")
+    @PatchMapping("/delete")
+    public ResponseEntity<?> deleteMember() {
+        authService.deleteMember();
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -4,6 +4,7 @@ import lombok.Builder;
 import org.bookwoori.core.domain.member.entity.Member;
 
 import java.util.Map;
+import java.util.Random;
 
 @Builder
 public record OAuth2UserInfo(
@@ -17,7 +18,7 @@ public record OAuth2UserInfo(
         Map<String, Object> profile = (Map<String, Object>) account.get("profile");
 
         return OAuth2UserInfo.builder()
-                .nickname((String) profile.get("nickname"))
+                .nickname(generateRandomNickname())
                 .profile((String) profile.get("profile_image_url"))
                 .build();
     }
@@ -29,6 +30,14 @@ public record OAuth2UserInfo(
                 .nickname(nickname)
                 .profileImg(profile)
                 .build();
+    }
+
+    // 랜덤 닉네임 생성 메소드
+    private static String generateRandomNickname() {
+        String[] words = {"솔바람", "별빛", "이슬", "물안개", "숲길", "산새", "구름", "노을빛", "푸른숲", "종이달"};
+        int randomIndex = new Random().nextInt(words.length);
+        int randomNumber = new Random().nextInt(100);  // 0~99 사이의 랜덤 숫자
+        return words[randomIndex] + randomNumber;
     }
 }
 

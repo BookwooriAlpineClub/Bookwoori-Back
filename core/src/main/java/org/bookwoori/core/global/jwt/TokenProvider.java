@@ -1,5 +1,6 @@
 package org.bookwoori.core.global.jwt;
 
+import com.nimbusds.oauth2.sdk.token.Tokens;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -24,6 +25,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
@@ -36,10 +39,7 @@ public class TokenProvider {
     private SecretKey accessKey;
     private SecretKey refreshKey;
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
-    private static final String KEY_ROLE = "role";
-    private static final String KEY_TYPE = "type";
-    private final JwtService jwtService;
+    public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
 
     @PostConstruct
     private void setSecretKey() {
@@ -47,91 +47,95 @@ public class TokenProvider {
         refreshKey = Keys.hmacShaKeyFor(refreshSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-
     public String generateAccessToken(Authentication authentication) {
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
         Long kakaoId = extractKakaoId(authentication);
-        Member member = jwtService.getOrCreateMemberByKakaoId(kakaoId);
-        String currentToken = member.getAccessToken();
-
-        // 만약 현재 액세스 토큰이 유효하다면, 새로운 토큰을 발급하지 않음
-        if (currentToken != null && validateToken(currentToken)) {
-            return currentToken;
-        }
-
-        String newAccessToken = generateToken(kakaoId, authentication.getAuthorities(),
-            ACCESS_TOKEN_EXPIRE_TIME, accessKey, "access");
-        jwtService.saveOrUpdateAccessToken(member, newAccessToken);
-        return newAccessToken;
+        return generateToken(kakaoId, roles, ACCESS_TOKEN_EXPIRE_TIME, accessKey, "access");
     }
 
-    public String generateRefreshToken(Authentication authentication) {
-        Long kakaoId = extractKakaoId(authentication);
-
-        // refreshToken을 새로 생성하여 저장
-        String refreshToken = generateToken(kakaoId, Collections.emptyList(),
-            REFRESH_TOKEN_EXPIRE_TIME, refreshKey, "refresh");
-        return refreshToken;
+    public String generateRefreshToken(Long kakaoId) {
+        return generateToken(kakaoId, Collections.emptyList(), REFRESH_TOKEN_EXPIRE_TIME, refreshKey, "refresh");
     }
 
-    private String generateToken(Long kakaoId, Collection<? extends GrantedAuthority> authorities,
-        long tokenExpireTime, SecretKey key, String tokenType) {
+    private String generateToken(Long kakaoId, List<String> roles, long tokenExpireTime, SecretKey key, String tokenType) {
         Date now = new Date();
-        Date expiredDate = new Date(now.getTime() + tokenExpireTime);
-
-        String authorityList = authorities.stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.joining());
+        Date expiryDate = new Date(now.getTime() + tokenExpireTime);
 
         JwtBuilder builder = Jwts.builder()
-            .subject(String.valueOf(kakaoId))  // 토큰에 카카오 ID를 subject로 설정
-            .claim(KEY_TYPE, tokenType)  // 토큰 타입 (access / refresh)
-            .issuedAt(now)
-            .setExpiration(expiredDate)
-            .signWith(key, SignatureAlgorithm.HS512);
+                .setSubject(String.valueOf(kakaoId))
+                .claim("type", tokenType)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(key, SignatureAlgorithm.HS512);
 
-        // 만약 권한 정보가 존재한다면, 액세스 토큰에만 추가
-        if (!authorityList.isEmpty() && "access".equals(tokenType)) {
-            builder.claim(KEY_ROLE, authorityList);
+        if (!roles.isEmpty() && "access".equals(tokenType)) {
+            builder.claim("role", String.join(",", roles));
         }
 
         return builder.compact();
     }
 
-    private Long extractKakaoId(Authentication authentication) throws CustomException {
+    public Map<String, String> renewAccessAndRefreshToken(String refreshToken) {
+        if (validateToken(refreshToken, true)) {
+            Claims claims = parseClaims(refreshToken, refreshKey);
+            Long kakaoId = Long.valueOf(claims.getSubject());
+            // 새 accessToken 및 refreshToken 생성
+            List<String> roles = getRolesFromClaims(claims);
+            String newAccessToken = generateToken(kakaoId, roles, ACCESS_TOKEN_EXPIRE_TIME, accessKey, "access");
+            String newRefreshToken = generateRefreshToken(kakaoId);
+            // 결과를 Map에 담아 반환
+            Map<String, String> tokens = new HashMap<>();
+            tokens.put("accessToken", newAccessToken);
+            tokens.put("refreshToken", newRefreshToken);
+            return tokens;
+        }
+        throw new TokenException(ErrorCode.INVALID_TOKEN);
+    }
+
+    public Long extractKakaoId(Authentication authentication) {
         if (authentication.getPrincipal() instanceof OAuth2User oAuth2User) {
-            return Long.valueOf(oAuth2User.getAttributes().get("id").toString());  // 카카오에서 전달된 ID
+            return Long.valueOf(oAuth2User.getAttributes().get("id").toString());
         }
         throw new TokenException(ErrorCode.MEMBER_NOT_FOUND);
     }
 
+    public boolean validateToken(String token, boolean isRefreshToken) {
+        try {
+            Claims claims = parseClaims(token, isRefreshToken ? refreshKey : accessKey);
+            return claims.getExpiration().after(new Date());
+        } catch (ExpiredJwtException e) {
+            throw new TokenException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+        } catch (JwtException e) {
+            throw new TokenException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
     public Authentication getAuthentication(String token) {
-        Claims claims = parseClaims(token);
+        Claims claims = parseClaims(token, accessKey);
         List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), token, authorities);
     }
 
+    private List<String> getRolesFromClaims(Claims claims) {
+        String roles = claims.get("role", String.class);
+        return roles == null ? List.of("ROLE_USER") : List.of(roles.split(","));
+    }
+
     private List<SimpleGrantedAuthority> getAuthorities(Claims claims) {
-        String role = claims.get(KEY_ROLE, String.class);
-        if (role == null || role.isEmpty()) {
-            role = "ROLE_USER";  // 기본 권한 설정
-        }
-        return Collections.singletonList(new SimpleGrantedAuthority(role));
+        return getRolesFromClaims(claims).stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
-    public boolean validateToken(String token) {
-        if (!StringUtils.hasText(token)) {
-            return false;
-        }
-        Claims claims = parseClaims(token);
-        return claims.getExpiration().after(new Date());
-    }
-
-    private Claims parseClaims(String token) {
+    private Claims parseClaims(String token, SecretKey key) {
         try {
             return Jwts.parser()
-                .setSigningKey(token.contains("refresh") ? refreshKey : accessKey)
-                .build()
-                .parseClaimsJws(token).getBody();
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         } catch (JwtException e) {
@@ -139,3 +143,5 @@ public class TokenProvider {
         }
     }
 }
+
+

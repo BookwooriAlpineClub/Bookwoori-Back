@@ -27,10 +27,10 @@ public enum ErrorCode {
     UNAUTHORIZED(401, 2000, "인증 정보가 누락되거나 잘못되었습니다."),
     ACCESS_DENIED(403, 2001, "접근 권한이 없습니다."),
     INVALID_JWT_SIGNATURE(401, 2003, "잘못된 JWT 서명입니다."),
-    INVALID_TOKEN(401, 2100, "잘못된 액세스 토큰입니다."),
+    INVALID_TOKEN(401, 2100, "잘못된 토큰입니다."),
     NO_COOKIE(404, 2101, "쿠키가 존재하지 않습니다."),
-    EXPIRED_ACCESS_TOKEN(401, 2200, "만료된 액세스 토큰입니다."),
-    EXPIRED_REFRESH_TOKEN(401, 2300, "만료된 리프레쉬 토큰입니다."),
+    EXPIRED_ACCESS_TOKEN(401, 2300, "만료된 엑세스 토큰입니다."),
+    EXPIRED_REFRESH_TOKEN(401, 2301, "만료된 리프레쉬 토큰입니다."),
 
     /*
      * 리소스 관련 오류
@@ -40,6 +40,7 @@ public enum ErrorCode {
     // Member (3000 ~ 3099)
     MEMBER_NOT_FOUND(404, 3000, "사용자를 찾을 수 없습니다."),
     SERVER_OWNER_NOT_FOUND(404, 3001, "서버 주인을 찾을 수 없습니다."),
+    MEMBER_INACTIVE(404, 3002, "이미 계정을 삭제한 멤버입니다."),
 
     // Server (3100 ~ 3199)
     SERVER_NOT_FOUND(404, 3100, "서버를 찾을 수 없습니다."),
@@ -48,7 +49,7 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND(404, 3200, "카테고리를 찾을 수 없습니다."),
 
     // Channel (3300 ~ 3399)
-    CHANNEL_NOT_FOUND(404, 3300, "채널을 찾을 수 없습니다.")
+    CHANNEL_NOT_FOUND(404, 3300, "채널을 찾을 수 없습니다."),
 
     // Climbing (3400 ~ 3499)
 
@@ -58,7 +59,6 @@ public enum ErrorCode {
 
     // Review (3700 ~ 3799)
     ;
-
 
     private final int status;
     private final int code;
