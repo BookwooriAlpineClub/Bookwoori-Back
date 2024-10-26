@@ -69,7 +69,7 @@ public class ServerFacade {
 
     public ServerCategoryListResponseDto getServerCategoryList(Long serverId) {
         Server server = serverService.getServerById(serverId);
-        List<Category> categories = categoryService.getCategoriesByServer(server);
+        List<Category> categories = categoryService.getCategoriesWithChannels(server);
         List<CategoryResponseDto> categoryDtoList = categories.stream()
             .map(category -> {
                 List<ChannelResponseDto> channelDtoList = category.getChannels().stream()

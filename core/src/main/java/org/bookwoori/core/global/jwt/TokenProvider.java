@@ -77,7 +77,7 @@ public class TokenProvider {
         return builder.compact();
     }
 
-    public Map<String, String> refreshTokens(String refreshToken) {
+    public Map<String, String> renewAccessAndRefreshToken(String refreshToken) {
         if (validateToken(refreshToken, true)) {
             Claims claims = parseClaims(refreshToken, refreshKey);
             Long kakaoId = Long.valueOf(claims.getSubject());
