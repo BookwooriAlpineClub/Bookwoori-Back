@@ -40,4 +40,12 @@ public class ClimbingMember {
     @Enumerated(EnumType.STRING)
     @NotNull
     private ClimbingRole role;
+
+    public ClimbingMember(Member member, Climbing climbing, ClimbingRole role, boolean hasShared, String memo) {
+        this.member = member;
+        this.climbing = climbing;
+        this.role = role;
+        this.hasShared = hasShared;
+        this.memo = memo;
+    }
 }

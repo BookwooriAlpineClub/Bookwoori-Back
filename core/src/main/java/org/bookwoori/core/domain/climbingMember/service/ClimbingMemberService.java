@@ -22,14 +22,13 @@ public class ClimbingMemberService {
             throw new CustomException(ErrorCode.ALREADY_JOINED_CLIMBING);
         }
 
-        ClimbingMemberDto climbingMemberDto = ClimbingMemberDto.from(currentMember, climbingRole);
-        ClimbingMember climbingMember = ClimbingMember.builder()
-                .member(currentMember)
-                .climbing(climbing)
-                .role(climbingRole)
-                .hasShared(climbingMemberDto.hasShared())
-                .memo(climbingMemberDto.memo())
-                .build();
+        ClimbingMember climbingMember = new ClimbingMember(
+                currentMember,
+                climbing,
+                climbingRole,
+                false,
+                null
+        );
         climbingMemberRepository.save(climbingMember);
     }
 
