@@ -10,6 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Optional<Category> findCategoryByServerAndNextNodeIsNull(Server server);
-    @Query("SELECT c FROM Category c JOIN FETCH c.channels WHERE c.server = :server")
+    @Query("SELECT c FROM Category c LEFT JOIN FETCH c.channels WHERE c.server = :server")
     List<Category> findCategoryByServer(Server server);
 }
