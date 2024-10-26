@@ -7,15 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "book")
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Book {
 
     @Id
@@ -48,15 +47,4 @@ public class Book {
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
-
-    @Builder
-    public Book(String title, String writer, String publisher, int pageCount, String isbn, String coverImg, String description) {
-        this.title = title;
-        this.writer = writer;
-        this.publisher = publisher;
-        this.pageCount = pageCount;
-        this.isbn = isbn;
-        this.coverImg = coverImg;
-        this.description = description;
-    }
 }
