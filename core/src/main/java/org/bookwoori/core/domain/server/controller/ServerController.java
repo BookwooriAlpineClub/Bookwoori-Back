@@ -53,26 +53,14 @@ public class ServerController {
     @Operation(summary = "초대코드 생성", description = "특정 서버에 대한 초대 코드를 생성합니다.")
     @PostMapping("/{serverId}/code")
     public ResponseEntity<?> generateInviteCode(@PathVariable final Long serverId) {
-        String inviteCode = serverFacade.generateInviteCode(serverId);
-        return ResponseEntity.ok(inviteCode);
-
+        return ResponseEntity.ok(serverFacade.generateInviteCode(serverId));
     }
 
-//
-//  // 초대 코드 확인 API
-//  @GetMapping("/{communityId}/join/{inviteCode}")
-//  public ResponseEntity<String> joinWithInviteCode(
-//      @PathVariable String communityId,
-//      @PathVariable String inviteCode
-//  ) {
-//    boolean isValid = inviteCodeService.validateInviteCode(communityId, inviteCode);
-//
-//    if (isValid) {
-//      inviteCodeService.expireInviteCode(communityId, inviteCode); // 초대 코드 만료 처리
-//      return ResponseEntity.ok("Joined community successfully!");
-//    } else {
-//      return ResponseEntity.status(403).body("Invalid or expired invite code.");
-//    }
-//  }
+    @Operation(summary = "초대 수락", description = "사용자를 초대코드에 해당하는 서버에 멤버로 추가합니다.")
+    @PostMapping("/servers/join/{inviteCode}")
+    public ResponseEntity<?> createServerMember(@PathVariable String inviteCode) {
+        serverFacade.createServerMember(inviteCode);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 
 }

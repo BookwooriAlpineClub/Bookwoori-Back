@@ -32,86 +32,78 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class ServerFacade {
 
-  private final S3Util s3Util;
-  private final StringRedisTemplate redisTemplate;
+    private final S3Util s3Util;
+    private final StringRedisTemplate redisTemplate;
 
 
-  private final ServerService serverService;
-  private final MemberService memberService;
-  private final CategoryService categoryService;
-  private final ChannelService channelService;
-  private final ServerMemberService serverMemberService;
+    private final ServerService serverService;
+    private final MemberService memberService;
+    private final CategoryService categoryService;
+    private final ChannelService channelService;
+    private final ServerMemberService serverMemberService;
 
-  @Transactional
-  public void createServer(ServerCreateRequestDto requestDto) {
+    @Transactional
+    public void createServer(ServerCreateRequestDto requestDto) {
 
-    //서버 저장
-    Server server = requestDto.toEntity(
-        s3Util.uploadImage(requestDto.serverImg(), "server"));
-    serverService.saveServer(server);
+        //서버 저장
+        Server server = requestDto.toEntity(
+            s3Util.uploadImage(requestDto.serverImg(), "server"));
+        serverService.saveServer(server);
 
-    //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
-    Member member = memberService.getCurrentMember();
-    //서버장을 ServerMember 테이블에 추가
-    serverMemberService.saveServerMember(member, server, ServerRole.OWNER);
+        //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
+        Member member = memberService.getCurrentMember();
+        //서버장을 ServerMember 테이블에 추가
+        serverMemberService.saveServerMember(member, server, ServerRole.OWNER);
 
-    //DEFAULT 카테고리/채널 생성 및 저장
-    Category category = categoryService.makeDefaultCategory(server);
-    channelService.makeDefaultChannels(category);
-  }
+        //DEFAULT 카테고리/채널 생성 및 저장
+        Category category = categoryService.makeDefaultCategory(server);
+        channelService.makeDefaultChannels(category);
+    }
 
-  public ServerResponseDto getServerDetails(Long serverId) {
-    Server server = serverService.getServerById(serverId);
-    Member owner = serverMemberService.getOwner(server);
-    int memberCount = serverMemberService.getMemberCount(server);
+    public ServerResponseDto getServerDetails(Long serverId) {
+        Server server = serverService.getServerById(serverId);
+        Member owner = serverMemberService.getOwner(server);
+        int memberCount = serverMemberService.getMemberCount(server);
 
-    return ServerResponseDto.from(server, owner.getNickname(), memberCount);
-  }
+        return ServerResponseDto.from(server, owner.getNickname(), memberCount);
+    }
 
-  public ServerMemberListResponseDto getServerMemberList(Long serverId) {
-    Server server = serverService.getServerById(serverId);
-    return new ServerMemberListResponseDto(serverMemberService.getAllMembersByServer(server));
-  }
+    public ServerMemberListResponseDto getServerMemberList(Long serverId) {
+        Server server = serverService.getServerById(serverId);
+        return new ServerMemberListResponseDto(serverMemberService.getAllMembersByServer(server));
+    }
 
-  public ServerCategoryListResponseDto getServerCategoryList(Long serverId) {
-    Server server = serverService.getServerById(serverId);
-    List<Category> categories = categoryService.getCategoriesWithChannels(server);
-    List<CategoryResponseDto> categoryDtoList = categories.stream()
-        .map(category -> {
-          List<ChannelResponseDto> channelDtoList = category.getChannels().stream()
-              .map(ChannelResponseDto::from).toList();
-          return CategoryResponseDto.from(category, channelDtoList);
-        }).collect(Collectors.toList());
-    return new ServerCategoryListResponseDto(categoryDtoList);
-  }
+    public ServerCategoryListResponseDto getServerCategoryList(Long serverId) {
+        Server server = serverService.getServerById(serverId);
+        List<Category> categories = categoryService.getCategoriesWithChannels(server);
+        List<CategoryResponseDto> categoryDtoList = categories.stream()
+            .map(category -> {
+                List<ChannelResponseDto> channelDtoList = category.getChannels().stream()
+                    .map(ChannelResponseDto::from).toList();
+                return CategoryResponseDto.from(category, channelDtoList);
+            }).collect(Collectors.toList());
+        return new ServerCategoryListResponseDto(categoryDtoList);
+    }
 
 
-  // 초대 코드 생성 메서드
-  public String generateInviteCode(Long serverId) {
-    String inviteCode = UUID.randomUUID().toString(); // UUID로 초대 코드 생성
-    String key = "serverId:" + serverId + " inviteCode:" + inviteCode;
+    public String generateInviteCode(Long serverId) {
+        String inviteCode = UUID.randomUUID().toString(); // UUID로 초대 코드 생성
+        // Redis에 저장, TTL 7일
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+        ops.set(inviteCode, String.valueOf(serverId), 7, TimeUnit.DAYS);
+        return inviteCode;
+    }
 
-    // Redis에 저장 및 TTL 설정 (1일)
-    ValueOperations<String, String> ops = redisTemplate.opsForValue();
-    ops.set(key, String.valueOf(serverId), 7, TimeUnit.DAYS);
+    public void createServerMember(String inviteCode) {
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+        System.out.println(ops.get(inviteCode));
+        Server server = serverService.getServerById(Long.valueOf(ops.get(inviteCode)));
+        //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
+        Member member = memberService.getCurrentMember();
+//        Member member = memberService.getMemberById(1L); // 테스트용
+        serverMemberService.saveServerMember(member, server, ServerRole.MEMBER); // 서버멤버 생성
 
-    return inviteCode;
-  }
-
-//  // 초대 코드 검증 메서드
-//  public boolean validateInviteCode(String communityId, String inviteCode) {
-//    String key = "invite:" + communityId + ":" + inviteCode;
-//    ValueOperations<String, String> ops = redisTemplate.opsForValue();
-//
-//    // 초대 코드가 유효한지 확인
-//    return ops.get(key) != null;
-//  }
-//
-//  // 초대 코드 만료 메서드
-//  public void expireInviteCode(String communityId, String inviteCode) {
-//    String key = "invite:" + communityId + ":" + inviteCode;
-//    redisTemplate.delete(key); // 코드 만료 처리
-//  }
+    }
 
 
 }
