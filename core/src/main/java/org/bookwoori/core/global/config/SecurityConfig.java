@@ -1,12 +1,13 @@
 package org.bookwoori.core.global.config;
 
+import java.util.Arrays;
+import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.global.exception.TokenExceptionFilter;
 import org.bookwoori.core.global.jwt.CustomAccessDeniedHandler;
 import org.bookwoori.core.global.jwt.CustomAuthenticationEntryPoint;
 import org.bookwoori.core.global.jwt.JwtAuthenticationFilter;
-import org.bookwoori.core.global.oauth.OAuth2UserService;
 import org.bookwoori.core.global.oauth.OAuth2SuccessHandler;
-import lombok.RequiredArgsConstructor;
+import org.bookwoori.core.global.oauth.OAuth2UserService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +27,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -95,7 +94,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/success", "/signup", "/login", "/token").permitAll()
                 .requestMatchers(HttpMethod.GET, "/playlists/**").permitAll()
-                .anyRequest().authenticated())
+//                .anyRequest().authenticated())
+                .anyRequest().permitAll()) // 테스트용 임시
+
             // 인증 예외 핸들링
             .exceptionHandling((exceptions) -> exceptions
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
