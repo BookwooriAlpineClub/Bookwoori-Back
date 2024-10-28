@@ -25,14 +25,14 @@ public class BookController {
     @Operation(summary = "도서 검색 목록 조회", description = "특정 키워드로 검색한 도서 목록을 조회합니다.")
     @GetMapping
     public List<BookResponseDto> getBookList(@RequestParam String keyword) { // 도서 검색
-        return bookService.findBooksByKeyword(keyword);
+        return bookService.getBooksByKeyword(keyword);
     }
 
 
     @Operation(summary = "책 상세정보 조회", description = "isbn으로 책의 상세 정보를 조회합니다.")
     @GetMapping("/{isbn13}")
     public BookDetailResponseDto getBook(@PathVariable String isbn13) { // 상세정보 조회
-        return bookService.findBookByIsbn(isbn13);
+        return bookService.getBookByIsbn(isbn13);
     }
 
 }

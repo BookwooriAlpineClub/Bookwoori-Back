@@ -25,7 +25,7 @@ public class BookService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public List<BookResponseDto> findBooksByKeyword(String keyword) { // 도서 검색
+    public List<BookResponseDto> getBooksByKeyword(String keyword) { // 도서 검색
         String url = ALADIN_API_URL_SEARCH + "?ttbkey=" + TTB_KEY +
             "&Query=" + keyword +
             "&QueryType=Keyword" +
@@ -65,7 +65,7 @@ public class BookService {
     }
 
 
-    public BookDetailResponseDto findBookByIsbn(String isbn13) { // 상세정보 조회
+    public BookDetailResponseDto getBookByIsbn(String isbn13) { // 상세정보 조회
         String url = ALADIN_API_URL_LOOKUP + "?ttbkey=" + TTB_KEY +
             "&itemIdType=ISBN13" +
             "&ItemId=" + isbn13 +
