@@ -1,5 +1,6 @@
 package org.bookwoori.core.global.oauth;
 
+import org.bookwoori.core.domain.member.facade.AuthFacade;
 import org.bookwoori.core.global.jwt.TokenProvider;
 import org.bookwoori.core.global.jwt.CookieUtil;
 import jakarta.servlet.ServletException;
@@ -20,9 +21,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
     private final CookieUtil cookieUtil;
-    private final AuthService authService;
     private static final String URI = "/auth/success";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+    private final AuthFacade authFacade;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -33,7 +34,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         // refreshToken 발급 및 쿠키에 저장
         Long kakoId = tokenProvider.extractKakaoId(authentication);
-        authService.getMemberStatus(kakoId); // 계정 삭제한 멤버 예외 처리
+        authFacade.getMemberStatus(kakoId); // 계정 삭제한 멤버 예외 처리
         String refreshToken = tokenProvider.generateRefreshToken(kakoId);
         cookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, CookieUtil.REFRESH_TOKEN_MAX_AGE);
 
