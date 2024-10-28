@@ -96,7 +96,7 @@ public class ServerFacade {
 
     public void createServerMember(String inviteCode) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        System.out.println(ops.get(inviteCode));
+//        System.out.println(ops.get(inviteCode)); // 디버깅용
         Server server = serverService.getServerById(Long.valueOf(ops.get(inviteCode)));
         //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
         Member member = memberService.getCurrentMember();
