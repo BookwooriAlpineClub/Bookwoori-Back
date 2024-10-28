@@ -1,12 +1,12 @@
 package org.bookwoori.core.domain.climbing.facade;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.book.service.BookService;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
+import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
 import org.bookwoori.core.domain.climbing.service.ClimbingService;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
 import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ClimbingFacade {
+
     private final MemberService memberService;
     private final ClimbingService climbingService;
     private final ServerService serverService;
@@ -40,11 +41,13 @@ public class ClimbingFacade {
     public void updateClimbing(Long climbingId, ClimbingChannelUpdateRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
-        Book book = bookService.getBookById(requestDto.bookId());
+        if (climbing.getStatus() != ClimbingStatus.READY) {
+            throw new CustomException(ErrorCode.CLIMBING_NOT_READY); //
+        }
         if (!climbingMemberService.isOwner(currentMember, climbing)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);  // OWNER만 편집 가능
         }
-        climbing.updateClimbing(book, requestDto.name(), requestDto.description(), requestDto.startDate(), requestDto.endDate());
+        climbing.updateClimbing(requestDto.name(), requestDto.description(), requestDto.endDate());
     }
 
     public void joinClimbing(Long climbingId) {

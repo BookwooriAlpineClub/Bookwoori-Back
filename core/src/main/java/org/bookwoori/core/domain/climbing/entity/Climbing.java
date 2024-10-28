@@ -61,7 +61,8 @@ public class Climbing extends BaseTimeEntity {
     private LocalDate endDate;
 
     @Builder
-    public Climbing(Long climbingId, Server server, Book book, String name, String description, LocalDate startDate, LocalDate endDate) {
+    public Climbing(Long climbingId, Server server, Book book, String name, String description,
+        LocalDate startDate, LocalDate endDate) {
         this.climbingId = climbingId;
         this.server = server;
         this.book = book;
@@ -72,11 +73,9 @@ public class Climbing extends BaseTimeEntity {
         this.endDate = endDate;
     }
 
-    public void updateClimbing(Book book, String name, String description, LocalDate startDate, LocalDate endDate){
-        this.book = book;
+    public void updateClimbing(String name, String description, LocalDate endDate) {
         this.name = name;
         this.description = description;
-        this.startDate = startDate;
         this.endDate = endDate;
     }
 
