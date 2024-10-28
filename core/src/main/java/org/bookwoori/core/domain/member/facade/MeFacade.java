@@ -12,12 +12,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class MeFacade {
+
     private final MemberService memberService;
     private final S3Util s3Util;
 
     public void updateMember(UpdateMemberRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
-        String profileImgUrl = s3Util.uploadImage(requestDto.profileImg(), "profile-images");
+        String profileImgUrl = s3Util.uploadImage(requestDto.profileImg(), "member/profile-image");
         currentMember.updateMember(requestDto.nickname(), profileImgUrl);
         memberService.saveMember(currentMember);
     }
