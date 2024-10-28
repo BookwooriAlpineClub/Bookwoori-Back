@@ -42,7 +42,7 @@ public class ClimbingFacade {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
         if (climbing.getStatus() != ClimbingStatus.READY) {
-            throw new CustomException(ErrorCode.CLIMBING_NOT_READY); //
+            throw new CustomException(ErrorCode.CLIMBING_NOT_READY);
         }
         if (!climbingMemberService.isOwner(currentMember, climbing)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);  // OWNER만 편집 가능
@@ -50,9 +50,17 @@ public class ClimbingFacade {
         climbing.updateClimbing(requestDto.name(), requestDto.description(), requestDto.endDate());
     }
 
-    public void joinClimbing(Long climbingId) {
+    public boolean toggleClimbing(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
-        climbingMemberService.saveMember(currentMember, climbing, ClimbingRole.MEMBER);
+        boolean isJoined = climbingMemberService.isJoined(currentMember, climbing);
+        if (isJoined) {
+            climbingMemberService.removeMember(currentMember, climbing);
+            return false;
+        } else {
+            climbingMemberService.saveMember(currentMember, climbing, ClimbingRole.MEMBER);
+            return true;
+        }
     }
+
 }
