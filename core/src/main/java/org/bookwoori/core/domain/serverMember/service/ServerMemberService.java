@@ -53,4 +53,8 @@ public class ServerMemberService {
             .map(ServerMember::getServer).toList();
     }
 
+    public void deleteServerMember(Server server, Member member) {
+        serverMemberRepository.deleteByServerAndMember(server, member);
+    }
+
 }

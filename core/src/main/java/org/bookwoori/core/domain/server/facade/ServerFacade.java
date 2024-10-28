@@ -88,4 +88,11 @@ public class ServerFacade {
             .toList();
         return new ServerListResponseDto(serverDtoList);
     }
+
+    @Transactional
+    public void leaveServer(Long serverId) {
+        Member member = memberService.getCurrentMember();
+        Server server = serverService.getServerById(serverId);
+        serverMemberService.deleteServerMember(server,member);
+    }
 }

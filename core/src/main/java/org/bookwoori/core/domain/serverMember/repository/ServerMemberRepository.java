@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 public interface ServerMemberRepository extends JpaRepository<ServerMember, Long> {
 
     int countByServer(Server server);
+
     @Query("SELECT m.member FROM ServerMember m WHERE m.server = :server AND m.role = 'OWNER'")
     Optional<Member> findOwnerByServer(@Param("server") Server server);
 
@@ -20,4 +21,6 @@ public interface ServerMemberRepository extends JpaRepository<ServerMember, Long
 
     @Query("SELECT sm FROM ServerMember sm JOIN FETCH sm.server WHERE sm.member = :member")
     List<ServerMember> findAllByMember(Member member);
+
+    void deleteByServerAndMember(Server server, Member member);
 }

@@ -9,6 +9,7 @@ import org.bookwoori.core.domain.server.facade.ServerFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,6 +49,13 @@ public class ServerController {
     @GetMapping("/{serverId}/members")
     public ResponseEntity<?> getServerMemberList(@PathVariable final Long serverId) {
         return ResponseEntity.ok(serverFacade.getServerMemberList(serverId));
+    }
+
+    @Operation(summary = "서버 나가기", description = "로그인한 유저를 해당 서버에서 나가게 합니다.")
+    @DeleteMapping("/{serverId}/members")
+    public ResponseEntity<?> leaveServer(@PathVariable final Long serverId) {
+        serverFacade.leaveServer(serverId);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "채널 목록 조회", description = "해당 서버의 채널 및 카테고리 목록을 조회합니다.")
