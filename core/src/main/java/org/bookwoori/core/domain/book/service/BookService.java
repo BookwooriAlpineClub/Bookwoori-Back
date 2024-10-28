@@ -9,6 +9,7 @@ import org.bookwoori.core.domain.book.dto.response.BookDetailResponseDto;
 import org.bookwoori.core.domain.book.dto.response.BookResponseDto;
 import org.bookwoori.core.domain.book.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,8 +19,9 @@ public class BookService {
 
     private static final String ALADIN_API_URL_SEARCH = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx";
     private static final String ALADIN_API_URL_LOOKUP = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx";
-    private static final String TTB_KEY = "ttboesnimnos1216001"; // 알라딘 API Key
     private final BookRepository bookRepository;
+    @Value("${aladin.TTB_KEY}")
+    private String TTB_KEY; // 알라딘 API Key
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
