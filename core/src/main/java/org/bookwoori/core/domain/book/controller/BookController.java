@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.book.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,16 +19,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/books")
 public class BookController {
 
-  private final BookService bookService;
+    private final BookService bookService;
 
-  @GetMapping
-  public List<BookResponseDto> getBookList(@RequestParam String keyword) { // 도서 검색
-    return bookService.findBooksByKeyword(keyword);
-  }
 
-  @GetMapping("/{isbn13}")
-  public BookDetailResponseDto getBook(@PathVariable String isbn13) { // 상세정보 조회
-    return bookService.findBookByIsbn(isbn13);
-  }
+    @Operation(summary = "도서 검색 목록 조회", description = "특정 키워드로 검색한 도서 목록을 조회합니다.")
+    @GetMapping
+    public List<BookResponseDto> getBookList(@RequestParam String keyword) { // 도서 검색
+        return bookService.findBooksByKeyword(keyword);
+    }
+
+
+    @Operation(summary = "책 상세정보 조회", description = "isbn으로 책의 상세 정보를 조회합니다.")
+    @GetMapping("/{isbn13}")
+    public BookDetailResponseDto getBook(@PathVariable String isbn13) { // 상세정보 조회
+        return bookService.findBookByIsbn(isbn13);
+    }
 
 }
