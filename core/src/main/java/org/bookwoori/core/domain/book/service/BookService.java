@@ -20,12 +20,12 @@ public class BookService {
     private static final String ALADIN_API_URL_SEARCH = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx";
     private static final String ALADIN_API_URL_LOOKUP = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx";
     private final BookRepository bookRepository;
+    @Autowired
+    private final RestTemplate restTemplate;
+    @Autowired
+    private final ObjectMapper objectMapper;
     @Value("${aladin.TTB_KEY}")
     private String TTB_KEY; // 알라딘 API Key
-    @Autowired
-    private RestTemplate restTemplate;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     public List<BookResponseDto> getBooksByKeyword(String keyword) { // 도서 검색
         String url = ALADIN_API_URL_SEARCH + "?ttbkey=" + TTB_KEY +
