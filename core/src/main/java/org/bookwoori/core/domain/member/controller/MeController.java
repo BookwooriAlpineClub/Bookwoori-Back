@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Tag(name = "Me")
 @RequiredArgsConstructor
-@RequestMapping("/me")
+@RequestMapping("/members/me")
 public class MeController {
     private final MeFacade meFacade;
 
