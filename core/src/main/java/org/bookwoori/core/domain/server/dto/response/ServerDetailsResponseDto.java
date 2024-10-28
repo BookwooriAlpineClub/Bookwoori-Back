@@ -2,13 +2,11 @@ package org.bookwoori.core.domain.server.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import org.bookwoori.core.domain.server.entity.Server;
 
 @Builder
-public record ServerResponseDto(
+public record ServerDetailsResponseDto(
     String name,
     String serverImg,
     String owner,
@@ -17,8 +15,8 @@ public record ServerResponseDto(
     LocalDateTime createdAt,
     String description) {
 
-    public static ServerResponseDto from(Server server, String owner, int memberCount) {
-        return ServerResponseDto.builder()
+    public static ServerDetailsResponseDto from(Server server, String owner, int memberCount) {
+        return ServerDetailsResponseDto.builder()
             .name(server.getName())
             .serverImg(server.getServerImg())
             .owner(owner)

@@ -14,7 +14,7 @@ import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.response.ServerCategoryListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto;
-import org.bookwoori.core.domain.server.dto.response.ServerResponseDto;
+import org.bookwoori.core.domain.server.dto.response.ServerDetailsResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
@@ -54,12 +54,12 @@ public class ServerFacade {
         channelService.makeDefaultChannels(category);
     }
 
-    public ServerResponseDto getServerDetails(Long serverId) {
+    public ServerDetailsResponseDto getServerDetails(Long serverId) {
         Server server = serverService.getServerById(serverId);
         Member owner = serverMemberService.getOwner(server);
         int memberCount = serverMemberService.getMemberCount(server);
 
-        return ServerResponseDto.from(server, owner.getNickname(), memberCount);
+        return ServerDetailsResponseDto.from(server, owner.getNickname(), memberCount);
     }
 
     public ServerMemberListResponseDto getServerMemberList(Long serverId) {
