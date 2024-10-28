@@ -5,6 +5,7 @@ import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.book.service.BookService;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
+import org.bookwoori.core.domain.climbing.dto.response.ClimbingDetailsResponseDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
 import org.bookwoori.core.domain.climbing.service.ClimbingService;
@@ -63,4 +64,9 @@ public class ClimbingFacade {
         }
     }
 
+    public ClimbingDetailsResponseDto getClimbing(Long climbingId) {
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        int memberCount = climbingMemberService.getMemberCount(climbing);
+        return ClimbingDetailsResponseDto.from(climbing, memberCount);
+    }
 }

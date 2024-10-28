@@ -9,6 +9,7 @@ import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateReque
 import org.bookwoori.core.domain.climbing.facade.ClimbingFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,6 +53,13 @@ public class ClimbingController {
         } else {
             return ResponseEntity.noContent().build();
         }
+    }
+
+    @Operation(summary = "클라이밍 채널 상세정보", description = "클라이밍 채널의 상세정보를 조회합니다.")
+    @GetMapping("/{climbingId}")
+    public ResponseEntity<?> getClimbingChannel(
+        @PathVariable("climbingId") final Long climbingId) {
+        return ResponseEntity.ok(climbingFacade.getClimbing(climbingId));
     }
 
 }

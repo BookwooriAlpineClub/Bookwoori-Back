@@ -11,4 +11,6 @@ public interface ClimbingMemberRepository extends JpaRepository<ClimbingMember, 
     Optional<ClimbingMember> findByMemberAndClimbing(Member member, Climbing climbing);
 
     boolean existsByMemberAndClimbing(Member member, Climbing climbing);
+
+    int countByClimbing(Climbing climbing);
 }
