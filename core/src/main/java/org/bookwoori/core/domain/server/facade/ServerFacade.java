@@ -13,8 +13,10 @@ import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.response.ServerCategoryListResponseDto;
+import org.bookwoori.core.domain.server.dto.response.ServerListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerDetailsResponseDto;
+import org.bookwoori.core.domain.server.dto.response.ServerResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
@@ -77,5 +79,13 @@ public class ServerFacade {
                 return CategoryResponseDto.from(category, channelDtoList);
             }).collect(Collectors.toList());
         return new ServerCategoryListResponseDto(categoryDtoList);
+    }
+
+    public ServerListResponseDto getServerList() {
+        Member member = memberService.getCurrentMember();
+        List<Server> servers = serverMemberService.getServerListByMember(member);
+        List<ServerResponseDto> serverDtoList = servers.stream().map(ServerResponseDto::from)
+            .toList();
+        return new ServerListResponseDto(serverDtoList);
     }
 }

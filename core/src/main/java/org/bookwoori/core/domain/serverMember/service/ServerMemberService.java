@@ -47,4 +47,10 @@ public class ServerMemberService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<Server> getServerListByMember(Member member) {
+        return serverMemberRepository.findAllByMember(member).stream()
+            .map(ServerMember::getServer).toList();
+    }
+
 }

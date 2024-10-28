@@ -17,4 +17,7 @@ public interface ServerMemberRepository extends JpaRepository<ServerMember, Long
 
     @Query("SELECT sm FROM ServerMember sm JOIN FETCH sm.member WHERE sm.server = :server")
     List<ServerMember> findAllByServer(Server server);
+
+    @Query("SELECT sm FROM ServerMember sm JOIN FETCH sm.server WHERE sm.member = :member")
+    List<ServerMember> findAllByMember(Member member);
 }

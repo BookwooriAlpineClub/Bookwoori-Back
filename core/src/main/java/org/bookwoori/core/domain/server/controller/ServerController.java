@@ -24,6 +24,12 @@ public class ServerController {
 
     private final ServerFacade serverFacade;
 
+    @Operation(summary = "내 서버 목록 조회", description = "로그인한 유저가 참여한 서버 목록을 조회합니다.")
+    @GetMapping
+    public ResponseEntity<?> getServerList() {
+        return ResponseEntity.ok(serverFacade.getServerList());
+    }
+
     @Operation(summary = "모임 서버 생성", description = "모임 서버를 생성합니다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createServer(
