@@ -57,7 +57,7 @@ public class ServerController {
     }
 
     @Operation(summary = "초대 수락", description = "사용자를 초대코드에 해당하는 서버에 멤버로 추가합니다.")
-    @PostMapping("/servers/join/{inviteCode}")
+    @PostMapping("/join/{inviteCode}")
     public ResponseEntity<?> createServerMember(@PathVariable String inviteCode) {
         serverFacade.createServerMember(inviteCode);
         return ResponseEntity.status(HttpStatus.CREATED).build();
