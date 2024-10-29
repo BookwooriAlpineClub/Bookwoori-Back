@@ -1,11 +1,14 @@
 package org.bookwoori.core.domain.climbing.facade;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.book.service.BookService;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingDetailsResponseDto;
+import org.bookwoori.core.domain.climbing.dto.response.ServerClimbingListDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
 import org.bookwoori.core.domain.climbing.service.ClimbingService;
@@ -65,8 +68,53 @@ public class ClimbingFacade {
     }
 
     public ClimbingDetailsResponseDto getClimbing(Long climbingId) {
+        Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
         int memberCount = climbingMemberService.getMemberCount(climbing);
-        return ClimbingDetailsResponseDto.from(climbing, memberCount);
+        boolean isJoined = climbingMemberService.isJoined(currentMember, climbing);
+        boolean isOwner = climbingMemberService.isOwner(currentMember, climbing);
+        return ClimbingDetailsResponseDto.from(climbing, memberCount, isJoined, isOwner);
+    }
+
+    public ServerClimbingListDto getClimbingList(Long serverId) {
+        Member currentMember = memberService.getCurrentMember();
+        // myClimbings
+        List<ServerClimbingListDto.ClimbingUnitDto> myClimbings = climbingService.getMyClimbings(
+                currentMember, serverId).stream()
+            .limit(3)
+            .map(climbing -> new ServerClimbingListDto.ClimbingUnitDto(climbing.getClimbingId(),
+                climbing.getBook().getCoverImg()))
+            .collect(Collectors.toList());
+        // readyClimbs
+        List<ServerClimbingListDto.ClimbingUnitDto> readyClimbs = climbingService.getReadyClimbings(
+                serverId).stream()
+            .limit(3)
+            .map(climbing -> new ServerClimbingListDto.ClimbingUnitDto(climbing.getClimbingId(),
+                climbing.getBook().getCoverImg()))
+            .collect(Collectors.toList());
+        return new ServerClimbingListDto(myClimbings, readyClimbs);
+    }
+
+    public List<ClimbingDetailsResponseDto> getMyClimbings(Long serverId) {
+        Member currentMember = memberService.getCurrentMember();
+        List<Climbing> myClimbings = climbingService.getMyClimbings(currentMember, serverId);
+        return convertToDto(myClimbings);
+    }
+
+    public List<ClimbingDetailsResponseDto> getReadyClimbings(Long serverId) {
+        List<Climbing> readyClimbs = climbingService.getReadyClimbings(serverId);
+        return convertToDto(readyClimbs);
+    }
+
+    private List<ClimbingDetailsResponseDto> convertToDto(List<Climbing> climbings) {
+        Member currentMember = memberService.getCurrentMember();
+        return climbings.stream()
+            .map(climbing -> {
+                int memberCount = climbingMemberService.getMemberCount(climbing);
+                boolean isJoined = climbingMemberService.isJoined(currentMember, climbing);
+                boolean isOwner = climbingMemberService.isOwner(currentMember, climbing);
+                return ClimbingDetailsResponseDto.from(climbing, memberCount, isJoined, isOwner);
+            })
+            .collect(Collectors.toList());
     }
 }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.core.domain.climbing.facade.ClimbingFacade;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.facade.ServerFacade;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ServerController {
 
     private final ServerFacade serverFacade;
+    private final ClimbingFacade climbingFacade;
 
     @Operation(summary = "모임 서버 생성", description = "모임 서버를 생성합니다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -48,6 +50,27 @@ public class ServerController {
     @GetMapping("/{serverId}/categories")
     public ResponseEntity<?> getCategoryList(@PathVariable final Long serverId) {
         return ResponseEntity.ok(serverFacade.getServerCategoryList(serverId));
+    }
+
+    @Operation(summary = "클라이밍 채널 목록 조회", description = "클라이밍 채널의 목록을 조회합니다.")
+    @GetMapping("/{serverId}/climbs")
+    public ResponseEntity<?> getClimbingChannelList(
+        @PathVariable final Long serverId) {
+        return ResponseEntity.ok(climbingFacade.getClimbingList(serverId));
+    }
+
+    @Operation(summary = "내 클라이밍 채널 목록 조회", description = "내가 참여한 클라이밍 채널의 목록을 조회합니다.")
+    @GetMapping("/{serverId}/climbs/me")
+    public ResponseEntity<?> getMyClimbingChannelList(
+        @PathVariable final Long serverId) {
+        return ResponseEntity.ok(climbingFacade.getMyClimbings(serverId));
+    }
+
+    @Operation(summary = "모집 중인 클라이밍 채널 목록 조회", description = "모집 중인 클라이밍 채널의 목록을 조회합니다.")
+    @GetMapping("/{serverId}/climbs/ready")
+    public ResponseEntity<?> getReadyClimbingChannelList(
+        @PathVariable final Long serverId) {
+        return ResponseEntity.ok(climbingFacade.getReadyClimbings(serverId));
     }
 
 }

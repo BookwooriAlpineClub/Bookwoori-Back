@@ -62,4 +62,5 @@ public class ClimbingController {
         return ResponseEntity.ok(climbingFacade.getClimbing(climbingId));
     }
 
+
 }

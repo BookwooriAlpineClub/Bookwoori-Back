@@ -11,17 +11,24 @@ public record ClimbingDetailsResponseDto(
     String name,
     LocalDate startDate,
     LocalDate endDate,
+    String description,
     int memberCount,
+    boolean isJoined,
+    boolean isOWner,
     BookInfoDto bookInfo) {
 
-    public static ClimbingDetailsResponseDto from(Climbing climbing, int memberCount) {
+    public static ClimbingDetailsResponseDto from(Climbing climbing, int memberCount,
+        boolean isJoined, boolean isOWner) {
         return new ClimbingDetailsResponseDto(
             climbing.getClimbingId(),
             climbing.getStatus(),
             climbing.getName(),
             climbing.getStartDate(),
             climbing.getEndDate(),
+            climbing.getDescription(),
             memberCount,
+            isJoined,
+            isOWner,
             BookInfoDto.from(climbing.getBook())
         );
     }
