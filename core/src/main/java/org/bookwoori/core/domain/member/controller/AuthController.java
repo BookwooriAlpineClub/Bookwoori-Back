@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.dto.response.LoginResponseDto;
@@ -12,12 +13,13 @@ import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.exception.TokenException;
 import org.bookwoori.core.global.jwt.CookieUtil;
 import org.bookwoori.core.global.jwt.TokenProvider;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -25,6 +27,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
+
     private final TokenProvider tokenProvider;
     private final AuthFacade authFacade;
     private final CookieUtil cookieUtil;
@@ -37,7 +40,8 @@ public class AuthController {
 
     @Operation(summary = "토큰 재발급", description = "액세스 토큰 및 리프레쉬 토큰을 재발급합니다.")
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(@CookieValue(name = "refreshToken") String refreshToken, HttpServletResponse response) {
+    public ResponseEntity<?> refreshAccessToken(
+        @CookieValue(name = "refreshToken") String refreshToken, HttpServletResponse response) {
         try {
             // accessToken과 refreshToken을 모두 재발급
             Map<String, String> tokens = tokenProvider.renewAccessAndRefreshToken(refreshToken);
@@ -45,12 +49,13 @@ public class AuthController {
             String newRefreshToken = tokens.get("refreshToken");
 
             // 새로운 refreshToken을 쿠키에 설정 (CookieUtil 사용)
-            cookieUtil.addCookie(response, "refreshToken", newRefreshToken, CookieUtil.REFRESH_TOKEN_MAX_AGE);
+            cookieUtil.addCookie(response, "refreshToken", newRefreshToken,
+                CookieUtil.REFRESH_TOKEN_MAX_AGE);
 
             // 응답: accessToken은 Authorization 헤더에 설정
             return ResponseEntity.ok()
-                    .header("Authorization", "Bearer " + newAccessToken)
-                    .body("New access and refresh tokens issued");
+                .header("Authorization", "Bearer " + newAccessToken)
+                .body("New access and refresh tokens issued");
         } catch (IllegalArgumentException e) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
         }
@@ -59,8 +64,9 @@ public class AuthController {
 
     @Operation(summary = "로그아웃", description = "로그아웃 및 리프레쉬 토큰 삭제")
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
-        if (refreshToken != null) {
+    public ResponseEntity<?> logout(
+        @CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        if (refreshToken == null) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
         }
         return ResponseEntity.ok().build();
