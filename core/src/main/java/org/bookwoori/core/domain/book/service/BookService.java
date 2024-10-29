@@ -47,16 +47,7 @@ public class BookService {
 
             if (items.isArray()) {
                 for (JsonNode item : items) {
-                    String title = item.path("title").asText();
-                    String author = item.path("author").asText();
-                    String publisher = item.path("publisher").asText();
-                    String pubYear = item.path("pubDate").asText().split("-")[0];
-                    String isbn13 = item.path("isbn13").asText();
-                    String cover = item.path("cover").asText();
-                    BookResponseDto bookResponseDto = new BookResponseDto(title, author, publisher,
-                        pubYear,
-                        isbn13, cover);
-                    bookList.add(bookResponseDto);
+                    bookList.add(BookResponseDto.from(item));
                 }
             }
         } catch (Exception e) {
@@ -81,17 +72,7 @@ public class BookService {
             JsonNode item = root.path("item").get(0);
 
             if (item != null) {
-                String title = item.path("title").asText();
-                String author = item.path("author").asText();
-                String publisher = item.path("publisher").asText();
-                String pubDate = item.path("pubDate").asText();
-                Long itemPage = item.path("subInfo").path("itemPage").asLong();
-                String description = item.path("description").asText();
-                String cover = item.path("cover").asText();
-
-                return new BookDetailResponseDto(title, author, publisher, pubDate, itemPage,
-                    description,
-                    isbn13, cover);
+                return BookDetailResponseDto.from(item);
             }
         } catch (Exception e) {
             e.printStackTrace();
