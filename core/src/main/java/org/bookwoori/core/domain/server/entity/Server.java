@@ -13,9 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.domain.category.entity.Category;
+import org.bookwoori.core.domain.serverMember.entity.ServerMember;
 import org.bookwoori.core.global.BaseTimeEntity;
 
 @Entity
@@ -23,6 +25,7 @@ import org.bookwoori.core.global.BaseTimeEntity;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Server extends BaseTimeEntity {
 
     @Id
@@ -34,13 +37,16 @@ public class Server extends BaseTimeEntity {
     @NotNull
     private String name;
 
-    @Column(name = "server_image")
+    @Column(name = "server_image", columnDefinition = "TEXT")
     private String serverImg;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @OneToMany(mappedBy = "server", cascade = CascadeType.ALL)
     private List<Category> categories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "server", cascade = CascadeType.ALL)
+    private List<ServerMember> members = new ArrayList<>();
 
 }

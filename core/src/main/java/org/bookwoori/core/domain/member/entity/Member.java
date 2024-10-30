@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.global.BaseTimeEntity;
+import org.bookwoori.core.global.s3.S3Util;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "member")
@@ -19,15 +21,15 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id", updatable = false)
     private Long memberId;
 
-    @Column(name = "kakao_member_id", updatable = false, unique = true)
+    @Column(name = "kakao_id", updatable = false, unique = true)
     @NotNull
-    private Long kakaoMemberId;
+    private Long kakaoId;
 
     @Column(name = "nickname", unique = true)
     @NotNull
     private String nickname;
 
-    @Column(name = "profile_image")
+    @Column(name = "profile_image", columnDefinition = "TEXT")
     private String profileImg;
 
     @Column(name = "grade")
@@ -45,12 +47,24 @@ public class Member extends BaseTimeEntity {
     private int totalPage;
 
     @Builder
-    public Member(Long kakaoMemberId, String nickname, String profileImg) {
-        this.kakaoMemberId = kakaoMemberId;
+    public Member(Long kakaoId, String nickname, String profileImg) {
+        this.kakaoId = kakaoId;
         this.nickname = nickname;
         this.profileImg = profileImg;
         this.grade = Grade.Dongsan;
         this.status = Status.ACTIVE;
         this.totalPage = 0;
     }
+
+    public void deleteMember() {
+        this.nickname = "(알 수 없음)";
+        this.profileImg = null; // 추후 수정
+        this.status = Status.INACTIVE;
+    }
+
+    public void updateMember(String nickname, String profileImgUrl) {
+        this.nickname = nickname;
+        this.profileImg = profileImgUrl;
+    }
+
 }

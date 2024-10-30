@@ -14,7 +14,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.util.Objects;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.domain.category.entity.Category;
@@ -24,6 +27,8 @@ import org.bookwoori.core.global.BaseTimeEntity;
 @Table(name = "channel")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Channel extends BaseTimeEntity {
 
     @Id
@@ -32,7 +37,7 @@ public class Channel extends BaseTimeEntity {
     private Long channelId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", updatable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @Column(name = "name")
@@ -51,4 +56,16 @@ public class Channel extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "next_channel_id")
     private Channel nextNode;
+
+    public void setBeforeNode(Channel channel) {
+        this.beforeNode = channel;
+        if (!Objects.isNull(channel)) {
+            channel.nextNode = this;
+        }
+    }
+
+    public void modifyName(String name) {
+        this.name = name;
+    }
+
 }

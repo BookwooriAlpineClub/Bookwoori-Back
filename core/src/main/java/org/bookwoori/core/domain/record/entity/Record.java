@@ -57,7 +57,7 @@ public class Record {
     @Column(name = "max_page")
     private int maxPage;
 
-    @Column(name = "expectation")
+    @Column(name = "expectation", columnDefinition = "TEXT")
     private String expectation;
 
 }
