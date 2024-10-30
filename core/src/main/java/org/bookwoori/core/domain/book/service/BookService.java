@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.dto.response.BookDetailResponseDto;
 import org.bookwoori.core.domain.book.dto.response.BookResponseDto;
 import org.bookwoori.core.domain.book.repository.BookRepository;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -58,7 +60,7 @@ public class BookService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new CustomException(ErrorCode.API_CALL_ERROR);
         }
 
         return bookList;
@@ -82,7 +84,7 @@ public class BookService {
                 return BookDetailResponseDto.from(item);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new CustomException(ErrorCode.API_CALL_ERROR);
         }
 
         return null; // 데이터가 없거나 오류 발생 시 null 반환
