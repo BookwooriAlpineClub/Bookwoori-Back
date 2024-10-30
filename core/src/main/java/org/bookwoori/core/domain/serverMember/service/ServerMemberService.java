@@ -30,6 +30,11 @@ public class ServerMemberService {
     }
 
     @Transactional(readOnly = true)
+    public boolean isOwner(Member member, Server server) {
+        return serverMemberRepository.existsByMemberAndServerAndRole(member, server);
+    }
+
+    @Transactional(readOnly = true)
     public Member getOwner(Server server) {
         return serverMemberRepository.findOwnerByServer(server)
             .orElseThrow(() -> new CustomException(ErrorCode.SERVER_OWNER_NOT_FOUND));

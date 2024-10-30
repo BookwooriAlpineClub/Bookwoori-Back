@@ -49,4 +49,8 @@ public class Server extends BaseTimeEntity {
     @OneToMany(mappedBy = "server", cascade = CascadeType.ALL)
     private List<ServerMember> members = new ArrayList<>();
 
+    public void updateInfo(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }
