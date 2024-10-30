@@ -1,6 +1,8 @@
 package org.bookwoori.core.domain.server.facade;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -18,8 +20,13 @@ import org.bookwoori.core.domain.server.dto.response.ServerResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
+import org.bookwoori.core.domain.serverMember.repository.ServerMemberRepository;
 import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.s3.S3Util;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,12 +36,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class ServerFacade {
 
     private final S3Util s3Util;
+    private final StringRedisTemplate redisTemplate;
+
 
     private final ServerService serverService;
     private final MemberService memberService;
     private final CategoryService categoryService;
     private final ChannelService channelService;
     private final ServerMemberService serverMemberService;
+    private final ServerMemberRepository serverMemberRepository;
 
     @Transactional
     public void createServer(ServerCreateRequestDto requestDto) {
@@ -78,4 +88,40 @@ public class ServerFacade {
             }).collect(Collectors.toList());
         return new ServerCategoryListResponseDto(categoryDtoList);
     }
+
+
+    public String getOrCreateInviteCode(Long serverId) {
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+        String inviteCode = ops.get(String.valueOf(serverId));
+
+        if (inviteCode != null) { // 이미 존재하는 경우
+            return inviteCode;
+        } else { // 존재하지 않는 경우
+            inviteCode = UUID.randomUUID().toString(); // 새로 생성
+            ops.set(String.valueOf(serverId), inviteCode, 7, TimeUnit.DAYS); // Redis에 저장, TTL 7일
+            return inviteCode;
+        }
+    }
+
+    public void createServerMember(String inviteCode) {
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+//        System.out.println(ops.get(inviteCode)); // 디버깅용
+        Server server = serverService.getServerById(Long.valueOf(ops.get(inviteCode)));
+        //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
+        Member currentMember = memberService.getCurrentMember();
+//        Member member = memberService.getMemberById(1L); // 테스트용
+        boolean isJoined = serverMemberRepository.findByMemberAndServer(currentMember, server)
+            .isPresent();
+
+        if (isJoined) {
+            throw new CustomException(ErrorCode.ALREADY_JOINED_SERVER);
+        } else {
+            serverMemberService.saveServerMember(currentMember, server,
+                ServerRole.MEMBER); // 서버멤버 생성
+
+        }
+
+    }
+
+
 }
