@@ -86,12 +86,17 @@ public class ServerFacade {
     }
 
 
-    public String generateInviteCode(Long serverId) {
-        String inviteCode = UUID.randomUUID().toString(); // UUID로 초대 코드 생성
-        // Redis에 저장, TTL 7일
+    public String getOrCreateInviteCode(Long serverId) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        ops.set(inviteCode, String.valueOf(serverId), 7, TimeUnit.DAYS);
-        return inviteCode;
+        String inviteCode = ops.get(String.valueOf(serverId));
+
+        if (inviteCode != null) { // 이미 존재하는 경우
+            return inviteCode;
+        } else { // 존재하지 않는 경우
+            inviteCode = UUID.randomUUID().toString(); // 새로 생성
+            ops.set(String.valueOf(serverId), inviteCode, 7, TimeUnit.DAYS); // Redis에 저장, TTL 7일
+            return inviteCode;
+        }
     }
 
     public void createServerMember(String inviteCode) {
