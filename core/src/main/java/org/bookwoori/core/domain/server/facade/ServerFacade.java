@@ -20,7 +20,10 @@ import org.bookwoori.core.domain.server.dto.response.ServerResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
+import org.bookwoori.core.domain.serverMember.repository.ServerMemberRepository;
 import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.s3.S3Util;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -41,6 +44,7 @@ public class ServerFacade {
     private final CategoryService categoryService;
     private final ChannelService channelService;
     private final ServerMemberService serverMemberService;
+    private final ServerMemberRepository serverMemberRepository;
 
     @Transactional
     public void createServer(ServerCreateRequestDto requestDto) {
@@ -104,9 +108,18 @@ public class ServerFacade {
 //        System.out.println(ops.get(inviteCode)); // 디버깅용
         Server server = serverService.getServerById(Long.valueOf(ops.get(inviteCode)));
         //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
 //        Member member = memberService.getMemberById(1L); // 테스트용
-        serverMemberService.saveServerMember(member, server, ServerRole.MEMBER); // 서버멤버 생성
+        boolean isJoined = serverMemberRepository.findByMemberAndServer(currentMember, server)
+            .isPresent();
+
+        if (isJoined) {
+            throw new CustomException(ErrorCode.ALREADY_JOINED_SERVER);
+        } else {
+            serverMemberService.saveServerMember(currentMember, server,
+                ServerRole.MEMBER); // 서버멤버 생성
+
+        }
 
     }
 
