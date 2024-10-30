@@ -5,6 +5,7 @@ import org.bookwoori.core.domain.member.entity.Member;
 
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 @Builder
 public record OAuth2UserInfo(
@@ -36,8 +37,8 @@ public record OAuth2UserInfo(
     private static String generateRandomNickname() {
         String[] words = {"솔바람", "별빛", "이슬", "물안개", "숲길", "산새", "구름", "노을빛", "푸른숲", "종이달"};
         int randomIndex = new Random().nextInt(words.length);
-        int randomNumber = new Random().nextInt(100);  // 0~99 사이의 랜덤 숫자
-        return words[randomIndex] + randomNumber;
+        String uuidPart = UUID.randomUUID().toString().substring(0, 4);
+        return words[randomIndex] + uuidPart;
     }
 }
 

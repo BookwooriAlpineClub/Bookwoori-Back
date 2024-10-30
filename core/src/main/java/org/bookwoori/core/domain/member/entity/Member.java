@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.global.BaseTimeEntity;
+import org.bookwoori.core.global.s3.S3Util;
+import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "member")
@@ -44,9 +46,6 @@ public class Member extends BaseTimeEntity {
     @NotNull
     private int totalPage;
 
-    @Column(name = "access_token")
-    private String accessToken;
-
     @Builder
     public Member(Long kakaoId, String nickname, String profileImg) {
         this.kakaoId = kakaoId;
@@ -63,8 +62,9 @@ public class Member extends BaseTimeEntity {
         this.status = Status.INACTIVE;
     }
 
-    public void updateMember(String nickname, String profileImg) {
+    public void updateMember(String nickname, String profileImgUrl) {
         this.nickname = nickname;
-        this.profileImg = profileImg;
+        this.profileImg = profileImgUrl;
     }
+
 }
