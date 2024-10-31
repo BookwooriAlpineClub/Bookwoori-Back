@@ -21,9 +21,11 @@ import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
+@Transactional
 public class ClimbingFacade {
 
     private final MemberService memberService;
@@ -66,6 +68,7 @@ public class ClimbingFacade {
         }
     }
 
+    @Transactional(readOnly = true)
     public ClimbingDetailsResponseDto getClimbingDetails(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
@@ -75,6 +78,7 @@ public class ClimbingFacade {
         return ClimbingDetailsResponseDto.from(climbing, memberCount, isJoined, isOwner);
     }
 
+    @Transactional(readOnly = true)
     public ServerClimbingListDto getClimbingList(Long serverId) {
         Member currentMember = memberService.getCurrentMember();
         // myClimbings
@@ -94,18 +98,21 @@ public class ClimbingFacade {
         return new ServerClimbingListDto(myClimbings, readyClimbs);
     }
 
+    @Transactional(readOnly = true)
     public List<ClimbingDetailsResponseDto> getMyClimbingList(Long serverId) {
         Member currentMember = memberService.getCurrentMember();
         List<Climbing> myClimbings = climbingService.getMyClimbings(currentMember, serverId);
         return convertToDto(myClimbings);
     }
 
+    @Transactional(readOnly = true)
     public List<ClimbingDetailsResponseDto> getReadyClimbingList(Long serverId) {
         List<Climbing> readyClimbs = climbingService.getReadyClimbings(serverId);
         return convertToDto(readyClimbs);
     }
 
-    private List<ClimbingDetailsResponseDto> convertToDto(List<Climbing> climbings) {
+    @Transactional(readOnly = true)
+    protected List<ClimbingDetailsResponseDto> convertToDto(List<Climbing> climbings) {
         Member currentMember = memberService.getCurrentMember();
         return climbings.stream()
             .map(climbing -> {
