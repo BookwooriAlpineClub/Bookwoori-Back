@@ -55,13 +55,15 @@ public enum ErrorCode {
     CLIMBING_NOT_FOUND(404, 3400, "클라이밍 채널을 찾을 수 없습니다."),
     ALREADY_JOINED_CLIMBING(409, 3401, "이미 참여하고 있는 클라이밍 채널입니다."),
     CLIMBING_NOT_READY(409, 3402, "모집 중인 클라이밍 채널만 편집할 수 있습니다."),
+    OWNER_CANNOT_LEAVE(409, 3403, "OWNER는 클라이밍 채널을 떠날 수 없습니다."),
 
     // Book (3500 ~ 3599)
-    BOOK_NOT_FOUND(404, 3500, "책을 찾을 수 없습니다."),
+    BOOK_NOT_FOUND(404, 3500, "책을 찾을 수 없습니다.")
 
     // Record (3600 ~ 3699)
 
     ;
+
 
     private final int status;
     private final int code;

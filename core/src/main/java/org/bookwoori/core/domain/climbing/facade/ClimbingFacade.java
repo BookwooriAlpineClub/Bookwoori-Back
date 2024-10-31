@@ -60,6 +60,9 @@ public class ClimbingFacade {
         Climbing climbing = climbingService.getClimbingById(climbingId);
         boolean isJoined = climbingMemberService.isJoined(currentMember, climbing);
         if (isJoined) {
+            if (climbingMemberService.isOwner(currentMember, climbing)) {
+                throw new CustomException(ErrorCode.OWNER_CANNOT_LEAVE);
+            }
             climbingMemberService.removeMember(currentMember, climbing);
             return false;
         } else {
