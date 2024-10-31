@@ -63,14 +63,14 @@ public class ServerController {
     @GetMapping("/{serverId}/climbs/me")
     public ResponseEntity<?> getMyClimbingChannelList(
         @PathVariable final Long serverId) {
-        return ResponseEntity.ok(climbingFacade.getMyClimbings(serverId));
+        return ResponseEntity.ok(climbingFacade.getMyClimbingList(serverId));
     }
 
     @Operation(summary = "모집 중인 클라이밍 채널 목록 조회", description = "모집 중인 클라이밍 채널의 목록을 조회합니다.")
     @GetMapping("/{serverId}/climbs/ready")
     public ResponseEntity<?> getReadyClimbingChannelList(
         @PathVariable final Long serverId) {
-        return ResponseEntity.ok(climbingFacade.getReadyClimbings(serverId));
+        return ResponseEntity.ok(climbingFacade.getReadyClimbingList(serverId));
     }
 
 }

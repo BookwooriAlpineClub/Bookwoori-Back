@@ -45,9 +45,9 @@ public class ClimbingController {
 
     @Operation(summary = "클라이밍 채널 참여 <-> 참여 취소", description = "클라이밍 채널에 참여 <-> 참여를 취소합니다.")
     @PutMapping("/{climbingId}")
-    public ResponseEntity<?> toggleClimbingChannel(
+    public ResponseEntity<?> toggleParticipation(
         @PathVariable("climbingId") final Long climbingId) {
-        boolean isJoined = climbingFacade.toggleClimbing(climbingId);
+        boolean isJoined = climbingFacade.toggleParticipation(climbingId);
         if (isJoined) {
             return ResponseEntity.ok().build();
         } else {
@@ -57,9 +57,9 @@ public class ClimbingController {
 
     @Operation(summary = "클라이밍 채널 상세정보", description = "클라이밍 채널의 상세정보를 조회합니다.")
     @GetMapping("/{climbingId}")
-    public ResponseEntity<?> getClimbingChannel(
+    public ResponseEntity<?> getClimbingDetails(
         @PathVariable("climbingId") final Long climbingId) {
-        return ResponseEntity.ok(climbingFacade.getClimbing(climbingId));
+        return ResponseEntity.ok(climbingFacade.getClimbingDetails(climbingId));
     }
 
 

@@ -22,7 +22,6 @@ import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
 
-
 @Component
 @RequiredArgsConstructor
 public class ClimbingFacade {
@@ -54,7 +53,7 @@ public class ClimbingFacade {
         climbing.updateClimbing(requestDto.name(), requestDto.description(), requestDto.endDate());
     }
 
-    public boolean toggleClimbing(Long climbingId) {
+    public boolean toggleParticipation(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
         boolean isJoined = climbingMemberService.isJoined(currentMember, climbing);
@@ -67,7 +66,7 @@ public class ClimbingFacade {
         }
     }
 
-    public ClimbingDetailsResponseDto getClimbing(Long climbingId) {
+    public ClimbingDetailsResponseDto getClimbingDetails(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
         int memberCount = climbingMemberService.getMemberCount(climbing);
@@ -95,13 +94,13 @@ public class ClimbingFacade {
         return new ServerClimbingListDto(myClimbings, readyClimbs);
     }
 
-    public List<ClimbingDetailsResponseDto> getMyClimbings(Long serverId) {
+    public List<ClimbingDetailsResponseDto> getMyClimbingList(Long serverId) {
         Member currentMember = memberService.getCurrentMember();
         List<Climbing> myClimbings = climbingService.getMyClimbings(currentMember, serverId);
         return convertToDto(myClimbings);
     }
 
-    public List<ClimbingDetailsResponseDto> getReadyClimbings(Long serverId) {
+    public List<ClimbingDetailsResponseDto> getReadyClimbingList(Long serverId) {
         List<Climbing> readyClimbs = climbingService.getReadyClimbings(serverId);
         return convertToDto(readyClimbs);
     }
