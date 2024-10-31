@@ -46,9 +46,7 @@ public class ClimbingService {
         List<Climbing> climbingList = climbingRepository.findAll();
 
         for (Climbing climbing : climbingList) {
-            if (climbing.getStartDate().isAfter(today)) {
-                climbing.updateStatus(ClimbingStatus.READY);
-            } else if (climbing.getStartDate().isEqual(today) || climbing.getEndDate()
+            if (climbing.getStartDate().isAfter(today) && climbing.getEndDate()
                 .isAfter(today)) {
                 climbing.updateStatus(ClimbingStatus.RUNNING);
             }
