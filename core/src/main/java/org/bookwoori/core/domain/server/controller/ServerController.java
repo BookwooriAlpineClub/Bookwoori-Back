@@ -71,6 +71,18 @@ public class ServerController {
     public ResponseEntity<?> getReadyClimbingChannelList(
         @PathVariable final Long serverId) {
         return ResponseEntity.ok(climbingFacade.getReadyClimbingList(serverId));
+
+    @Operation(summary = "초대코드 조회 또는 생성", description = "특정 서버에 대한 초대 코드를 조회 또는 생성합니다.")
+    @PostMapping("/{serverId}/code")
+    public ResponseEntity<?> getOrCreateInviteCode(@PathVariable final Long serverId) {
+        return ResponseEntity.ok(serverFacade.getOrCreateInviteCode(serverId));
+    }
+
+    @Operation(summary = "초대 수락", description = "사용자를 초대코드에 해당하는 서버에 멤버로 추가합니다.")
+    @PostMapping("/join/{inviteCode}")
+    public ResponseEntity<?> createServerMember(@PathVariable String inviteCode) {
+        serverFacade.createServerMember(inviteCode);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }
