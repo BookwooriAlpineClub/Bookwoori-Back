@@ -4,14 +4,14 @@ import lombok.Builder;
 import org.bookwoori.core.domain.server.entity.Server;
 
 @Builder
-public record ServerResponseDto(
+public record ServerItemDto(
     Long serverId,
     String name,
     String serverImg
 ) {
 
-    public static ServerResponseDto from(Server server) {
-        return ServerResponseDto.builder()
+    public static ServerItemDto from(Server server) {
+        return ServerItemDto.builder()
             .serverId(server.getServerId())
             .name(server.getName())
             .serverImg(server.getServerImg())

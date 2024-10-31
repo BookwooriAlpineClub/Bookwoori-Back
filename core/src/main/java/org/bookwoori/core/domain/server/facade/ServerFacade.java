@@ -17,9 +17,9 @@ import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
 import org.bookwoori.core.domain.server.dto.response.ServerCategoryListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerDetailsResponseDto;
+import org.bookwoori.core.domain.server.dto.response.ServerItemDto;
 import org.bookwoori.core.domain.server.dto.response.ServerListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto;
-import org.bookwoori.core.domain.server.dto.response.ServerResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
@@ -128,8 +128,7 @@ public class ServerFacade {
     public ServerListResponseDto getServerList() {
         Member member = memberService.getCurrentMember();
         List<Server> servers = serverMemberService.getServerListByMember(member);
-        List<ServerResponseDto> serverDtoList = servers.stream().map(ServerResponseDto::from)
-            .toList();
+        List<ServerItemDto> serverDtoList = servers.stream().map(ServerItemDto::from).toList();
         return new ServerListResponseDto(serverDtoList);
     }
 

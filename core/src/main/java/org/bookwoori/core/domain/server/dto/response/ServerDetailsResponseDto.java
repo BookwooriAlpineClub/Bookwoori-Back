@@ -9,17 +9,17 @@ import org.bookwoori.core.domain.server.entity.Server;
 public record ServerDetailsResponseDto(
     String name,
     String serverImg,
-    String owner,
+    String ownerNickname,
     int memberCount,
     @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDateTime createdAt,
     String description) {
 
-    public static ServerDetailsResponseDto from(Server server, String owner, int memberCount) {
+    public static ServerDetailsResponseDto from(Server server, String nickname, int memberCount) {
         return ServerDetailsResponseDto.builder()
             .name(server.getName())
             .serverImg(server.getServerImg())
-            .owner(owner)
+            .ownerNickname(nickname)
             .memberCount(memberCount)
             .createdAt(server.getCreatedAt())
             .description(server.getDescription())
