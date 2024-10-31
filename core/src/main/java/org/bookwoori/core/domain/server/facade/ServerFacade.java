@@ -136,6 +136,11 @@ public class ServerFacade {
     public void leaveServer(Long serverId) {
         Member member = memberService.getCurrentMember();
         Server server = serverService.getServerById(serverId);
+
+        if (serverMemberService.isOwner(member, server)) {
+            throw new CustomException(ErrorCode.DELEGATION_REQUIRED);
+        }
+
         serverMemberService.deleteServerMember(server, member);
     }
 
