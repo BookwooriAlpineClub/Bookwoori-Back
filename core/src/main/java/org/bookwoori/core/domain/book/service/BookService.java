@@ -1,12 +1,22 @@
 package org.bookwoori.core.domain.book.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.core.domain.book.dto.response.BookDetailResponseDto;
+import org.bookwoori.core.domain.book.dto.response.BookResponseDto;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.book.repository.BookRepository;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional
@@ -21,7 +31,7 @@ public class BookService {
     @Autowired
     private final ObjectMapper objectMapper;
     @Value("${aladin.TTB_KEY}")
-    private String TTB_KEY; // 알라딘 API Key
+    private String TTB_KEY;
 
     public List<BookResponseDto> getBooksByKeyword(String keyword) { // 도서 검색
         String url = ALADIN_API_URL_SEARCH + "?ttbkey=" + TTB_KEY +
@@ -61,47 +71,37 @@ public class BookService {
             "&output=js" +
             "&Version=20131101";
 
-        String jsonResponse = restTemplate.getForObject(url, String.class);
-
         try {
+            String jsonResponse = restTemplate.getForObject(url, String.class);
             JsonNode root = objectMapper.readTree(jsonResponse);
             JsonNode item = root.path("item").get(0);
 
             if (item != null) {
                 return BookDetailResponseDto.from(item);
+            } else {
+                throw new CustomException(ErrorCode.BOOK_NOT_FOUND);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new CustomException(ErrorCode.BOOK_NOT_FOUND);
         }
-
-        return null; // 데이터가 없거나 오류 발생 시 null 반환
     }
 
-
-}
-    private final BookRepository bookRepository;
 
     public Book getOrCreateBookByIsbn(String isbn) {
-        return bookRepository.findByIsbn13(isbn)
-            .orElseGet(() -> {
-                Book newBook = Book.builder()
-                    .title("테스트 제목")
-                    .author("테스트 저자")
-                    .publisher("테스트 출판사")
-                    .pubDate(LocalDate.now())
-                    .itemPage(1)
-                    .isbn13(isbn)
-                    .description("기본 설명")
-                    .coverImg("default.jpg")
-                    .build();
-                return bookRepository.save(newBook);
-            });
+        Optional<Book> existingBook = bookRepository.findByIsbn13(isbn);
+        if (existingBook.isPresent()) {
+            return existingBook.get();
+        }
+        Book newBook = getBookByIsbn(isbn).toEntity();
+        return bookRepository.save(newBook);
     }
+
 
     @Transactional(readOnly = true)
     public Book getBookById(Long bookId) {
         return bookRepository.findById(bookId)
-                .orElseThrow(() -> new CustomException(ErrorCode.BOOK_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorCode.BOOK_NOT_FOUND));
     }
 
 }
