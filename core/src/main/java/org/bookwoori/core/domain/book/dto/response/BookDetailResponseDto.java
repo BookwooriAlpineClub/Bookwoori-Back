@@ -1,7 +1,9 @@
 package org.bookwoori.core.domain.book.dto.response;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.time.LocalDate;
 import lombok.Builder;
+import org.bookwoori.core.domain.book.entity.Book;
 
 @Builder
 public record BookDetailResponseDto(
@@ -27,6 +29,18 @@ public record BookDetailResponseDto(
             .build();
     }
 
+    public Book toEntity() {
+        return Book.builder()
+            .title(this.title)
+            .author(this.author)
+            .publisher(this.publisher)
+            .pubDate(LocalDate.parse(this.pubDate))
+            .itemPage(this.itemPage != null ? Math.toIntExact(this.itemPage) : null)
+            .isbn13(this.isbn13)
+            .description(this.description)
+            .coverImg(this.cover)
+            .build();
+    }
 }
 
 

@@ -7,7 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import java.time.LocalDate;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "book")
@@ -26,25 +31,27 @@ public class Book {
     @NotNull
     private String title;
 
-    @Column(name = "writer")
+    @Column(name = "author")
     @NotNull
-    private String writer;
+    private String author;
 
     @Column(name = "publisher")
     @NotNull
     private String publisher;
 
-    @Column(name = "page_count")
-    @NotNull
-    private int pageCount;
+    @Column(name = "pub_date")
+    private LocalDate pubDate;
 
-    @Column(name = "isbn", updatable = false, unique = true)
-    @NotNull
-    private String isbn;
+    @Column(name = "item_page")
+    private int itemPage;
 
-    @Column(name = "cover_image", columnDefinition = "TEXT")
-    private String coverImg;
+    @Column(name = "isbn13", updatable = false, unique = true)
+    @NotNull
+    private String isbn13;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "cover_image", columnDefinition = "TEXT")
+    private String coverImg;
 }
