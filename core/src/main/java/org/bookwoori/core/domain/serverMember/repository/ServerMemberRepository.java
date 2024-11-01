@@ -13,6 +13,9 @@ public interface ServerMemberRepository extends JpaRepository<ServerMember, Long
 
     int countByServer(Server server);
 
+    @Query("SELECT sm FROM ServerMember sm WHERE sm.member = :member AND sm.server = :server AND sm.role = 'OWNER'")
+    boolean existsByMemberAndServerAndRole(Member member, Server server);
+
     @Query("SELECT m.member FROM ServerMember m WHERE m.server = :server AND m.role = 'OWNER'")
     Optional<Member> findOwnerByServer(@Param("server") Server server);
 
@@ -21,4 +24,9 @@ public interface ServerMemberRepository extends JpaRepository<ServerMember, Long
 
     Optional<ServerMember> findByMemberAndServer(Member member, Server server);
 
+
+    @Query("SELECT sm FROM ServerMember sm JOIN FETCH sm.server WHERE sm.member = :member")
+    List<ServerMember> findAllByMember(Member member);
+
+    void deleteByServerAndMember(Server server, Member member);
 }

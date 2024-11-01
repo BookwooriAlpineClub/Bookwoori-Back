@@ -6,14 +6,18 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.climbing.facade.ClimbingFacade;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
+import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
 import org.bookwoori.core.domain.server.facade.ServerFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,6 +29,12 @@ public class ServerController {
 
     private final ServerFacade serverFacade;
     private final ClimbingFacade climbingFacade;
+
+    @Operation(summary = "내 서버 목록 조회", description = "로그인한 유저가 참여한 서버 목록을 조회합니다.")
+    @GetMapping
+    public ResponseEntity<?> getServerList() {
+        return ResponseEntity.ok(serverFacade.getServerList());
+    }
 
     @Operation(summary = "모임 서버 생성", description = "모임 서버를 생성합니다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -40,10 +50,25 @@ public class ServerController {
         return ResponseEntity.ok(serverFacade.getServerDetails(serverId));
     }
 
+    @Operation(summary = "서버 정보 수정", description = "서버의 이름과 설명을 수정합니다.")
+    @PatchMapping("/{serverId}")
+    public ResponseEntity<?> updateServerInfo(@PathVariable final Long serverId,
+        @Valid @RequestBody ServerInfoUpdateRequestDto requestDto) {
+        serverFacade.updateServerInfo(serverId, requestDto);
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "서버 멤버 목록 조회", description = "해당 서버에 속한 멤버 목록을 조회합니다.")
     @GetMapping("/{serverId}/members")
     public ResponseEntity<?> getServerMemberList(@PathVariable final Long serverId) {
         return ResponseEntity.ok(serverFacade.getServerMemberList(serverId));
+    }
+
+    @Operation(summary = "서버 나가기", description = "로그인한 유저를 해당 서버에서 나가게 합니다.")
+    @DeleteMapping("/{serverId}/members")
+    public ResponseEntity<?> leaveServer(@PathVariable final Long serverId) {
+        serverFacade.leaveServer(serverId);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "채널 목록 조회", description = "해당 서버의 채널 및 카테고리 목록을 조회합니다.")

@@ -45,6 +45,7 @@ public enum ErrorCode {
     // Server (3100 ~ 3199)
     SERVER_NOT_FOUND(404, 3100, "서버를 찾을 수 없습니다."),
     ALREADY_JOINED_SERVER(409, 3101, "이미 참여하고 있는 서버입니다."),
+    DELEGATION_REQUIRED(409, 3102, "해당 요청 처리를 위해서는 서버장 권한을 위임해야 합니다."),
 
     // Category (3200 ~ 3299)
     CATEGORY_NOT_FOUND(404, 3200, "카테고리를 찾을 수 없습니다."),
