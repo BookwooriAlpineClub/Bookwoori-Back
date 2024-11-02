@@ -36,7 +36,7 @@ public class ClimbingMemberFacade {
             climbing);
         return climbingMemberList.stream()
             .map(member -> {
-                Optional<Record> record = recordService.getClimbingMemerRecord(member,
+                Optional<Record> record = recordService.getClimbingMemberRecord(member,
                     climbing.getBook());
                 ReadingStatus status = record.map(Record::getStatus).orElse(ReadingStatus.UNREAD);
                 int currentPage = record.map(Record::getCurrentPage).orElse(0);

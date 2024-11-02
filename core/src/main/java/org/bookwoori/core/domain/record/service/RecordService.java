@@ -16,7 +16,7 @@ public class RecordService {
     private final RecordRepository recordRepository;
 
     @Transactional(readOnly = true)
-    public Optional<Record> getClimbingMemerRecord(ClimbingMember climbingMember, Book book) {
+    public Optional<Record> getClimbingMemberRecord(ClimbingMember climbingMember, Book book) {
         return recordRepository.findByMemberAndBook(climbingMember.getMember(), book);
     }
 }

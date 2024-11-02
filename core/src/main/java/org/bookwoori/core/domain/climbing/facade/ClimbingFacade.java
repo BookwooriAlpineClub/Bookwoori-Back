@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.climbing.facade;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -12,15 +13,18 @@ import org.bookwoori.core.domain.climbing.dto.response.ServerClimbingListDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
 import org.bookwoori.core.domain.climbing.service.ClimbingService;
+import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
 import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.service.RecordService;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +39,32 @@ public class ClimbingFacade {
     private final BookService bookService;
     private final ClimbingMemberService climbingMemberService;
     private final RecordService recordService;
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void updateClimbingStatus() {
+        LocalDate today = LocalDate.now();
+        List<Climbing> climbingList = climbingService.getAllClimbings();
+        for (Climbing climbing : climbingList) {
+            if (climbing.getStartDate().isAfter(today) && climbing.getEndDate()
+                .isAfter(today)) {
+                climbing.updateStatus(ClimbingStatus.RUNNING);
+            } else if (climbing.getEndDate().isBefore(today)) {
+                List<ClimbingMember> climbingMemberList = climbingMemberService.findMembersByClimbing(
+                    climbing);
+                boolean allFinished = climbingMemberList.stream()
+                    .allMatch(
+                        member -> recordService.getClimbingMemberRecord(member, climbing.getBook())
+                            .map(record -> record.getStatus() == ReadingStatus.FINISHED)
+                            .orElse(false));
+                if (allFinished) {
+                    climbing.updateStatus(ClimbingStatus.FINISHED);
+                } else {
+                    climbing.updateStatus(ClimbingStatus.FAILED);
+                }
+            }
+            climbingService.saveClimbingChannel(climbing);
+        }
+    }
 
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
