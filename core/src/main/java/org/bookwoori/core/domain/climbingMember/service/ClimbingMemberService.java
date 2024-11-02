@@ -53,7 +53,7 @@ public class ClimbingMemberService {
 
     @Transactional(readOnly = true)
     public ClimbingMember findByMemberAndClimbing(Member member, Long climbingId) {
-        return climbingMemberRepository.findByMemberAndClimbing_Id(member, climbingId)
+        return climbingMemberRepository.findByMemberAndClimbing_ClimbingId(member, climbingId)
             .orElseThrow(() -> new CustomException(ErrorCode.CLIMBINGMEMBER_NOT_FOUND));
     }
 

@@ -17,5 +17,5 @@ public interface ClimbingMemberRepository extends JpaRepository<ClimbingMember, 
 
     List<ClimbingMember> findByClimbing(Climbing climbing);
 
-    Optional<ClimbingMember> findByMemberAndClimbing_Id(Member member, Long climbingId);
+    Optional<ClimbingMember> findByMemberAndClimbing_ClimbingId(Member member, Long climbingId);
 }

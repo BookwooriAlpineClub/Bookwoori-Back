@@ -83,7 +83,7 @@ public class ClimbingController {
     }
 
     @Operation(summary = "클라이밍 채널 참여자 메모 수정", description = "클라이밍 채널 참여자의 메모를 수정합니다.")
-    @GetMapping("/{climbingId}/members/memo")
+    @PatchMapping("/{climbingId}/members/memo")
     public ResponseEntity<?> getClimbingMemberMemo(
         @PathVariable("climbingId") final Long climbingId,
         @RequestBody @Valid ClimbingMemoUpdateRequestDto requestDto) {
