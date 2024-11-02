@@ -1,11 +1,11 @@
 package org.bookwoori.core.domain.record.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import org.bookwoori.core.domain.member.entity.Grade;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 
 public enum ReadingStatus {
+    UNREAD,
     WISH,
     READING,
     FINISHED;

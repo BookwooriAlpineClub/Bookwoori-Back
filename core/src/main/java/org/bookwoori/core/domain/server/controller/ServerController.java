@@ -71,6 +71,7 @@ public class ServerController {
     public ResponseEntity<?> getReadyClimbingChannelList(
         @PathVariable final Long serverId) {
         return ResponseEntity.ok(climbingFacade.getReadyClimbingList(serverId));
+    }
 
     @Operation(summary = "초대코드 조회 또는 생성", description = "특정 서버에 대한 초대 코드를 조회 또는 생성합니다.")
     @PostMapping("/{serverId}/code")

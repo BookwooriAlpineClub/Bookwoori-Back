@@ -1,11 +1,14 @@
 package org.bookwoori.core.domain.climbingMember.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
 import org.bookwoori.core.domain.climbingMember.repository.ClimbingMemberRepository;
 import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,5 +44,27 @@ public class ClimbingMemberService {
     @Transactional(readOnly = true)
     public int getMemberCount(Climbing climbing) {
         return climbingMemberRepository.countByClimbing(climbing);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ClimbingMember> findMembersByClimbing(Climbing climbing) {
+        return climbingMemberRepository.findByClimbing(climbing);
+    }
+
+    @Transactional(readOnly = true)
+    public ClimbingMember findByMemberAndClimbing(Member member, Long climbingId) {
+        return climbingMemberRepository.findByMemberAndClimbing_Id(member, climbingId)
+            .orElseThrow(() -> new CustomException(ErrorCode.CLIMBINGMEMBER_NOT_FOUND));
+    }
+
+    public void delegateClimbingRole(Long climbingId, Member currentMember,
+        Member newOwner) {
+        ClimbingMember currentClimbingMember = findByMemberAndClimbing(currentMember, climbingId);
+        ClimbingMember newClimbingOwner = findByMemberAndClimbing(newOwner, climbingId);
+        if (currentClimbingMember.getRole() != ClimbingRole.OWNER) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+        currentClimbingMember.updateRole(ClimbingRole.MEMBER);
+        newClimbingOwner.updateRole(ClimbingRole.OWNER);
     }
 }

@@ -16,6 +16,7 @@ import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
 import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.record.service.RecordService;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.global.exception.CustomException;
@@ -33,6 +34,7 @@ public class ClimbingFacade {
     private final ServerService serverService;
     private final BookService bookService;
     private final ClimbingMemberService climbingMemberService;
+    private final RecordService recordService;
 
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
