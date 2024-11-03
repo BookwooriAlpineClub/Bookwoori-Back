@@ -36,6 +36,10 @@ public class ChannelService {
         channelRepository.save(voiceChannel);
     }
 
+    public void deleteChannel(Channel channel) {
+        channelRepository.delete(channel);
+    }
+
     @Transactional(readOnly = true)
     public Channel getLastNodeByCategory(Category category) {
         return channelRepository.findChannelByCategoryAndNextNodeIsNull(category).orElse(null);
@@ -50,6 +54,12 @@ public class ChannelService {
     public Channel getChannelById(Long channelId) {
         return channelRepository.findById(channelId)
             .orElseThrow(() -> new CustomException(ErrorCode.CHANNEL_NOT_FOUND));
+    }
+
+    @Transactional
+    public void detach(Channel channel) {
+        channel.connectBeforeAndNextNodes();
+        channelRepository.flush();
     }
 
     @Transactional
