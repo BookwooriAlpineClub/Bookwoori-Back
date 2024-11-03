@@ -63,8 +63,28 @@ public class Category {
     public void setBeforeNode(Category category) {
         this.beforeNode = category;
         if (!Objects.isNull(category)) {
-            category.nextNode = this;
+            category.setNextNode(this);
         }
+    }
+
+    public void setNextNode(Category category) {
+        this.nextNode = category;
+    }
+
+    public void connectBeforeAndAfterNodes() {
+        Category beforeCategory = this.beforeNode;
+        Category nextCategory = this.nextNode;
+
+        if (nextCategory != null) {
+            nextCategory.setBeforeNode(beforeCategory);
+        } else {
+            if (beforeCategory != null) {
+                beforeCategory.setNextNode(null);
+            }
+        }
+
+        this.beforeNode = null;
+        this.nextNode = null;
     }
 
     public void modifyName(String name) {
