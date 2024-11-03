@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Tag(name = "Server")
@@ -55,6 +57,14 @@ public class ServerController {
     public ResponseEntity<?> updateServerInfo(@PathVariable final Long serverId,
         @Valid @RequestBody ServerInfoUpdateRequestDto requestDto) {
         serverFacade.updateServerInfo(serverId, requestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "서버 이미지 편집", description = "서버 이미지를 수정 또는 삭제합니다.")
+    @PatchMapping(value = "/{serverId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateServerImage(@PathVariable final Long serverId,
+        @RequestPart(required = false) MultipartFile imageFile) {
+        serverFacade.updateServerImage(serverId, imageFile);
         return ResponseEntity.ok().build();
     }
 
