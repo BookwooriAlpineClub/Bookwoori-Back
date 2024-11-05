@@ -48,7 +48,7 @@ public class ClimbingMemberFacade {
 
     public void updateClimbingMemberMemo(Long climbingId, ClimbingMemoUpdateRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
-        ClimbingMember climbingMember = climbingMemberService.findByMemberAndClimbing(currentMember,
+        ClimbingMember climbingMember = climbingMemberService.findByClimbing(currentMember,
             climbingId);
         climbingMember.updateMemo(requestDto.memo());
     }
