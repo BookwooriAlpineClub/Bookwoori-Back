@@ -84,7 +84,7 @@ public class ClimbingController {
 
     @Operation(summary = "클라이밍 채널 참여자 메모 수정", description = "클라이밍 채널 참여자의 메모를 수정합니다.")
     @PatchMapping("/{climbingId}/members/memo")
-    public ResponseEntity<?> getClimbingMemberMemo(
+    public ResponseEntity<?> updateClimbingMemberMemo(
         @PathVariable("climbingId") final Long climbingId,
         @RequestBody @Valid ClimbingMemoUpdateRequestDto requestDto) {
         climbingMemberFacade.updateClimbingMemberMemo(climbingId, requestDto);
