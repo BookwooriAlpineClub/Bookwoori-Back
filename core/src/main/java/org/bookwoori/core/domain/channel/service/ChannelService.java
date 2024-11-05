@@ -46,6 +46,11 @@ public class ChannelService {
     }
 
     @Transactional(readOnly = true)
+    public Channel getFirstNodeByCategory(Category category) {
+        return channelRepository.findChannelByCategoryAndBeforeNodeIsNull(category).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
     public Channel getChannelById(Long channelId) {
         return channelRepository.findById(channelId)
             .orElseThrow(() -> new CustomException(ErrorCode.CHANNEL_NOT_FOUND));
@@ -55,5 +60,14 @@ public class ChannelService {
     public void detach(Channel channel) {
         channel.connectBeforeAndNextNodes();
         channelRepository.flush();
+    }
+
+    @Transactional
+    public void moveChannelsToCategory(Category from, Category to) {
+        Channel nextChannel = getFirstNodeByCategory(from);
+        if (nextChannel != null) {
+            nextChannel.setBeforeNode(getLastNodeByCategory(to));
+        }
+        from.getChannels().forEach(channel -> channel.modifyCategory(to));
     }
 }

@@ -88,4 +88,12 @@ public class Channel extends BaseTimeEntity {
     public void modifyName(String name) {
         this.name = name;
     }
+
+    public void modifyCategory(Category category) {
+        if (category != null) {
+            category.getChannels().remove(this);
+        }
+        this.category = category;
+    }
+
 }
