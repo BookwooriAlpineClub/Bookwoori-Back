@@ -2,6 +2,7 @@ package org.bookwoori.core.global.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import java.io.IOException;
@@ -48,6 +49,16 @@ public class S3Util {
         }
 
         return amazonS3.getUrl(bucket, fileName).toString();
+    }
+
+    public void deleteImage(String url) {
+        String delimiter = ".com/";
+        int index = url.lastIndexOf(delimiter);
+        if (index == -1) {
+            return;
+        }
+        String fileName = url.substring(index + delimiter.length());
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
     }
 
     private void validateFileExtension(MultipartFile multipartFile) {

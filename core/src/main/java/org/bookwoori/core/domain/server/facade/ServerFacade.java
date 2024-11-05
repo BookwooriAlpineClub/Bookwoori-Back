@@ -32,6 +32,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @RequiredArgsConstructor
@@ -154,5 +155,21 @@ public class ServerFacade {
         }
 
         server.updateInfo(requestDto.name(), requestDto.description());
+    }
+
+    @Transactional
+    public void updateServerImage(Long serverId, MultipartFile newImage) {
+        Member member = memberService.getCurrentMember();
+        Server server = serverService.getServerById(serverId);
+
+        if (!serverMemberService.isOwner(member, server)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if (server.getServerImg() != null) {
+            s3Util.deleteImage(server.getServerImg());
+        }
+        
+        server.updateServerImg(s3Util.uploadImage(newImage, "server"));
     }
 }

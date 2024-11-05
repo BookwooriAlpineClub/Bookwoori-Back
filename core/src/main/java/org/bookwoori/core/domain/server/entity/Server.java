@@ -53,4 +53,8 @@ public class Server extends BaseTimeEntity {
         this.name = name;
         this.description = description;
     }
+
+    public void updateServerImg(String url) {
+        this.serverImg = url;
+    }
 }
