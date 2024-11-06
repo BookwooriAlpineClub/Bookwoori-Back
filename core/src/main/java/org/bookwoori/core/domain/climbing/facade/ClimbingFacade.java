@@ -9,6 +9,8 @@ import org.bookwoori.core.domain.book.service.BookService;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingDetailsResponseDto;
+import org.bookwoori.core.domain.climbing.dto.response.MyClimbingListResponseDto;
+import org.bookwoori.core.domain.climbing.dto.response.ReadyClimbingListResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.ServerClimbingListDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
@@ -134,16 +136,18 @@ public class ClimbingFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<ClimbingDetailsResponseDto> getMyClimbingList(Long serverId) {
+    public MyClimbingListResponseDto getMyClimbingList(Long serverId) {
         Member currentMember = memberService.getCurrentMember();
         List<Climbing> myClimbings = climbingService.getMyClimbings(currentMember, serverId);
-        return convertToDto(myClimbings);
+        List<ClimbingDetailsResponseDto> myClimbingList = convertToDto(myClimbings);
+        return new MyClimbingListResponseDto(myClimbingList);
     }
 
     @Transactional(readOnly = true)
-    public List<ClimbingDetailsResponseDto> getReadyClimbingList(Long serverId) {
-        List<Climbing> readyClimbs = climbingService.getReadyClimbings(serverId);
-        return convertToDto(readyClimbs);
+    public ReadyClimbingListResponseDto getReadyClimbingList(Long serverId) {
+        List<Climbing> readyClimbings = climbingService.getReadyClimbings(serverId);
+        List<ClimbingDetailsResponseDto> readyClimbingList = convertToDto(readyClimbings);
+        return new ReadyClimbingListResponseDto(readyClimbingList);
     }
 
     @Transactional(readOnly = true)
