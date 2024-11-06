@@ -6,6 +6,8 @@ import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface ClimbingMemberRepository extends JpaRepository<ClimbingMember, Long> {
 
@@ -15,7 +17,8 @@ public interface ClimbingMemberRepository extends JpaRepository<ClimbingMember, 
 
     int countByClimbing(Climbing climbing);
 
-    List<ClimbingMember> findByClimbing(Climbing climbing);
+    @Query("SELECT cm FROM ClimbingMember cm JOIN FETCH cm.member WHERE cm.climbing = :climbing")
+    List<ClimbingMember> findByClimbingWithMember(@Param("climbing") Climbing climbing);
 
     Optional<ClimbingMember> findByMemberAndClimbing_ClimbingId(Member member, Long climbingId);
 }

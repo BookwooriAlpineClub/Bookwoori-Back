@@ -48,7 +48,7 @@ public class ClimbingMemberService {
 
     @Transactional(readOnly = true)
     public List<ClimbingMember> findMembersByClimbing(Climbing climbing) {
-        return climbingMemberRepository.findByClimbing(climbing);
+        return climbingMemberRepository.findByClimbingWithMember(climbing);
     }
 
     @Transactional(readOnly = true)
