@@ -5,6 +5,7 @@ import org.bookwoori.core.domain.record.entity.ReadingStatus;
 
 public record ClimbingMemberUnitDto(
     Long memberId,
+    String nickname,
     String profileImg,
     int level,
     String mountain,
@@ -17,6 +18,7 @@ public record ClimbingMemberUnitDto(
         int currentPage) {
         return new ClimbingMemberUnitDto(
             member.getMember().getMemberId(),
+            member.getMember().getNickname(),
             member.getMember().getProfileImg(),
             member.getMember().getGrade().getLevel(),
             member.getMember().getGrade().getMountain(),
