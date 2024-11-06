@@ -1,8 +1,10 @@
 package org.bookwoori.core.domain.climbing.dto.response;
 
+import lombok.Builder;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
 
+@Builder
 public record ClimbingMemberUnitDto(
     Long memberId,
     String nickname,
@@ -16,15 +18,15 @@ public record ClimbingMemberUnitDto(
 
     public static ClimbingMemberUnitDto from(ClimbingMember member, ReadingStatus status,
         int currentPage) {
-        return new ClimbingMemberUnitDto(
-            member.getMember().getMemberId(),
-            member.getMember().getNickname(),
-            member.getMember().getProfileImg(),
-            member.getMember().getGrade().getLevel(),
-            member.getMember().getGrade().getMountain(),
-            status,
-            currentPage,
-            member.getMemo()
-        );
+        return ClimbingMemberUnitDto.builder()
+            .memberId(member.getMember().getMemberId())
+            .nickname(member.getMember().getNickname())
+            .profileImg(member.getMember().getProfileImg())
+            .level(member.getMember().getGrade().getLevel())
+            .mountain(member.getMember().getGrade().getMountain())
+            .status(status)
+            .currentPage(currentPage)
+            .memo(member.getMemo())
+            .build();
     }
 }
