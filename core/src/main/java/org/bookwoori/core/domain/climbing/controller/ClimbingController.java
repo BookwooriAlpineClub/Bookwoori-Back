@@ -90,4 +90,12 @@ public class ClimbingController {
         climbingMemberFacade.updateClimbingMemberMemo(climbingId, requestDto);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "클라이밍 채널 참여자 감상평 공유", description = "클라이밍 채널 참여자가 감상평을 공유합니다")
+    @PatchMapping("/{climbingId}/reviews")
+    public ResponseEntity<?> shareReviewWithClimbing(
+        @PathVariable("climbingId") final Long climbingId) {
+        climbingMemberFacade.shareReviewWithClimbing(climbingId);
+        return ResponseEntity.ok().build();
+    }
 }

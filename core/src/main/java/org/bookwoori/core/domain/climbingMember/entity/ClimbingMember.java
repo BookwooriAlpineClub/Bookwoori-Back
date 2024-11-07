@@ -70,4 +70,8 @@ public class ClimbingMember {
     public void updateRole(ClimbingRole climbingRole) {
         this.role = climbingRole;
     }
+
+    public void updateShared(boolean hasShared) {
+        this.hasShared = hasShared;
+    }
 }

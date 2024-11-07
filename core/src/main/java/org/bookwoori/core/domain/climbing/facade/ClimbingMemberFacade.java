@@ -17,6 +17,8 @@ import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.record.service.RecordService;
+import org.bookwoori.core.domain.review.entity.Review;
+import org.bookwoori.core.domain.review.service.ReviewService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
@@ -31,7 +33,7 @@ public class ClimbingMemberFacade {
     private final ClimbingService climbingService;
     private final ClimbingMemberService climbingMemberService;
     private final RecordService recordService;
-
+    private final ReviewService reviewService;
 
     public boolean toggleParticipation(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
@@ -52,11 +54,11 @@ public class ClimbingMemberFacade {
     @Transactional(readOnly = true)
     public List<ClimbingMemberUnitDto> getClimbingMembers(Long climbingId) {
         Climbing climbing = climbingService.getClimbingById(climbingId);
-        List<ClimbingMember> climbingMemberList = climbingMemberService.findMembersByClimbing(
+        List<ClimbingMember> climbingMemberList = climbingMemberService.findByClimbing(
             climbing);
         return climbingMemberList.stream()
             .map(member -> {
-                Optional<Record> record = recordService.getClimbingMemberRecord(member,
+                Optional<Record> record = recordService.getClimbingMemberRecordOpt(member,
                     climbing.getBook());
                 ReadingStatus status = record.map(Record::getStatus).orElse(ReadingStatus.UNREAD);
                 int currentPage = record.map(Record::getCurrentPage).orElse(0);
@@ -69,7 +71,7 @@ public class ClimbingMemberFacade {
     public void updateClimbingMemberMemo(Long climbingId, ClimbingMemoUpdateRequestDto requestDto) {
         climbingService.isRunning(climbingId);
         Member currentMember = memberService.getCurrentMember();
-        ClimbingMember climbingMember = climbingMemberService.findByClimbing(currentMember,
+        ClimbingMember climbingMember = climbingMemberService.findByMemberAndClimbing(currentMember,
             climbingId);
         climbingMember.updateMemo(requestDto.memo());
     }
@@ -78,5 +80,17 @@ public class ClimbingMemberFacade {
         Member currentMember = memberService.getCurrentMember();
         Member newOwner = memberService.getMemberById(requestDto.memberId());
         climbingMemberService.delegateClimbingRole(climbingId, currentMember, newOwner);
+    }
+
+    public void shareReviewWithClimbing(Long climbingId) {
+        Member currentMember = memberService.getCurrentMember();
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        ClimbingMember climbingMember = climbingMemberService.findByMemberAndClimbing(currentMember,
+            climbingId);
+        Review review = reviewService.getReviewByMemberAndClimbing(currentMember, climbing);
+        if (climbingMember.isHasShared()) {
+            throw new CustomException(ErrorCode.REVIEW_ALREADY_SHARED);
+        }
+        climbingMember.updateShared(true);
     }
 }
