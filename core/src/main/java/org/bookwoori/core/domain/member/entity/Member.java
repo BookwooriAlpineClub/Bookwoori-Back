@@ -1,14 +1,19 @@
 package org.bookwoori.core.domain.member.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.global.BaseTimeEntity;
-import org.bookwoori.core.global.s3.S3Util;
-import org.springframework.web.multipart.MultipartFile;
 
 @Entity
 @Table(name = "member")
@@ -66,5 +71,4 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         this.profileImg = profileImgUrl;
     }
-
 }

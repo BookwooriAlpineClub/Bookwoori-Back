@@ -62,4 +62,12 @@ public class ClimbingMember {
         this.hasShared = false;
         this.memo = null;
     }
+
+    public void updateMemo(String memo) {
+        this.memo = memo;
+    }
+
+    public void updateRole(ClimbingRole climbingRole) {
+        this.role = climbingRole;
+    }
 }

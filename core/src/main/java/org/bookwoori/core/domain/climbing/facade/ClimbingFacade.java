@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.climbing.facade;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -8,18 +9,24 @@ import org.bookwoori.core.domain.book.service.BookService;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingDetailsResponseDto;
+import org.bookwoori.core.domain.climbing.dto.response.MyClimbingListResponseDto;
+import org.bookwoori.core.domain.climbing.dto.response.ReadyClimbingListResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.ServerClimbingListDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
 import org.bookwoori.core.domain.climbing.service.ClimbingService;
+import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
 import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.record.entity.ReadingStatus;
+import org.bookwoori.core.domain.record.service.RecordService;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +40,33 @@ public class ClimbingFacade {
     private final ServerService serverService;
     private final BookService bookService;
     private final ClimbingMemberService climbingMemberService;
+    private final RecordService recordService;
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void updateClimbingStatus() {
+        LocalDate today = LocalDate.now();
+        List<Climbing> climbingList = climbingService.getAllClimbings();
+        for (Climbing climbing : climbingList) {
+            if (climbing.getStartDate().isAfter(today) && climbing.getEndDate()
+                .isAfter(today)) {
+                climbing.updateStatus(ClimbingStatus.RUNNING);
+            } else if (climbing.getEndDate().isBefore(today)) {
+                List<ClimbingMember> climbingMemberList = climbingMemberService.findMembersByClimbing(
+                    climbing);
+                boolean allFinished = climbingMemberList.stream()
+                    .allMatch(
+                        member -> recordService.getClimbingMemberRecord(member, climbing.getBook())
+                            .map(record -> record.getStatus() == ReadingStatus.FINISHED)
+                            .orElse(false));
+                if (allFinished) {
+                    climbing.updateStatus(ClimbingStatus.FINISHED);
+                } else {
+                    climbing.updateStatus(ClimbingStatus.FAILED);
+                }
+            }
+            climbingService.saveClimbingChannel(climbing);
+        }
+    }
 
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
@@ -60,6 +94,9 @@ public class ClimbingFacade {
         Climbing climbing = climbingService.getClimbingById(climbingId);
         boolean isJoined = climbingMemberService.isJoined(currentMember, climbing);
         if (isJoined) {
+            if (climbingMemberService.isOwner(currentMember, climbing)) {
+                throw new CustomException(ErrorCode.OWNER_CANNOT_LEAVE);
+            }
             climbingMemberService.removeMember(currentMember, climbing);
             return false;
         } else {
@@ -99,16 +136,18 @@ public class ClimbingFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<ClimbingDetailsResponseDto> getMyClimbingList(Long serverId) {
+    public MyClimbingListResponseDto getMyClimbingList(Long serverId) {
         Member currentMember = memberService.getCurrentMember();
         List<Climbing> myClimbings = climbingService.getMyClimbings(currentMember, serverId);
-        return convertToDto(myClimbings);
+        List<ClimbingDetailsResponseDto> myClimbingList = convertToDto(myClimbings);
+        return new MyClimbingListResponseDto(myClimbingList);
     }
 
     @Transactional(readOnly = true)
-    public List<ClimbingDetailsResponseDto> getReadyClimbingList(Long serverId) {
-        List<Climbing> readyClimbs = climbingService.getReadyClimbings(serverId);
-        return convertToDto(readyClimbs);
+    public ReadyClimbingListResponseDto getReadyClimbingList(Long serverId) {
+        List<Climbing> readyClimbings = climbingService.getReadyClimbings(serverId);
+        List<ClimbingDetailsResponseDto> readyClimbingList = convertToDto(readyClimbings);
+        return new ReadyClimbingListResponseDto(readyClimbingList);
     }
 
     @Transactional(readOnly = true)

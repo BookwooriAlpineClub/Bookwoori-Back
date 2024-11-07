@@ -6,7 +6,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
+import org.bookwoori.core.domain.climbing.dto.request.ClimbingMemoUpdateRequestDto;
+import org.bookwoori.core.domain.climbing.dto.request.ClimbingRoleDelegateRequestDto;
 import org.bookwoori.core.domain.climbing.facade.ClimbingFacade;
+import org.bookwoori.core.domain.climbing.facade.ClimbingMemberFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ClimbingController {
 
     private final ClimbingFacade climbingFacade;
+    private final ClimbingMemberFacade climbingMemberFacade;
 
     @Operation(summary = "클라이밍 채널 생성", description = "클라이밍 채널을 생성합니다.")
     @PostMapping
@@ -62,5 +66,28 @@ public class ClimbingController {
         return ResponseEntity.ok(climbingFacade.getClimbingDetails(climbingId));
     }
 
+    @Operation(summary = "클라이밍 채널 권한 위임", description = "클라이밍 채널의 OWNER가 권한을 위임합니다.")
+    @PatchMapping("/{climbingId}/members")
+    public ResponseEntity<?> delegateClimbingRole(
+        @PathVariable("climbingId") final Long climbingId,
+        @RequestBody ClimbingRoleDelegateRequestDto requestDto) {
+        climbingMemberFacade.delegateClimbingRole(climbingId, requestDto);
+        return ResponseEntity.ok().build();
+    }
 
+    @Operation(summary = "클라이밍 채널 참여자 조회", description = "클라이밍 채널 참여자 목록 / 참여자 독서 현황을 조회합니다.")
+    @GetMapping("/{climbingId}/members")
+    public ResponseEntity<?> getClimbingMembers(
+        @PathVariable("climbingId") final Long climbingId) {
+        return ResponseEntity.ok(climbingMemberFacade.getClimbingMembers(climbingId));
+    }
+
+    @Operation(summary = "클라이밍 채널 참여자 메모 수정", description = "클라이밍 채널 참여자의 메모를 수정합니다.")
+    @PatchMapping("/{climbingId}/members/memo")
+    public ResponseEntity<?> updateClimbingMemberMemo(
+        @PathVariable("climbingId") final Long climbingId,
+        @RequestBody @Valid ClimbingMemoUpdateRequestDto requestDto) {
+        climbingMemberFacade.updateClimbingMemberMemo(climbingId, requestDto);
+        return ResponseEntity.ok().build();
+    }
 }

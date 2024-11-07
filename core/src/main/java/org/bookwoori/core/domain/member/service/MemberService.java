@@ -32,11 +32,10 @@ public class MemberService {
         return member;
     }
 
-    @Transactional(readOnly = true)
-    public void getMemberStatus(Long kakaoId){
+    public void getMemberStatus(Long kakaoId) {
         memberRepository.findByKakaoId(kakaoId)
-                .filter(member -> member.getStatus() != Status.INACTIVE)
-                    .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_INACTIVE));
+            .filter(member -> member.getStatus() != Status.INACTIVE)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_INACTIVE));
     }
 
     public void saveMember(Member member) {

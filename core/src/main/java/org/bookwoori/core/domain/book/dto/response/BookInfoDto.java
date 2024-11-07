@@ -1,8 +1,10 @@
 package org.bookwoori.core.domain.book.dto.response;
 
 import java.time.LocalDate;
+import lombok.Builder;
 import org.bookwoori.core.domain.book.entity.Book;
 
+@Builder
 public record BookInfoDto(
     String title,
     String author,
@@ -14,15 +16,15 @@ public record BookInfoDto(
     String cover) {
 
     public static BookInfoDto from(Book book) {
-        return new BookInfoDto(
-            book.getTitle(),
-            book.getAuthor(),
-            book.getPublisher(),
-            book.getPubDate(),
-            book.getItemPage(),
-            book.getDescription(),
-            book.getIsbn13(),
-            book.getCoverImg()
-        );
+        return BookInfoDto.builder()
+            .title(book.getTitle())
+            .author(book.getAuthor())
+            .publisher(book.getPublisher())
+            .pubDate(book.getPubDate())
+            .itemPage(book.getItemPage())
+            .description(book.getDescription())
+            .isbn13(book.getIsbn13())
+            .cover(book.getCoverImg())
+            .build();
     }
 }
