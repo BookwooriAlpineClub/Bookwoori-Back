@@ -3,6 +3,7 @@ package org.bookwoori.core.domain.climbing.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
+import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
 import org.bookwoori.core.domain.climbing.repository.ClimbingRepository;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.global.exception.CustomException;
@@ -40,6 +41,14 @@ public class ClimbingService {
     @Transactional(readOnly = true)
     public List<Climbing> getAllClimbings() {
         return climbingRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public void isRunning(Long climbingId) {
+        Climbing climbing = getClimbingById(climbingId);
+        if (climbing.getStatus() != ClimbingStatus.RUNNING) {
+            throw new CustomException(ErrorCode.CLIMBING_NOT_RUNNING);
+        }
     }
 }
 
