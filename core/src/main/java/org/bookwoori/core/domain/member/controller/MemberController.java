@@ -6,23 +6,28 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.dto.request.UpdateMemberRequestDto;
-import org.bookwoori.core.domain.member.facade.MeFacade;
+import org.bookwoori.core.domain.member.facade.MemberFacade;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@Tag(name = "Me")
+@Tag(name = "Member")
 @RequiredArgsConstructor
-@RequestMapping("/members/me")
-public class MeController {
-    private final MeFacade meFacade;
+@RequestMapping("/members")
+public class MemberController {
+
+    private final MemberFacade memberFacade;
 
     @Operation(summary = "프로필 수정", description = "닉네임, 프로필 이미지를 수정합니다.")
     @PatchMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateMember(@ModelAttribute @Valid UpdateMemberRequestDto requestDto) {
-        meFacade.updateMember(requestDto);
+    public ResponseEntity<?> updateMember(
+        @ModelAttribute @Valid UpdateMemberRequestDto requestDto) {
+        memberFacade.updateMember(requestDto);
         return ResponseEntity.ok().build();
     }
 }
