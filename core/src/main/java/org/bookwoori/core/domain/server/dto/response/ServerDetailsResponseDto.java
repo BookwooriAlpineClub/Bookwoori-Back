@@ -13,9 +13,13 @@ public record ServerDetailsResponseDto(
     int memberCount,
     @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDateTime createdAt,
-    String description) {
+    String description,
 
-    public static ServerDetailsResponseDto from(Server server, String nickname, int memberCount) {
+    boolean isOwner
+) {
+
+    public static ServerDetailsResponseDto from(Server server, String nickname, int memberCount,
+        boolean isOwner) {
         return ServerDetailsResponseDto.builder()
             .name(server.getName())
             .serverImg(server.getServerImg())
@@ -23,6 +27,7 @@ public record ServerDetailsResponseDto(
             .memberCount(memberCount)
             .createdAt(server.getCreatedAt())
             .description(server.getDescription())
+            .isOwner(isOwner)
             .build();
     }
 }

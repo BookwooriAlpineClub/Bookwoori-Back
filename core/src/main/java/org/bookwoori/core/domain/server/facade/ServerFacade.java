@@ -71,8 +71,10 @@ public class ServerFacade {
         Server server = serverService.getServerById(serverId);
         Member owner = serverMemberService.getOwner(server);
         int memberCount = serverMemberService.getMemberCount(server);
+        Member currentMember = memberService.getCurrentMember();
 
-        return ServerDetailsResponseDto.from(server, owner.getNickname(), memberCount);
+        return ServerDetailsResponseDto.from(server, owner.getNickname(), memberCount,
+            currentMember.equals(owner));
     }
 
     public ServerMemberListResponseDto getServerMemberList(Long serverId) {
@@ -169,7 +171,7 @@ public class ServerFacade {
         if (server.getServerImg() != null) {
             s3Util.deleteImage(server.getServerImg());
         }
-        
+
         server.updateServerImg(s3Util.uploadImage(newImage, "server"));
     }
 }
