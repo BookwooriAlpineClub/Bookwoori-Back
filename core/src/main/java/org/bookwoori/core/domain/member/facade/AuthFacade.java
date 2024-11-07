@@ -9,15 +9,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class AuthFacade {
+
     private final MemberService memberService;
 
-    public void deleteMember(){
+    public void deleteMember() {
         Member currentMember = memberService.getCurrentMember();
         currentMember.deleteMember();
+        memberService.saveMember(currentMember);
     }
 
     @Transactional(readOnly = true)
-    public void getMemberStatus(Long kakaoId){
+    public void getMemberStatus(Long kakaoId) {
         memberService.getMemberStatus(kakaoId);
     }
 }
