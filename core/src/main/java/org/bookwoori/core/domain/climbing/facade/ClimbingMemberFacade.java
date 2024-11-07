@@ -12,6 +12,8 @@ import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberReviewUnitD
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberUnitDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingReviewListResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiListDto;
+import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiMemberListResponseDto;
+import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiMemberUnitDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.service.ClimbingService;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
@@ -136,5 +138,17 @@ public class ClimbingMemberFacade {
         Review review = reviewService.getReviewById(reviewId);
         ReviewEmoji reviewEmoji = requestDto.toEntity(currentMember, climbing, review);
         reviewEmojiService.save(reviewEmoji);
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewEmojiMemberListResponseDto getEmojiMemberList(Long climbingId, Long reviewId,
+        Emoji emoji) {
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        Review review = reviewService.getReviewById(reviewId);
+        List<ReviewEmoji> reviewEmojis = reviewEmojiService.findByReviewAndEmoji(review, emoji);
+        List<ReviewEmojiMemberUnitDto> reviewEmojiMembers = reviewEmojis.stream()
+            .map(reviewEmoji -> ReviewEmojiMemberUnitDto.from(reviewEmoji.getMember()))
+            .collect(Collectors.toList());
+        return new ReviewEmojiMemberListResponseDto(reviewEmojiMembers);
     }
 }
