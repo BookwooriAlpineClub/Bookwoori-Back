@@ -48,7 +48,7 @@ public class ClimbingController {
     }
 
     @Operation(summary = "클라이밍 채널 참여 <-> 참여 취소", description = "클라이밍 채널에 참여 <-> 참여를 취소합니다.")
-    @PutMapping("/{climbingId}")
+    @PutMapping("/{climbingId}/members")
     public ResponseEntity<?> toggleParticipation(
         @PathVariable("climbingId") final Long climbingId) {
         boolean isJoined = climbingFacade.toggleParticipation(climbingId);
