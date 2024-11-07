@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingMemoUpdateRequestDto;
+import org.bookwoori.core.domain.climbing.dto.request.ClimbingReviewAddRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingRoleDelegateRequestDto;
 import org.bookwoori.core.domain.climbing.facade.ClimbingFacade;
 import org.bookwoori.core.domain.climbing.facade.ClimbingMemberFacade;
@@ -99,10 +100,20 @@ public class ClimbingController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "클라이밍 채널 참여자 감상평 리스트 조회", description = "클라이밍 채널 참여자가 감상평을 공유합니다")
+    @Operation(summary = "클라이밍 채널 참여자 감상평 리스트 조회", description = "클라이밍 채널 참여자의 감상평 리스트를 조회합니다.")
     @GetMapping("/{climbingId}/reviews")
     public ResponseEntity<?> getClimbingReviewList(
         @PathVariable("climbingId") final Long climbingId) {
         return ResponseEntity.ok(climbingMemberFacade.getClimbingReviewList(climbingId));
+    }
+
+    @Operation(summary = "클라이밍 채널 참여자 감상평 반응 추가", description = "클라이밍 채널 참여자가 공유한 감상평에 반응을 추가합니다.")
+    @PostMapping("/{climbingId}/reviews/{reviewId}")
+    public ResponseEntity<?> addClimbingReviewEmoji(
+        @PathVariable("climbingId") final Long climbingId,
+        @PathVariable("reviewId") final Long reviewId,
+        @RequestBody @Valid ClimbingReviewAddRequestDto requestDto) {
+        climbingMemberFacade.addClimbingReviewEmoji(climbingId, reviewId, requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

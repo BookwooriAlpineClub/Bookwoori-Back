@@ -21,4 +21,10 @@ public class ReviewService {
         return reviewRepository.findByRecordMemberAndRecordBook(currentMember, climbing.getBook())
             .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
     }
+
+    @Transactional(readOnly = true)
+    public Review getReviewById(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+            .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+    }
 }
