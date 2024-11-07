@@ -10,12 +10,15 @@ import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberUnitDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.service.ClimbingService;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
+import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
 import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.record.service.RecordService;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,23 @@ public class ClimbingMemberFacade {
     private final ClimbingService climbingService;
     private final ClimbingMemberService climbingMemberService;
     private final RecordService recordService;
+
+
+    public boolean toggleParticipation(Long climbingId) {
+        Member currentMember = memberService.getCurrentMember();
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        boolean isJoined = climbingMemberService.isJoined(currentMember, climbing);
+        if (isJoined) {
+            if (climbingMemberService.isOwner(currentMember, climbing)) {
+                throw new CustomException(ErrorCode.OWNER_CANNOT_LEAVE);
+            }
+            climbingMemberService.removeMember(currentMember, climbing);
+            return false;
+        } else {
+            climbingMemberService.saveMember(currentMember, climbing, ClimbingRole.MEMBER);
+            return true;
+        }
+    }
 
     @Transactional(readOnly = true)
     public List<ClimbingMemberUnitDto> getClimbingMembers(Long climbingId) {

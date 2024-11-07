@@ -89,22 +89,6 @@ public class ClimbingFacade {
         climbing.updateClimbing(requestDto.name(), requestDto.description(), requestDto.endDate());
     }
 
-    public boolean toggleParticipation(Long climbingId) {
-        Member currentMember = memberService.getCurrentMember();
-        Climbing climbing = climbingService.getClimbingById(climbingId);
-        boolean isJoined = climbingMemberService.isJoined(currentMember, climbing);
-        if (isJoined) {
-            if (climbingMemberService.isOwner(currentMember, climbing)) {
-                throw new CustomException(ErrorCode.OWNER_CANNOT_LEAVE);
-            }
-            climbingMemberService.removeMember(currentMember, climbing);
-            return false;
-        } else {
-            climbingMemberService.saveMember(currentMember, climbing, ClimbingRole.MEMBER);
-            return true;
-        }
-    }
-
     @Transactional(readOnly = true)
     public ClimbingDetailsResponseDto getClimbingDetails(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();

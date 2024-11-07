@@ -51,7 +51,7 @@ public class ClimbingController {
     @PutMapping("/{climbingId}/members")
     public ResponseEntity<?> toggleParticipation(
         @PathVariable("climbingId") final Long climbingId) {
-        boolean isJoined = climbingFacade.toggleParticipation(climbingId);
+        boolean isJoined = climbingMemberFacade.toggleParticipation(climbingId);
         if (isJoined) {
             return ResponseEntity.ok().build();
         } else {
