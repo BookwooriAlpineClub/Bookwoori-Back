@@ -98,4 +98,11 @@ public class ClimbingController {
         climbingMemberFacade.shareReviewWithClimbing(climbingId);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "클라이밍 채널 참여자 감상평 리스트 조회", description = "클라이밍 채널 참여자가 감상평을 공유합니다")
+    @GetMapping("/{climbingId}/reviews")
+    public ResponseEntity<?> getClimbingReviewList(
+        @PathVariable("climbingId") final Long climbingId) {
+        return ResponseEntity.ok(climbingMemberFacade.getClimbingReviewList(climbingId));
+    }
 }

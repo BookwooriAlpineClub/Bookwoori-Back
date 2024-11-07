@@ -6,7 +6,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingMemoUpdateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingRoleDelegateRequestDto;
+import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberReviewUnitDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberUnitDto;
+import org.bookwoori.core.domain.climbing.dto.response.ClimbingReviewListResponseDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.service.ClimbingService;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
@@ -92,5 +94,20 @@ public class ClimbingMemberFacade {
             throw new CustomException(ErrorCode.REVIEW_ALREADY_SHARED);
         }
         climbingMember.updateShared(true);
+    }
+
+    public ClimbingReviewListResponseDto getClimbingReviewList(Long climbingId) {
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        List<ClimbingMember> climbingMembers = climbingMemberService.findByClimbing(climbing);
+        List<ClimbingMemberReviewUnitDto> climbingReviews = climbingMembers.stream()
+            .filter(ClimbingMember::isHasShared)
+            .map(climbingMember -> {
+                Review review = reviewService.getReviewByMemberAndClimbing(
+                    climbingMember.getMember(), climbing);
+                return ClimbingMemberReviewUnitDto.from(climbingMember, review);
+            })
+            .collect(Collectors.toList());
+        return new ClimbingReviewListResponseDto(climbingReviews);
+
     }
 }
