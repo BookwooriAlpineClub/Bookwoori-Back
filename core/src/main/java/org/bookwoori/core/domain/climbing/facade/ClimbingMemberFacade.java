@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingMemoUpdateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingReviewAddRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingRoleDelegateRequestDto;
+import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberReviewUnitDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberUnitDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingReviewListResponseDto;
@@ -64,11 +65,10 @@ public class ClimbingMemberFacade {
     }
 
     @Transactional(readOnly = true)
-    public List<ClimbingMemberUnitDto> getClimbingMembers(Long climbingId) {
+    public ClimbingMemberResponseDto getClimbingMembers(Long climbingId) {
         Climbing climbing = climbingService.getClimbingById(climbingId);
-        List<ClimbingMember> climbingMemberList = climbingMemberService.findByClimbing(
-            climbing);
-        return climbingMemberList.stream()
+        List<ClimbingMember> climbingMemberList = climbingMemberService.findByClimbing(climbing);
+        List<ClimbingMemberUnitDto> climbingMembers = climbingMemberList.stream()
             .map(member -> {
                 Optional<Record> record = recordService.getClimbingMemberRecordOpt(member,
                     climbing.getBook());
@@ -77,8 +77,9 @@ public class ClimbingMemberFacade {
                 return ClimbingMemberUnitDto.from(member, status, currentPage);
             })
             .collect(Collectors.toList());
-    }
 
+        return new ClimbingMemberResponseDto(climbingMembers);
+    }
 
     public void updateClimbingMemberMemo(Long climbingId, ClimbingMemoUpdateRequestDto requestDto) {
         climbingService.isRunning(climbingId);
@@ -143,7 +144,6 @@ public class ClimbingMemberFacade {
     @Transactional(readOnly = true)
     public ReviewEmojiMemberListResponseDto getEmojiMemberList(Long climbingId, Long reviewId,
         Emoji emoji) {
-        Climbing climbing = climbingService.getClimbingById(climbingId);
         Review review = reviewService.getReviewById(reviewId);
         List<ReviewEmoji> reviewEmojis = reviewEmojiService.findByReviewAndEmoji(review, emoji);
         List<ReviewEmojiMemberUnitDto> reviewEmojiMembers = reviewEmojis.stream()
