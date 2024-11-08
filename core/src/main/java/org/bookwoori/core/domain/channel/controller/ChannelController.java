@@ -9,6 +9,7 @@ import org.bookwoori.core.domain.channel.dto.request.ChannelUpdateRequestDto;
 import org.bookwoori.core.domain.channel.facade.ChannelFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,13 @@ public class ChannelController {
     public ResponseEntity<?> createChannel(@Valid @RequestBody ChannelCreateRequestDto requestDto) {
         channelFacade.createChannel(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(summary = "채널 삭제", description = "채팅/음성 채널을 삭제합니다.")
+    @DeleteMapping("/{channelId}")
+    public ResponseEntity<?> deleteChannel(@PathVariable final Long channelId) {
+        channelFacade.deleteChannel(channelId);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "채널 이름 변경", description = "채팅/음성 채널의 이름을 변경합니다.")
