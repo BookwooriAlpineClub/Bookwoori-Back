@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingMemoUpdateRequestDto;
-import org.bookwoori.core.domain.climbing.dto.request.ClimbingReviewAddRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingRoleDelegateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberReviewUnitDto;
@@ -106,7 +105,6 @@ public class ClimbingMemberFacade {
         climbingMember.updateShared(true);
     }
 
-
     @Transactional(readOnly = true)
     public ClimbingReviewListResponseDto getClimbingReviewList(Long climbingId) {
         Climbing climbing = climbingService.getClimbingById(climbingId);
@@ -148,21 +146,25 @@ public class ClimbingMemberFacade {
         return new ClimbingReviewListResponseDto(climbingReviews);
     }
 
-
-    public void addClimbingReviewEmoji(Long climbingId, Long reviewId,
-        ClimbingReviewAddRequestDto requestDto) {
+    public boolean toggleClimbingReviewEmoji(Long climbingId, Long reviewId, Emoji emoji) {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
         Review review = reviewService.getReviewById(reviewId);
-        ReviewEmoji reviewEmoji = requestDto.toEntity(currentMember, climbing, review);
-        reviewEmojiService.save(reviewEmoji);
-    }
-
-    public void deleteClimbingReviewEmoji(Long climbingId, Long reviewId, Emoji emoji) {
-        Member currentMember = memberService.getCurrentMember();
-        Climbing climbing = climbingService.getClimbingById(climbingId);
-        Review review = reviewService.getReviewById(reviewId);
-        reviewEmojiService.deleteEmoji(currentMember, climbing, review, emoji);
+        Optional<ReviewEmoji> reviewEmoji = reviewEmojiService.findByMemberClimbingReviewAndEmoji(
+            currentMember, climbing, review, emoji);
+        if (reviewEmoji.isPresent()) {
+            reviewEmojiService.deleteEmoji(currentMember, climbing, review, emoji);
+            return false;
+        } else {
+            ReviewEmoji newEmoji = ReviewEmoji.builder()
+                .member(currentMember)
+                .climbing(climbing)
+                .review(review)
+                .emoji(emoji)
+                .build();
+            reviewEmojiService.save(newEmoji);
+            return true;
+        }
     }
 
     @Transactional(readOnly = true)

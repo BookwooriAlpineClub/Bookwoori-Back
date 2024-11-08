@@ -25,6 +25,16 @@ public class ReviewEmojiService {
         return reviewEmojiRepository.save(reviewEmoji);
     }
 
+    public void deleteEmoji(Member member, Climbing climbing, Review review, Emoji emoji) {
+        Optional<ReviewEmoji> reviewEmoji = reviewEmojiRepository.findByMemberAndClimbingAndReviewAndEmoji(
+            member, climbing, review, emoji);
+        if (reviewEmoji.isPresent()) {
+            reviewEmojiRepository.delete(reviewEmoji.get());
+        } else {
+            throw new CustomException(ErrorCode.REVIEW_EMOJI_NOT_FOUND);
+        }
+    }
+
     @Transactional(readOnly = true)
     public List<ReviewEmoji> findByReviewAndEmoji(Review review, Emoji emoji) {
         return reviewEmojiRepository.findByReviewAndEmoji(review, emoji);
@@ -36,14 +46,10 @@ public class ReviewEmojiService {
         return reviewEmojiRepository.findByClimbingAndReviewIn(climbing, sharedReviews);
     }
 
-    public void deleteEmoji(Member member, Climbing climbing, Review review, Emoji emoji) {
-        Optional<ReviewEmoji> reviewEmoji = reviewEmojiRepository.findByMemberAndClimbingAndReviewAndEmoji(
-            member, climbing, review, emoji);
-        if (reviewEmoji.isPresent()) {
-            reviewEmojiRepository.delete(reviewEmoji.get());
-        } else {
-            throw new CustomException(ErrorCode.REVIEW_EMOJI_NOT_FOUND);
-        }
+    @Transactional(readOnly = true)
+    public Optional<ReviewEmoji> findByMemberClimbingReviewAndEmoji(Member currentMember,
+        Climbing climbing, Review review, Emoji emoji) {
+        return reviewEmojiRepository.findByMemberAndClimbingAndReviewAndEmoji(currentMember,
+            climbing, review, emoji);
     }
-
 }
