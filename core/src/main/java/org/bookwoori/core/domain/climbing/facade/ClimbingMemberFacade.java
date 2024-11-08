@@ -159,7 +159,7 @@ public class ClimbingMemberFacade {
     }
 
     @Transactional(readOnly = true)
-    public ReviewEmojiMemberListResponseDto getEmojiMemberList(Long climbingId, Long reviewId,
+    public ReviewEmojiMemberListResponseDto getEmojiMemberList(Long reviewId,
         Emoji emoji) {
         Review review = reviewService.getReviewById(reviewId);
         List<ReviewEmoji> reviewEmojis = reviewEmojiService.findByReviewAndEmoji(review, emoji);

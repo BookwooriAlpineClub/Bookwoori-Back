@@ -125,6 +125,6 @@ public class ClimbingController {
         @PathVariable("reviewId") final Long reviewId,
         @PathVariable("emoji") final Emoji emoji) {
         return ResponseEntity.ok(
-            climbingMemberFacade.getEmojiMemberList(climbingId, reviewId, emoji));
+            climbingMemberFacade.getEmojiMemberList(reviewId, emoji));
     }
 }
