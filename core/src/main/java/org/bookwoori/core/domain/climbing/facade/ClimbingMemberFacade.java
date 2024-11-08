@@ -97,10 +97,8 @@ public class ClimbingMemberFacade {
 
     public void shareReviewWithClimbing(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
-        Climbing climbing = climbingService.getClimbingById(climbingId);
         ClimbingMember climbingMember = climbingMemberService.findByMemberAndClimbing(currentMember,
             climbingId);
-        Review review = reviewService.getReviewByMemberAndClimbing(currentMember, climbing);
         if (climbingMember.isHasShared()) {
             throw new CustomException(ErrorCode.REVIEW_ALREADY_SHARED);
         }
@@ -111,11 +109,20 @@ public class ClimbingMemberFacade {
     public ClimbingReviewListResponseDto getClimbingReviewList(Long climbingId) {
         Climbing climbing = climbingService.getClimbingById(climbingId);
         List<ClimbingMember> climbingMembers = climbingMemberService.findByClimbing(climbing);
+        // members: ClimbingMember의 memberId 목록
+        List<Long> members = climbingMembers.stream()
+            .map(climbingMember -> climbingMember.getMember().getMemberId())
+            .collect(Collectors.toList());
+        // reviews: memberId들과 book에 해당하는 Review 목록
+        List<Review> reviews = reviewService.findByMembersAndBook(members, climbing.getBook());
+        Map<Long, Review> reviewMap = reviews.stream()
+            .collect(Collectors.toMap(review -> review.getRecord().getMember().getMemberId(),
+                review -> review));
+        // climbingReviews
         List<ClimbingMemberReviewUnitDto> climbingReviews = climbingMembers.stream()
             .filter(ClimbingMember::isHasShared)
             .map(climbingMember -> {
-                Review review = reviewService.getReviewByMemberAndClimbing(
-                    climbingMember.getMember(), climbing);
+                Review review = reviewMap.get(climbingMember.getMember().getMemberId());
                 // ReviewEmojiList
                 List<ReviewEmoji> reviewEmojis = reviewEmojiService.findByReview(review);
                 Map<Emoji, Long> emojiCounts = reviewEmojis.stream()
@@ -124,13 +131,12 @@ public class ClimbingMemberFacade {
                     .map(entry -> new ReviewEmojiListDto(entry.getKey(),
                         entry.getValue().intValue()))
                     .collect(Collectors.toList());
-                // ClimbingMemberReviewUnitDto
                 return ClimbingMemberReviewUnitDto.from(climbingMember, review, reviewEmojiList);
             })
             .collect(Collectors.toList());
         return new ClimbingReviewListResponseDto(climbingReviews);
-
     }
+
 
     public void addClimbingReviewEmoji(Long climbingId, Long reviewId,
         ClimbingReviewAddRequestDto requestDto) {
