@@ -69,7 +69,8 @@ public enum ErrorCode {
 
     // Review (3700 ~ 3799)
     REVIEW_NOT_FOUND(404, 3700, "리뷰를 찾을 수 없습니다."),
-    REVIEW_ALREADY_SHARED(409, 3701, "클라이밍 채널에 이미 공유된 리뷰입니다.");
+    REVIEW_ALREADY_SHARED(409, 3701, "클라이밍 채널에 이미 공유된 리뷰입니다."),
+    REVIEW_EMOJI_NOT_FOUND(404, 3702, "리뷰 이모지를 찾을 수 없습니다.");
 
 
     private final int status;

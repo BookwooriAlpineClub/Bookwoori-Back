@@ -14,6 +14,7 @@ import org.bookwoori.core.domain.climbing.facade.ClimbingMemberFacade;
 import org.bookwoori.core.domain.reviewEmoji.entity.Emoji;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -116,6 +117,16 @@ public class ClimbingController {
         @RequestBody @Valid ClimbingReviewAddRequestDto requestDto) {
         climbingMemberFacade.addClimbingReviewEmoji(climbingId, reviewId, requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @Operation(summary = "클라이밍 채널 참여자 감상평 반응 삭제", description = "클라이밍 채널 참여자가 공유한 감상평의 반응을 삭제합니다.")
+    @DeleteMapping("/{climbingId}/reviews/{reviewId}/emojis/{emoji}")
+    public ResponseEntity<?> deleteClimbingReviewEmoji(
+        @PathVariable("climbingId") final Long climbingId,
+        @PathVariable("reviewId") final Long reviewId,
+        @PathVariable("emoji") final Emoji emoji) {
+        climbingMemberFacade.deleteClimbingReviewEmoji(climbingId, reviewId, emoji);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "클라이밍 채널 참여자 감상평 반응 리스트 조회", description = "클라이밍 채널 참여자가 공유한 감상평의 반응마다 멤버 리스트를 조회합니다.")

@@ -158,6 +158,13 @@ public class ClimbingMemberFacade {
         reviewEmojiService.save(reviewEmoji);
     }
 
+    public void deleteClimbingReviewEmoji(Long climbingId, Long reviewId, Emoji emoji) {
+        Member currentMember = memberService.getCurrentMember();
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        Review review = reviewService.getReviewById(reviewId);
+        reviewEmojiService.deleteEmoji(currentMember, climbing, review, emoji);
+    }
+
     @Transactional(readOnly = true)
     public ReviewEmojiMemberListResponseDto getEmojiMemberList(Long reviewId,
         Emoji emoji) {
