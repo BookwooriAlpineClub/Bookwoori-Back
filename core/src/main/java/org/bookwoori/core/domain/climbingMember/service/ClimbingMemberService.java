@@ -67,4 +67,9 @@ public class ClimbingMemberService {
         currentClimbingMember.updateRole(ClimbingRole.MEMBER);
         newClimbingOwner.updateRole(ClimbingRole.OWNER);
     }
+
+    @Transactional(readOnly = true)
+    public List<Long> findSharedMemberIdsByClimbing(Climbing climbing) {
+        return climbingMemberRepository.findSharedMemberIdsByClimbing(climbing);
+    }
 }

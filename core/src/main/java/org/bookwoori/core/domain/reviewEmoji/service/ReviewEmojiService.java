@@ -2,6 +2,7 @@ package org.bookwoori.core.domain.reviewEmoji.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.bookwoori.core.domain.reviewEmoji.entity.Emoji;
 import org.bookwoori.core.domain.reviewEmoji.entity.ReviewEmoji;
@@ -21,12 +22,13 @@ public class ReviewEmojiService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewEmoji> findByReview(Review review) {
-        return reviewEmojiRepository.findByReview(review);
+    public List<ReviewEmoji> findByReviewAndEmoji(Review review, Emoji emoji) {
+        return reviewEmojiRepository.findByReviewAndEmoji(review, emoji);
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewEmoji> findByReviewAndEmoji(Review review, Emoji emoji) {
-        return reviewEmojiRepository.findByReviewAndEmoji(review, emoji);
+    public List<ReviewEmoji> findByClimbingAndReviews(Climbing climbing,
+        List<Review> sharedReviews) {
+        return reviewEmojiRepository.findByClimbingAndReviewIn(climbing, sharedReviews);
     }
 }

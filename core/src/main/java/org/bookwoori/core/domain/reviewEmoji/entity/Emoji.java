@@ -7,7 +7,7 @@ import org.bookwoori.core.global.exception.ErrorCode;
 public enum Emoji {
     GOOD,
     HEART,
-    SMAIL,
+    SMILE,
     CRY,
     THINK;
 

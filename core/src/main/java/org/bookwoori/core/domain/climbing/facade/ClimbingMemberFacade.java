@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.climbing.facade;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -105,32 +106,42 @@ public class ClimbingMemberFacade {
         climbingMember.updateShared(true);
     }
 
+
     @Transactional(readOnly = true)
     public ClimbingReviewListResponseDto getClimbingReviewList(Long climbingId) {
         Climbing climbing = climbingService.getClimbingById(climbingId);
-        List<ClimbingMember> climbingMembers = climbingMemberService.findByClimbing(climbing);
-        // members: ClimbingMember의 memberId 목록
-        List<Long> members = climbingMembers.stream()
-            .map(climbingMember -> climbingMember.getMember().getMemberId())
-            .collect(Collectors.toList());
-        // reviews: memberId들과 book에 해당하는 Review 목록
-        List<Review> reviews = reviewService.findByMembersAndBook(members, climbing.getBook());
-        Map<Long, Review> reviewMap = reviews.stream()
-            .collect(Collectors.toMap(review -> review.getRecord().getMember().getMemberId(),
-                review -> review));
-        // climbingReviews
-        List<ClimbingMemberReviewUnitDto> climbingReviews = climbingMembers.stream()
-            .filter(ClimbingMember::isHasShared)
-            .map(climbingMember -> {
-                Review review = reviewMap.get(climbingMember.getMember().getMemberId());
-                // ReviewEmojiList
-                List<ReviewEmoji> reviewEmojis = reviewEmojiService.findByReview(review);
-                Map<Emoji, Long> emojiCounts = reviewEmojis.stream()
-                    .collect(Collectors.groupingBy(ReviewEmoji::getEmoji, Collectors.counting()));
+        // sharedReview, sharedReviewEmojis
+        List<Long> sharedMemberIds = climbingMemberService.findSharedMemberIdsByClimbing(climbing);
+        List<Review> sharedReviews = reviewService.findByMembersAndBook(sharedMemberIds,
+            climbing.getBook());
+        Map<Long, Review> reviewMap = sharedReviews.stream()
+            .collect(Collectors.toMap(
+                review -> review.getRecord().getMember().getMemberId(),
+                review -> review
+            ));
+        // sharedReviewEmojis
+        List<ReviewEmoji> sharedReviewEmojis = reviewEmojiService.findByClimbingAndReviews(climbing,
+            sharedReviews);
+        Map<Long, Map<Emoji, Long>> reviewEmojiCounts = sharedReviewEmojis.stream()
+            .collect(Collectors.groupingBy(
+                reviewEmoji -> reviewEmoji.getReview().getReviewId(),
+                Collectors.groupingBy(
+                    ReviewEmoji::getEmoji,
+                    Collectors.counting()
+                )
+            ));
+        List<ClimbingMemberReviewUnitDto> climbingReviews = sharedMemberIds.stream()
+            .map(memberId -> {
+                Review review = reviewMap.get(memberId);
+                Member member = memberService.getMemberById(memberId);
+                Map<Emoji, Long> emojiCounts = reviewEmojiCounts.getOrDefault(review.getReviewId(),
+                    Collections.emptyMap());
                 List<ReviewEmojiListDto> reviewEmojiList = emojiCounts.entrySet().stream()
                     .map(entry -> new ReviewEmojiListDto(entry.getKey(),
                         entry.getValue().intValue()))
                     .collect(Collectors.toList());
+                ClimbingMember climbingMember = climbingMemberService.findByMemberAndClimbing(
+                    member, climbingId);
                 return ClimbingMemberReviewUnitDto.from(climbingMember, review, reviewEmojiList);
             })
             .collect(Collectors.toList());
