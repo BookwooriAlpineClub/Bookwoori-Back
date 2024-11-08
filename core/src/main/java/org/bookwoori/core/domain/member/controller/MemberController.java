@@ -24,7 +24,7 @@ public class MemberController {
     private final MemberFacade memberFacade;
 
     @Operation(summary = "프로필 수정", description = "닉네임, 프로필 이미지를 수정합니다.")
-    @PatchMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateMember(
         @ModelAttribute @Valid UpdateMemberRequestDto requestDto) {
         memberFacade.updateMember(requestDto);
