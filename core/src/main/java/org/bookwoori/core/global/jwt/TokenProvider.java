@@ -1,12 +1,22 @@
 package org.bookwoori.core.global.jwt;
 
-import com.nimbusds.oauth2.sdk.token.Tokens;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtBuilder;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
-import org.bookwoori.core.domain.member.entity.Member;
-import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.exception.TokenException;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,17 +26,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.HashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
@@ -49,26 +48,28 @@ public class TokenProvider {
 
     public String generateAccessToken(Authentication authentication) {
         List<String> roles = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
         Long kakaoId = extractKakaoId(authentication);
         return generateToken(kakaoId, roles, ACCESS_TOKEN_EXPIRE_TIME, accessKey, "access");
     }
 
     public String generateRefreshToken(Long kakaoId) {
-        return generateToken(kakaoId, Collections.emptyList(), REFRESH_TOKEN_EXPIRE_TIME, refreshKey, "refresh");
+        return generateToken(kakaoId, Collections.emptyList(), REFRESH_TOKEN_EXPIRE_TIME,
+            refreshKey, "refresh");
     }
 
-    private String generateToken(Long kakaoId, List<String> roles, long tokenExpireTime, SecretKey key, String tokenType) {
+    private String generateToken(Long kakaoId, List<String> roles, long tokenExpireTime,
+        SecretKey key, String tokenType) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + tokenExpireTime);
 
         JwtBuilder builder = Jwts.builder()
-                .setSubject(String.valueOf(kakaoId))
-                .claim("type", tokenType)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(key, SignatureAlgorithm.HS512);
+            .setSubject(String.valueOf(kakaoId))
+            .claim("type", tokenType)
+            .setIssuedAt(now)
+            .setExpiration(expiryDate)
+            .signWith(key, SignatureAlgorithm.HS512);
 
         if (!roles.isEmpty() && "access".equals(tokenType)) {
             builder.claim("role", String.join(",", roles));
@@ -83,7 +84,8 @@ public class TokenProvider {
             Long kakaoId = Long.valueOf(claims.getSubject());
             // 새 accessToken 및 refreshToken 생성
             List<String> roles = getRolesFromClaims(claims);
-            String newAccessToken = generateToken(kakaoId, roles, ACCESS_TOKEN_EXPIRE_TIME, accessKey, "access");
+            String newAccessToken = generateToken(kakaoId, roles, ACCESS_TOKEN_EXPIRE_TIME,
+                accessKey, "access");
             String newRefreshToken = generateRefreshToken(kakaoId);
             // 결과를 Map에 담아 반환
             Map<String, String> tokens = new HashMap<>();
@@ -106,7 +108,11 @@ public class TokenProvider {
             Claims claims = parseClaims(token, isRefreshToken ? refreshKey : accessKey);
             return claims.getExpiration().after(new Date());
         } catch (ExpiredJwtException e) {
-            throw new TokenException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+            if (isRefreshToken) {
+                throw new TokenException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+            } else {
+                throw new TokenException(ErrorCode.EXPIRED_ACCESS_TOKEN);
+            }
         } catch (JwtException e) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
         }
@@ -125,17 +131,17 @@ public class TokenProvider {
 
     private List<SimpleGrantedAuthority> getAuthorities(Claims claims) {
         return getRolesFromClaims(claims).stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
     }
 
     private Claims parseClaims(String token, SecretKey key) {
         try {
             return Jwts.parser()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         } catch (JwtException e) {
