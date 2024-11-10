@@ -13,8 +13,6 @@ public interface ReviewEmojiRepository extends JpaRepository<ReviewEmoji, Long> 
 
     List<ReviewEmoji> findByClimbingAndReviewIn(Climbing climbing, List<Review> sharedReviews);
 
-    List<ReviewEmoji> findByReviewAndEmoji(Review review, Emoji emoji);
-
     Optional<ReviewEmoji> findByMemberAndClimbingAndReviewAndEmoji(Member member, Climbing climbing,
         Review review, Emoji emoji);
 
