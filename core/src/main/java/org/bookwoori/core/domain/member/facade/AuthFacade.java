@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
+@Transactional
 public class AuthFacade {
 
     private final MemberService memberService;
@@ -15,7 +16,6 @@ public class AuthFacade {
     public void deleteMember() {
         Member currentMember = memberService.getCurrentMember();
         currentMember.deleteMember();
-        memberService.saveMember(currentMember);
     }
 
     @Transactional(readOnly = true)
