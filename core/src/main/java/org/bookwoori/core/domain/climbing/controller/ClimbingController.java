@@ -122,7 +122,7 @@ public class ClimbingController {
         }
     }
 
-    @Operation(summary = "클라이밍 채널 참여자 감상평 반응 리스트 조회", description = "클라이밍 채널 감상평 반응들의 멤버 리스트를 조회합니다.")
+    @Operation(summary = "클라이밍 채널 참여자 감상평 반응 리스트 조회", description = "클라이밍 채널 감상평 반응들과 반응을 남긴 멤버 리스트를 조회합니다.")
     @GetMapping("/{climbingId}/reviews/{reviewId}/emojis")
     public ResponseEntity<?> getEmojiMemberList(
         @PathVariable("climbingId") final Long climbingId,

@@ -137,7 +137,6 @@ public class ClimbingMemberFacade {
         List<ClimbingMemberReviewUnitDto> climbingReviews = sharedMemberIds.stream()
             .map(memberId -> {
                 Review review = reviewMap.get(memberId);
-                Member member = memberService.getMemberById(memberId);
                 Map<EmojiType, Long> emojiCounts = reviewEmojiCounts.getOrDefault(
                     review.getReviewId(),
                     Collections.emptyMap());
@@ -145,8 +144,8 @@ public class ClimbingMemberFacade {
                     .map(entry -> new ReviewEmojiListCountDto(entry.getKey(),
                         entry.getValue().intValue()))
                     .collect(Collectors.toList());
-                ClimbingMember climbingMember = climbingMemberService.findByMemberAndClimbing(
-                    member, climbingId);
+                ClimbingMember climbingMember = climbingMemberService.findClimbingMemberWithMember(
+                    climbingId, memberId);
                 return ClimbingMemberReviewUnitDto.from(climbingMember, review, reviewEmojiList);
             })
             .collect(Collectors.toList());

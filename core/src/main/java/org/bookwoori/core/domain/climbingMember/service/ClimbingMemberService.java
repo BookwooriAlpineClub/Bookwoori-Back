@@ -72,4 +72,9 @@ public class ClimbingMemberService {
     public List<Long> findSharedMemberIdsByClimbing(Climbing climbing) {
         return climbingMemberRepository.findSharedMemberIdsByClimbing(climbing);
     }
+
+    @Transactional(readOnly = true)
+    public ClimbingMember findClimbingMemberWithMember(Long climbingId, Long memberId) {
+        return climbingMemberRepository.findClimbingMemberWithMember(climbingId, memberId);
+    }
 }
