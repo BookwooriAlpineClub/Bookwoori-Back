@@ -12,10 +12,10 @@ public record ClimbingMemberReviewUnitDto(
     int star,
     Long reviewId,
     String content,
-    List<ReviewEmojiListDto> reviewEmojiList) {
+    List<ReviewEmojiListCountDto> reviewEmojiList) {
 
     public static ClimbingMemberReviewUnitDto from(ClimbingMember member, Review review,
-        List<ReviewEmojiListDto> reviewEmojiList) {
+        List<ReviewEmojiListCountDto> reviewEmojiList) {
         return ClimbingMemberReviewUnitDto.builder()
             .memberId(member.getMember().getMemberId())
             .nickname(member.getMember().getNickname())

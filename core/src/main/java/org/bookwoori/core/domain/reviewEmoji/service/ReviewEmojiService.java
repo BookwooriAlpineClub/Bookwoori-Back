@@ -52,4 +52,9 @@ public class ReviewEmojiService {
         return reviewEmojiRepository.findByMemberAndClimbingAndReviewAndEmoji(currentMember,
             climbing, review, emoji);
     }
+
+    @Transactional(readOnly = true)
+    public List<ReviewEmoji> findByReview(Review review) {
+        return reviewEmojiRepository.findByReview(review);
+    }
 }

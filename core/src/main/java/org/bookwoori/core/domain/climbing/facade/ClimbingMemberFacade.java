@@ -1,6 +1,7 @@
 package org.bookwoori.core.domain.climbing.facade;
 
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberResponseDto
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberReviewUnitDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberUnitDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingReviewListResponseDto;
+import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiListCountDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiListDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiMemberListResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiMemberUnitDto;
@@ -134,8 +136,8 @@ public class ClimbingMemberFacade {
                 Member member = memberService.getMemberById(memberId);
                 Map<Emoji, Long> emojiCounts = reviewEmojiCounts.getOrDefault(review.getReviewId(),
                     Collections.emptyMap());
-                List<ReviewEmojiListDto> reviewEmojiList = emojiCounts.entrySet().stream()
-                    .map(entry -> new ReviewEmojiListDto(entry.getKey(),
+                List<ReviewEmojiListCountDto> reviewEmojiList = emojiCounts.entrySet().stream()
+                    .map(entry -> new ReviewEmojiListCountDto(entry.getKey(),
                         entry.getValue().intValue()))
                     .collect(Collectors.toList());
                 ClimbingMember climbingMember = climbingMemberService.findByMemberAndClimbing(
@@ -168,13 +170,26 @@ public class ClimbingMemberFacade {
     }
 
     @Transactional(readOnly = true)
-    public ReviewEmojiMemberListResponseDto getEmojiMemberList(Long reviewId,
-        Emoji emoji) {
+    public ReviewEmojiMemberListResponseDto getEmojiMemberList(Long reviewId) {
         Review review = reviewService.getReviewById(reviewId);
-        List<ReviewEmoji> reviewEmojis = reviewEmojiService.findByReviewAndEmoji(review, emoji);
-        List<ReviewEmojiMemberUnitDto> reviewEmojiMembers = reviewEmojis.stream()
-            .map(reviewEmoji -> ReviewEmojiMemberUnitDto.from(reviewEmoji.getMember()))
+        // emojiMemberMap: emoji별로 그룹화
+        EnumMap<Emoji, List<ReviewEmojiMemberUnitDto>> emojiMemberMap = reviewEmojiService.findByReview(
+                review)
+            .stream()
+            .collect(Collectors.groupingBy(
+                ReviewEmoji::getEmoji,
+                () -> new EnumMap<>(Emoji.class),
+                Collectors.mapping(
+                    reviewEmoji -> ReviewEmojiMemberUnitDto.from(reviewEmoji.getMember()),
+                    Collectors.toList()
+                )
+            ));
+        // emoji별로 그룹화된 항목을 ReviewEmojiListDto로 변환
+        List<ReviewEmojiListDto> emojiLists = emojiMemberMap.entrySet().stream()
+            .map(entry -> new ReviewEmojiListDto(entry.getKey(), entry.getValue()))
             .collect(Collectors.toList());
-        return new ReviewEmojiMemberListResponseDto(reviewEmojiMembers);
+        return new ReviewEmojiMemberListResponseDto(emojiLists);
     }
+
+
 }
