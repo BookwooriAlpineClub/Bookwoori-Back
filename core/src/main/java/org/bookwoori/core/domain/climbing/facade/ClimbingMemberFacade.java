@@ -110,18 +110,21 @@ public class ClimbingMemberFacade {
     @Transactional(readOnly = true)
     public ClimbingReviewListResponseDto getClimbingReviewList(Long climbingId) {
         Climbing climbing = climbingService.getClimbingById(climbingId);
-        // sharedReview, sharedReviewEmojis
+        // sharedReviews: hasShared true인 ClimbingMember의 Review 리스트
+        // sharedReviewEmojis: sharedReviews의 ReviewEmoji 리스트
         List<Long> sharedMemberIds = climbingMemberService.findSharedMemberIdsByClimbing(climbing);
         List<Review> sharedReviews = reviewService.findByMembersAndBook(sharedMemberIds,
             climbing.getBook());
+        // reviewMap: memberId(key), Review 객체(value)
         Map<Long, Review> reviewMap = sharedReviews.stream()
             .collect(Collectors.toMap(
                 review -> review.getRecord().getMember().getMemberId(),
                 review -> review
             ));
-        // sharedReviewEmojis
+        // sharedReviewEmoji
         List<ReviewEmoji> sharedReviewEmojis = reviewEmojiService.findByClimbingAndReviews(climbing,
             sharedReviews);
+        // reviewEmojiCounts: Emoij와 reviewId 기준으로 그룹화
         Map<Long, Map<Emoji, Long>> reviewEmojiCounts = sharedReviewEmojis.stream()
             .collect(Collectors.groupingBy(
                 reviewEmoji -> reviewEmoji.getReview().getReviewId(),
@@ -130,6 +133,7 @@ public class ClimbingMemberFacade {
                     Collectors.counting()
                 )
             ));
+        // climbingReviews: sharedMemberIds를 순회하면서 ClimbingMemberReviewUnitDto 생성
         List<ClimbingMemberReviewUnitDto> climbingReviews = sharedMemberIds.stream()
             .map(memberId -> {
                 Review review = reviewMap.get(memberId);
