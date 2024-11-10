@@ -51,7 +51,7 @@ public class ClimbingFacade {
                 .isAfter(today)) {
                 climbing.updateStatus(ClimbingStatus.RUNNING);
             } else if (climbing.getEndDate().isBefore(today)) {
-                List<ClimbingMember> climbingMemberList = climbingMemberService.findByClimbing(
+                List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
                     climbing);
                 boolean allFinished = climbingMemberList.stream()
                     .allMatch(

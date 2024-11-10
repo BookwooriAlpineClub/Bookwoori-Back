@@ -23,7 +23,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<Review> findByMembersAndBook(List<Long> members, Book book) {
+    public List<Review> getReviewsByMembersAndBook(List<Long> members, Book book) {
         return reviewRepository.findByMemberIdsAndBook(members, book);
     }
 }

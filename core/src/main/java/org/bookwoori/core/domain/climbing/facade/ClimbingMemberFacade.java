@@ -69,7 +69,8 @@ public class ClimbingMemberFacade {
     @Transactional(readOnly = true)
     public ClimbingMemberResponseDto getClimbingMembers(Long climbingId) {
         Climbing climbing = climbingService.getClimbingById(climbingId);
-        List<ClimbingMember> climbingMemberList = climbingMemberService.findByClimbing(climbing);
+        List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
+            climbing);
         List<ClimbingMemberUnitDto> climbingMembers = climbingMemberList.stream()
             .map(member -> {
                 Optional<Record> record = recordService.getClimbingMemberRecordOpt(member,
@@ -86,7 +87,7 @@ public class ClimbingMemberFacade {
     public void updateClimbingMemberMemo(Long climbingId, ClimbingMemoUpdateRequestDto requestDto) {
         climbingService.isRunning(climbingId);
         Member currentMember = memberService.getCurrentMember();
-        ClimbingMember climbingMember = climbingMemberService.findByMemberAndClimbing(currentMember,
+        ClimbingMember climbingMember = climbingMemberService.getMemberInClimbing(currentMember,
             climbingId);
         climbingMember.updateMemo(requestDto.memo());
     }
@@ -99,7 +100,7 @@ public class ClimbingMemberFacade {
 
     public void shareReviewToClimbing(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
-        ClimbingMember climbingMember = climbingMemberService.findByMemberAndClimbing(currentMember,
+        ClimbingMember climbingMember = climbingMemberService.getMemberInClimbing(currentMember,
             climbingId);
         if (climbingMember.isHasShared()) {
             throw new CustomException(ErrorCode.REVIEW_ALREADY_SHARED);
@@ -112,8 +113,8 @@ public class ClimbingMemberFacade {
         Climbing climbing = climbingService.getClimbingById(climbingId);
         // sharedReviews: hasShared true인 ClimbingMember의 Review 리스트
         // sharedReviewEmojis: sharedReviews의 ReviewEmoji 리스트
-        List<Long> sharedMemberIds = climbingMemberService.findSharedMemberIdsByClimbing(climbing);
-        List<Review> sharedReviews = reviewService.findByMembersAndBook(sharedMemberIds,
+        List<Long> sharedMemberIds = climbingMemberService.getSharedMemberIds(climbing);
+        List<Review> sharedReviews = reviewService.getReviewsByMembersAndBook(sharedMemberIds,
             climbing.getBook());
         // reviewMap: memberId(key), Review 객체(value)
         Map<Long, Review> reviewMap = sharedReviews.stream()
@@ -122,7 +123,8 @@ public class ClimbingMemberFacade {
                 review -> review
             ));
         // sharedReviewEmoji
-        List<ReviewEmoji> sharedReviewEmojis = reviewEmojiService.findByClimbingAndReviews(climbing,
+        List<ReviewEmoji> sharedReviewEmojis = reviewEmojiService.getEmojisByClimbingAndReviews(
+            climbing,
             sharedReviews);
         // reviewEmojiCounts: Emoij와 reviewId 기준으로 그룹화
         Map<Long, Map<EmojiType, Long>> reviewEmojiCounts = sharedReviewEmojis.stream()
@@ -144,7 +146,7 @@ public class ClimbingMemberFacade {
                     .map(entry -> new ReviewEmojiListCountDto(entry.getKey(),
                         entry.getValue().intValue()))
                     .collect(Collectors.toList());
-                ClimbingMember climbingMember = climbingMemberService.findClimbingMemberWithMember(
+                ClimbingMember climbingMember = climbingMemberService.getClimbingMemberWithMember(
                     climbingId, memberId);
                 return ClimbingMemberReviewUnitDto.from(climbingMember, review, reviewEmojiList);
             })
@@ -156,7 +158,7 @@ public class ClimbingMemberFacade {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
         Review review = reviewService.getReviewById(reviewId);
-        Optional<ReviewEmoji> reviewEmoji = reviewEmojiService.findByMemberClimbingReviewAndEmoji(
+        Optional<ReviewEmoji> reviewEmoji = reviewEmojiService.getEmojisOpt(
             currentMember, climbing, review, emoji);
         if (reviewEmoji.isPresent()) {
             reviewEmojiService.deleteEmoji(currentMember, climbing, review, emoji);
@@ -177,7 +179,7 @@ public class ClimbingMemberFacade {
     public ReviewEmojiMemberListResponseDto getEmojiMemberList(Long reviewId) {
         Review review = reviewService.getReviewById(reviewId);
         // emojiMemberMap: emoji별로 그룹화
-        EnumMap<EmojiType, List<ReviewEmojiMemberUnitDto>> emojiMemberMap = reviewEmojiService.findByReview(
+        EnumMap<EmojiType, List<ReviewEmojiMemberUnitDto>> emojiMemberMap = reviewEmojiService.getEmojisByReview(
                 review)
             .stream()
             .collect(Collectors.groupingBy(
