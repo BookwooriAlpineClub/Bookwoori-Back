@@ -95,7 +95,7 @@ public class ClimbingMemberFacade {
         climbingMemberService.delegateClimbingRole(climbingId, currentMember, newOwner);
     }
 
-    public void shareReviewWithClimbing(Long climbingId) {
+    public void shareReviewToClimbing(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
         ClimbingMember climbingMember = climbingMemberService.findByMemberAndClimbing(currentMember,
             climbingId);
@@ -146,7 +146,7 @@ public class ClimbingMemberFacade {
         return new ClimbingReviewListResponseDto(climbingReviews);
     }
 
-    public boolean toggleClimbingReviewEmoji(Long climbingId, Long reviewId, Emoji emoji) {
+    public boolean toggleReviewReaction(Long climbingId, Long reviewId, Emoji emoji) {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
         Review review = reviewService.getReviewById(reviewId);

@@ -94,9 +94,9 @@ public class ClimbingController {
 
     @Operation(summary = "클라이밍 채널 참여자 감상평 공유", description = "클라이밍 채널 참여자가 감상평을 공유합니다")
     @PatchMapping("/{climbingId}/reviews")
-    public ResponseEntity<?> shareReviewWithClimbing(
+    public ResponseEntity<?> shareReviewToClimbing(
         @PathVariable("climbingId") final Long climbingId) {
-        climbingMemberFacade.shareReviewWithClimbing(climbingId);
+        climbingMemberFacade.shareReviewToClimbing(climbingId);
         return ResponseEntity.ok().build();
     }
 
@@ -109,11 +109,11 @@ public class ClimbingController {
 
     @Operation(summary = "클라이밍 채널 참여자 감상평 반응 추가 <-> 삭제", description = "클라이밍 채널 참여자가 공유한 감상평에 반응을 추가 <-> 삭제합니다.")
     @PutMapping("/{climbingId}/reviews/{reviewId}/emojis/{emoji}")
-    public ResponseEntity<?> toggleClimbingReviewEmoji(
+    public ResponseEntity<?> toggleReviewReaction(
         @PathVariable("climbingId") final Long climbingId,
         @PathVariable("reviewId") final Long reviewId,
         @PathVariable("emoji") final Emoji emoji) {
-        boolean isCreated = climbingMemberFacade.toggleClimbingReviewEmoji(climbingId, reviewId,
+        boolean isCreated = climbingMemberFacade.toggleReviewReaction(climbingId, reviewId,
             emoji);
         if (isCreated) {
             return ResponseEntity.ok().build();
