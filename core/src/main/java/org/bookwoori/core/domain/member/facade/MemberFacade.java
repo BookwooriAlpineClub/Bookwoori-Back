@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MeFacade {
+public class MemberFacade {
 
     private final MemberService memberService;
     private final S3Util s3Util;

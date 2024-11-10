@@ -10,6 +10,7 @@ import org.bookwoori.core.domain.climbing.dto.request.ClimbingMemoUpdateRequestD
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingRoleDelegateRequestDto;
 import org.bookwoori.core.domain.climbing.facade.ClimbingFacade;
 import org.bookwoori.core.domain.climbing.facade.ClimbingMemberFacade;
+import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,10 +49,10 @@ public class ClimbingController {
     }
 
     @Operation(summary = "클라이밍 채널 참여 <-> 참여 취소", description = "클라이밍 채널에 참여 <-> 참여를 취소합니다.")
-    @PutMapping("/{climbingId}")
+    @PutMapping("/{climbingId}/members")
     public ResponseEntity<?> toggleParticipation(
         @PathVariable("climbingId") final Long climbingId) {
-        boolean isJoined = climbingFacade.toggleParticipation(climbingId);
+        boolean isJoined = climbingMemberFacade.toggleParticipation(climbingId);
         if (isJoined) {
             return ResponseEntity.ok().build();
         } else {
@@ -89,5 +90,44 @@ public class ClimbingController {
         @RequestBody @Valid ClimbingMemoUpdateRequestDto requestDto) {
         climbingMemberFacade.updateClimbingMemberMemo(climbingId, requestDto);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "클라이밍 채널 참여자 감상평 공유", description = "클라이밍 채널 참여자가 감상평을 공유합니다")
+    @PatchMapping("/{climbingId}/reviews")
+    public ResponseEntity<?> shareReviewToClimbing(
+        @PathVariable("climbingId") final Long climbingId) {
+        climbingMemberFacade.shareReviewToClimbing(climbingId);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "클라이밍 채널 참여자 감상평 리스트 조회", description = "클라이밍 채널 참여자의 감상평 리스트를 조회합니다.")
+    @GetMapping("/{climbingId}/reviews")
+    public ResponseEntity<?> getClimbingReviewList(
+        @PathVariable("climbingId") final Long climbingId) {
+        return ResponseEntity.ok(climbingMemberFacade.getClimbingReviewList(climbingId));
+    }
+
+    @Operation(summary = "클라이밍 채널 참여자 감상평 반응 추가 <-> 삭제", description = "클라이밍 채널 참여자가 공유한 감상평에 반응을 추가 <-> 삭제합니다.")
+    @PutMapping("/{climbingId}/reviews/{reviewId}/emojis/{emoji}")
+    public ResponseEntity<?> toggleReviewReaction(
+        @PathVariable("climbingId") final Long climbingId,
+        @PathVariable("reviewId") final Long reviewId,
+        @PathVariable("emoji") final EmojiType emoji) {
+        boolean isCreated = climbingMemberFacade.toggleReviewReaction(climbingId, reviewId,
+            emoji);
+        if (isCreated) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @Operation(summary = "클라이밍 채널 참여자 감상평 반응 리스트 조회", description = "클라이밍 채널 감상평 반응들과 반응을 남긴 멤버 리스트를 조회합니다.")
+    @GetMapping("/{climbingId}/reviews/{reviewId}/emojis")
+    public ResponseEntity<?> getEmojiMemberList(
+        @PathVariable("climbingId") final Long climbingId,
+        @PathVariable("reviewId") final Long reviewId) {
+        return ResponseEntity.ok(
+            climbingMemberFacade.getEmojiMemberList(reviewId));
     }
 }

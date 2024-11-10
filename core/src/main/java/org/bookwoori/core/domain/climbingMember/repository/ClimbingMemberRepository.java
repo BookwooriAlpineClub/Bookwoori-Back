@@ -21,4 +21,12 @@ public interface ClimbingMemberRepository extends JpaRepository<ClimbingMember, 
     List<ClimbingMember> findByClimbingWithMember(@Param("climbing") Climbing climbing);
 
     Optional<ClimbingMember> findByMemberAndClimbing_ClimbingId(Member member, Long climbingId);
+
+    @Query("SELECT cm.member.memberId FROM ClimbingMember cm WHERE cm.climbing = :climbing AND cm.hasShared = true")
+    List<Long> findSharedMemberIdsByClimbing(@Param("climbing") Climbing climbing);
+
+    @Query("SELECT cm FROM ClimbingMember cm JOIN FETCH cm.member m " +
+        "WHERE cm.climbing.climbingId = :climbingId AND m.memberId = :memberId")
+    ClimbingMember findClimbingMemberWithMember(@Param("climbingId") Long climbingId,
+        @Param("memberId") Long memberId);
 }

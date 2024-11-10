@@ -1,4 +1,4 @@
-package org.bookwoori.core.domain.climbingMember.entity;
+package org.bookwoori.core.domain.reviewEmoji.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,59 +19,39 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.review.entity.Review;
 
 @Entity
-@Table(name = "climbing_member")
+@Table(name = "review_emoji")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class ClimbingMember {
+public class ReviewEmoji {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "climbing_member_id", updatable = false)
-    private Long climbingMemberId;
+    @Column(name = "review_emoji_id", updatable = false)
+    private Long reviewEmojiId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "climbing_id", updatable = false)
+    @JoinColumn(name = "review_id")
+    @NotNull
+    private Review review;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "climbing_id", nullable = false)
     @NotNull
     private Climbing climbing;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", updatable = false)
+    @JoinColumn(name = "member_id", nullable = false)
     @NotNull
     private Member member;
 
-    @Column(name = "has_shared")
+    @Column(name = "emoji")
     @NotNull
-    private boolean hasShared;
-
-    @Column(name = "memo")
-    private String memo;
-
-    @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    @NotNull
-    private ClimbingRole role;
+    private EmojiType emoji;
 
-    public ClimbingMember(Member member, Climbing climbing, ClimbingRole role) {
-        this.member = member;
-        this.climbing = climbing;
-        this.role = role;
-        this.hasShared = false;
-        this.memo = null;
-    }
-
-    public void updateMemo(String memo) {
-        this.memo = memo;
-    }
-
-    public void updateRole(ClimbingRole climbingRole) {
-        this.role = climbingRole;
-    }
-
-    public void updateShared(boolean hasShared) {
-        this.hasShared = hasShared;
-    }
 }

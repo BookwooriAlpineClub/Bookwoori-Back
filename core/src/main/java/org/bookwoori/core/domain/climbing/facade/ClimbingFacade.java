@@ -51,11 +51,12 @@ public class ClimbingFacade {
                 .isAfter(today)) {
                 climbing.updateStatus(ClimbingStatus.RUNNING);
             } else if (climbing.getEndDate().isBefore(today)) {
-                List<ClimbingMember> climbingMemberList = climbingMemberService.findMembersByClimbing(
+                List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
                     climbing);
                 boolean allFinished = climbingMemberList.stream()
                     .allMatch(
-                        member -> recordService.getClimbingMemberRecord(member, climbing.getBook())
+                        member -> recordService.getClimbingMemberRecordOpt(member,
+                                climbing.getBook())
                             .map(record -> record.getStatus() == ReadingStatus.FINISHED)
                             .orElse(false));
                 if (allFinished) {
@@ -87,22 +88,6 @@ public class ClimbingFacade {
             throw new CustomException(ErrorCode.ACCESS_DENIED);  // OWNER만 편집 가능
         }
         climbing.updateClimbing(requestDto.name(), requestDto.description(), requestDto.endDate());
-    }
-
-    public boolean toggleParticipation(Long climbingId) {
-        Member currentMember = memberService.getCurrentMember();
-        Climbing climbing = climbingService.getClimbingById(climbingId);
-        boolean isJoined = climbingMemberService.isJoined(currentMember, climbing);
-        if (isJoined) {
-            if (climbingMemberService.isOwner(currentMember, climbing)) {
-                throw new CustomException(ErrorCode.OWNER_CANNOT_LEAVE);
-            }
-            climbingMemberService.removeMember(currentMember, climbing);
-            return false;
-        } else {
-            climbingMemberService.saveMember(currentMember, climbing, ClimbingRole.MEMBER);
-            return true;
-        }
     }
 
     @Transactional(readOnly = true)
