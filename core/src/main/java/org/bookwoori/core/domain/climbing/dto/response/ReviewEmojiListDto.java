@@ -1,10 +1,10 @@
 package org.bookwoori.core.domain.climbing.dto.response;
 
 import java.util.List;
-import org.bookwoori.core.domain.reviewEmoji.entity.Emoji;
+import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
 
 public record ReviewEmojiListDto(
-    Emoji emoji,
+    EmojiType emoji,
     List<ReviewEmojiMemberUnitDto> reviewEmojiMemberList
 ) {
 

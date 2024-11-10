@@ -29,7 +29,7 @@ import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.record.service.RecordService;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.bookwoori.core.domain.review.service.ReviewService;
-import org.bookwoori.core.domain.reviewEmoji.entity.Emoji;
+import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
 import org.bookwoori.core.domain.reviewEmoji.entity.ReviewEmoji;
 import org.bookwoori.core.domain.reviewEmoji.service.ReviewEmojiService;
 import org.bookwoori.core.global.exception.CustomException;
@@ -125,7 +125,7 @@ public class ClimbingMemberFacade {
         List<ReviewEmoji> sharedReviewEmojis = reviewEmojiService.findByClimbingAndReviews(climbing,
             sharedReviews);
         // reviewEmojiCounts: Emoij와 reviewId 기준으로 그룹화
-        Map<Long, Map<Emoji, Long>> reviewEmojiCounts = sharedReviewEmojis.stream()
+        Map<Long, Map<EmojiType, Long>> reviewEmojiCounts = sharedReviewEmojis.stream()
             .collect(Collectors.groupingBy(
                 reviewEmoji -> reviewEmoji.getReview().getReviewId(),
                 Collectors.groupingBy(
@@ -138,7 +138,8 @@ public class ClimbingMemberFacade {
             .map(memberId -> {
                 Review review = reviewMap.get(memberId);
                 Member member = memberService.getMemberById(memberId);
-                Map<Emoji, Long> emojiCounts = reviewEmojiCounts.getOrDefault(review.getReviewId(),
+                Map<EmojiType, Long> emojiCounts = reviewEmojiCounts.getOrDefault(
+                    review.getReviewId(),
                     Collections.emptyMap());
                 List<ReviewEmojiListCountDto> reviewEmojiList = emojiCounts.entrySet().stream()
                     .map(entry -> new ReviewEmojiListCountDto(entry.getKey(),
@@ -152,7 +153,7 @@ public class ClimbingMemberFacade {
         return new ClimbingReviewListResponseDto(climbingReviews);
     }
 
-    public boolean toggleReviewReaction(Long climbingId, Long reviewId, Emoji emoji) {
+    public boolean toggleReviewReaction(Long climbingId, Long reviewId, EmojiType emoji) {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
         Review review = reviewService.getReviewById(reviewId);
@@ -177,12 +178,12 @@ public class ClimbingMemberFacade {
     public ReviewEmojiMemberListResponseDto getEmojiMemberList(Long reviewId) {
         Review review = reviewService.getReviewById(reviewId);
         // emojiMemberMap: emoji별로 그룹화
-        EnumMap<Emoji, List<ReviewEmojiMemberUnitDto>> emojiMemberMap = reviewEmojiService.findByReview(
+        EnumMap<EmojiType, List<ReviewEmojiMemberUnitDto>> emojiMemberMap = reviewEmojiService.findByReview(
                 review)
             .stream()
             .collect(Collectors.groupingBy(
                 ReviewEmoji::getEmoji,
-                () -> new EnumMap<>(Emoji.class),
+                () -> new EnumMap<>(EmojiType.class),
                 Collectors.mapping(
                     reviewEmoji -> ReviewEmojiMemberUnitDto.from(reviewEmoji.getMember()),
                     Collectors.toList()

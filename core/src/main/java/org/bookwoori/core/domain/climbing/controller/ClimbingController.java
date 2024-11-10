@@ -10,7 +10,7 @@ import org.bookwoori.core.domain.climbing.dto.request.ClimbingMemoUpdateRequestD
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingRoleDelegateRequestDto;
 import org.bookwoori.core.domain.climbing.facade.ClimbingFacade;
 import org.bookwoori.core.domain.climbing.facade.ClimbingMemberFacade;
-import org.bookwoori.core.domain.reviewEmoji.entity.Emoji;
+import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -112,7 +112,7 @@ public class ClimbingController {
     public ResponseEntity<?> toggleReviewReaction(
         @PathVariable("climbingId") final Long climbingId,
         @PathVariable("reviewId") final Long reviewId,
-        @PathVariable("emoji") final Emoji emoji) {
+        @PathVariable("emoji") final EmojiType emoji) {
         boolean isCreated = climbingMemberFacade.toggleReviewReaction(climbingId, reviewId,
             emoji);
         if (isCreated) {

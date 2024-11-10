@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.review.entity.Review;
-import org.bookwoori.core.domain.reviewEmoji.entity.Emoji;
+import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
 import org.bookwoori.core.domain.reviewEmoji.entity.ReviewEmoji;
 import org.bookwoori.core.domain.reviewEmoji.repository.ReviewEmojiRepository;
 import org.bookwoori.core.global.exception.CustomException;
@@ -25,7 +25,7 @@ public class ReviewEmojiService {
         return reviewEmojiRepository.save(reviewEmoji);
     }
 
-    public void deleteEmoji(Member member, Climbing climbing, Review review, Emoji emoji) {
+    public void deleteEmoji(Member member, Climbing climbing, Review review, EmojiType emoji) {
         Optional<ReviewEmoji> reviewEmoji = reviewEmojiRepository.findByMemberAndClimbingAndReviewAndEmoji(
             member, climbing, review, emoji);
         if (reviewEmoji.isPresent()) {
@@ -43,7 +43,7 @@ public class ReviewEmojiService {
 
     @Transactional(readOnly = true)
     public Optional<ReviewEmoji> findByMemberClimbingReviewAndEmoji(Member currentMember,
-        Climbing climbing, Review review, Emoji emoji) {
+        Climbing climbing, Review review, EmojiType emoji) {
         return reviewEmojiRepository.findByMemberAndClimbingAndReviewAndEmoji(currentMember,
             climbing, review, emoji);
     }
