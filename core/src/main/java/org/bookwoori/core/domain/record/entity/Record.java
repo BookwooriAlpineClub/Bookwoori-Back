@@ -67,4 +67,14 @@ public class Record {
     @Column(name = "review", columnDefinition = "TEXT")
     private String review;
 
+    public Record updateRecord(Record record) {
+        this.status = record.status;
+        this.star = record.star;
+        this.startDate = record.startDate;
+        this.currentPage = record.currentPage;
+        this.review = record.review;
+        this.isbn13 = record.isbn13;
+        return this;
+    }
+
 }

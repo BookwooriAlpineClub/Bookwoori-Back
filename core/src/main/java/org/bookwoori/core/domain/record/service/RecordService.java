@@ -2,9 +2,7 @@ package org.bookwoori.core.domain.record.service;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
-import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.record.repository.RecordRepository;
 import org.bookwoori.core.global.exception.CustomException;
@@ -29,5 +27,21 @@ public class RecordService {
     @Transactional(readOnly = true)
     public Optional<Record> getClimbingMemberRecordOpt(ClimbingMember climbingMember, Book book) {
         return recordRepository.findByMemberAndBook(climbingMember.getMember(), book);
+    }
+
+
+    @Transactional
+    public void saveRecord(Record record) {
+        recordRepository.save(record);
+    }
+
+    @Transactional
+    public Record getRecordById(Long recordId) {
+        return recordRepository.findById(recordId)
+            .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
+    }
+
+    public void deleteRecord(Long recordId) {
+        recordRepository.deleteById(recordId);
     }
 }
