@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.server.facade;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -10,6 +11,7 @@ import org.bookwoori.core.domain.category.dto.response.CategoryResponseDto;
 import org.bookwoori.core.domain.category.entity.Category;
 import org.bookwoori.core.domain.category.service.CategoryService;
 import org.bookwoori.core.domain.channel.dto.response.ChannelResponseDto;
+import org.bookwoori.core.domain.channel.entity.Channel;
 import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
@@ -88,14 +90,37 @@ public class ServerFacade {
     @Transactional(readOnly = true)
     public ServerCategoryListResponseDto getServerCategoryList(Long serverId) {
         Server server = serverService.getServerById(serverId);
-        List<Category> categories = categoryService.getCategoriesWithChannels(server);
+        List<Category> categories = sortCategory(categoryService.getCategoriesWithChannels(server));
         List<CategoryResponseDto> categoryDtoList = categories.stream()
             .map(category -> {
-                List<ChannelResponseDto> channelDtoList = category.getChannels().stream()
+                List<ChannelResponseDto> channelDtoList = sortChannel(
+                    category.getChannels()).stream()
                     .map(ChannelResponseDto::from).toList();
                 return CategoryResponseDto.from(category, channelDtoList);
             }).collect(Collectors.toList());
         return new ServerCategoryListResponseDto(categoryDtoList);
+    }
+
+    private List<Category> sortCategory(List<Category> categories) {
+        List<Category> sortedList = new ArrayList<>();
+        Category currentCategory = categories.stream()
+            .filter(category -> category.getBeforeNode() == null).findFirst().orElse(null);
+        while (currentCategory != null) {
+            sortedList.add(currentCategory);
+            currentCategory = currentCategory.getNextNode();
+        }
+        return sortedList;
+    }
+
+    private List<Channel> sortChannel(List<Channel> channels) {
+        List<Channel> sortedList = new ArrayList<>();
+        Channel currentChannel = channels.stream()
+            .filter(channel -> channel.getBeforeNode() == null).findFirst().orElse(null);
+        while (currentChannel != null) {
+            sortedList.add(currentChannel);
+            currentChannel = currentChannel.getNextNode();
+        }
+        return sortedList;
     }
 
     @Transactional
