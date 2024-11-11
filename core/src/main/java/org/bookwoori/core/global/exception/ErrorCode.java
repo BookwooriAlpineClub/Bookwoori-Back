@@ -39,14 +39,14 @@ public enum ErrorCode {
 
     // Member (3000 ~ 3099)
     MEMBER_NOT_FOUND(404, 3000, "사용자를 찾을 수 없습니다."),
-    SERVER_OWNER_NOT_FOUND(404, 3001, "서버 주인을 찾을 수 없습니다."),
-    MEMBER_INACTIVE(404, 3002, "이미 계정을 삭제한 멤버입니다."),
+    MEMBER_INACTIVE(404, 3001, "이미 계정을 삭제한 멤버입니다."),
 
     // Server (3100 ~ 3199)
     SERVER_NOT_FOUND(404, 3100, "서버를 찾을 수 없습니다."),
     ALREADY_JOINED_SERVER(409, 3101, "이미 참여하고 있는 서버입니다."),
     DELEGATION_REQUIRED(409, 3102, "해당 요청 처리를 위해서는 서버장 권한을 위임해야 합니다."),
     SERVER_MEMBER_NOT_FOUND(404, 3150, "해당 서버에 사용자가 존재하지 않습니다."),
+    SERVER_OWNER_NOT_FOUND(404, 3151, "서버 주인을 찾을 수 없습니다."),
 
     // Category (3200 ~ 3299)
     CATEGORY_NOT_FOUND(404, 3200, "카테고리를 찾을 수 없습니다."),
@@ -60,7 +60,7 @@ public enum ErrorCode {
     ALREADY_JOINED_CLIMBING(409, 3401, "이미 참여하고 있는 클라이밍 채널입니다."),
     CLIMBING_NOT_READY(409, 3402, "모집 중인 클라이밍 채널만 편집할 수 있습니다."),
     OWNER_CANNOT_LEAVE(409, 3403, "OWNER는 클라이밍 채널을 떠날 수 없습니다."),
-    CLIMBINGMEMBER_NOT_FOUND(404, 3404, "클라이밍 멤버를 찾을 수 없습니다."),
+    CLIMBING_MEMBER_NOT_FOUND(404, 3404, "클라이밍 멤버를 찾을 수 없습니다."),
     CLIMBING_NOT_RUNNING(409, 3405, "진행 중인 클라이밍이 아닙니다."),
 
     // Book (3500 ~ 3599)
