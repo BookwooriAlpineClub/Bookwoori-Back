@@ -48,4 +48,7 @@ public class ServerMember {
     @Enumerated(EnumType.STRING)
     private ServerRole role;
 
+    public void updateRole(ServerRole role) {
+        this.role = role;
+    }
 }

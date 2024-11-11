@@ -62,4 +62,22 @@ public class ServerMemberService {
         serverMemberRepository.deleteByServerAndMember(server, member);
     }
 
+    public ServerMember getByMemberAndServer(Member member, Server server) {
+        return serverMemberRepository.findByMemberAndServer(member, server)
+            .orElseThrow(() -> new CustomException(ErrorCode.SERVER_MEMBER_NOT_FOUND));
+    }
+
+    @Transactional
+    public void delegateServerRole(Server server, Member from, Member to) {
+        ServerMember owner = getByMemberAndServer(from, server);
+
+        if (!owner.getRole().equals(ServerRole.OWNER)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        ServerMember newOwner = getByMemberAndServer(to, server);
+        owner.updateRole(ServerRole.MEMBER);
+        newOwner.updateRole(ServerRole.OWNER);
+    }
+
 }

@@ -15,6 +15,7 @@ import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
+import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
 import org.bookwoori.core.domain.server.dto.response.ServerCategoryListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerDetailsResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerItemDto;
@@ -173,5 +174,13 @@ public class ServerFacade {
         }
 
         server.updateServerImg(s3Util.uploadImage(newImage, "server"));
+    }
+
+    @Transactional
+    public void delegateServerRole(Long serverId, ServerRoleDelegateRequestDto requestDto) {
+        Server server = serverService.getServerById(serverId);
+        Member currentMember = memberService.getCurrentMember();
+        Member newOwner = memberService.getMemberById(requestDto.memberId());
+        serverMemberService.delegateServerRole(server, currentMember, newOwner);
     }
 }

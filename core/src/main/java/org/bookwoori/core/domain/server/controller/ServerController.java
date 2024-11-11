@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.climbing.facade.ClimbingFacade;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
+import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
 import org.bookwoori.core.domain.server.facade.ServerFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -72,6 +73,14 @@ public class ServerController {
     @GetMapping("/{serverId}/members")
     public ResponseEntity<?> getServerMemberList(@PathVariable final Long serverId) {
         return ResponseEntity.ok(serverFacade.getServerMemberList(serverId));
+    }
+
+    @Operation(summary = "서버장 권한 위임", description = "서버장 권한을 같은 서버의 다른 멤버에게 이전합니다.")
+    @PatchMapping("/{serverId}/members")
+    public ResponseEntity<?> delegateServerRole(@PathVariable final Long serverId,
+        @RequestBody @Valid ServerRoleDelegateRequestDto requestDto) {
+        serverFacade.delegateServerRole(serverId, requestDto);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "서버 나가기", description = "로그인한 유저를 해당 서버에서 나가게 합니다.")
