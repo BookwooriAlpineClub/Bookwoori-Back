@@ -14,15 +14,18 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.member.entity.Member;
 
 @Entity
 @Table(name = "record")
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Record {
 
     @Id
@@ -30,10 +33,10 @@ public class Record {
     @Column(name = "record_id", updatable = false)
     private Long recordId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", updatable = false)
-    @NotNull
-    private Book book;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "book_id", updatable = false)
+//    @NotNull
+//    private Book book;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", updatable = false)
@@ -57,7 +60,11 @@ public class Record {
     @Column(name = "max_page")
     private int maxPage;
 
-    @Column(name = "expectation", columnDefinition = "TEXT")
-    private String expectation;
+
+    @Column(name = "isbn13", updatable = false, unique = true)
+    @NotNull
+    private String isbn13;
+    @Column(name = "review", columnDefinition = "TEXT")
+    private String review;
 
 }
