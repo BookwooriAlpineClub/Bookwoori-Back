@@ -68,6 +68,7 @@ public class ServerFacade {
         channelService.makeDefaultChannels(category);
     }
 
+    @Transactional(readOnly = true)
     public ServerDetailsResponseDto getServerDetails(Long serverId) {
         Server server = serverService.getServerById(serverId);
         Member owner = serverMemberService.getOwner(server);
@@ -78,11 +79,13 @@ public class ServerFacade {
             currentMember.equals(owner));
     }
 
+    @Transactional(readOnly = true)
     public ServerMemberListResponseDto getServerMemberList(Long serverId) {
         Server server = serverService.getServerById(serverId);
         return new ServerMemberListResponseDto(serverMemberService.getAllMembersByServer(server));
     }
 
+    @Transactional(readOnly = true)
     public ServerCategoryListResponseDto getServerCategoryList(Long serverId) {
         Server server = serverService.getServerById(serverId);
         List<Category> categories = categoryService.getCategoriesWithChannels(server);
@@ -95,7 +98,7 @@ public class ServerFacade {
         return new ServerCategoryListResponseDto(categoryDtoList);
     }
 
-
+    @Transactional
     public String getOrCreateInviteCode(Long serverId) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
         String inviteCode = ops.get(String.valueOf(serverId));
@@ -109,6 +112,7 @@ public class ServerFacade {
         }
     }
 
+    @Transactional
     public void createServerMember(String inviteCode) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
 //        System.out.println(ops.get(inviteCode)); // 디버깅용
@@ -124,11 +128,10 @@ public class ServerFacade {
         } else {
             serverMemberService.saveServerMember(currentMember, server,
                 ServerRole.MEMBER); // 서버멤버 생성
-
         }
     }
 
-
+    @Transactional(readOnly = true)
     public ServerListResponseDto getServerList() {
         Member member = memberService.getCurrentMember();
         List<Server> servers = serverMemberService.getServerListByMember(member);
