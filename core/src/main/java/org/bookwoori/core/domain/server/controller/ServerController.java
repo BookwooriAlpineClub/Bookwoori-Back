@@ -61,6 +61,13 @@ public class ServerController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "서버 삭제", description = "서버를 삭제합니다.")
+    @DeleteMapping("/{serverId}")
+    public ResponseEntity<?> deleteServer(@PathVariable final Long serverId) {
+        serverFacade.deleteServer(serverId);
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "서버 이미지 편집", description = "서버 이미지를 수정 또는 삭제합니다.")
     @PatchMapping(value = "/{serverId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateServerImage(@PathVariable final Long serverId,

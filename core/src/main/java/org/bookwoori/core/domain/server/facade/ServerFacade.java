@@ -183,4 +183,16 @@ public class ServerFacade {
         Member newOwner = memberService.getMemberById(requestDto.memberId());
         serverMemberService.delegateServerRole(server, currentMember, newOwner);
     }
+
+    @Transactional
+    public void deleteServer(Long serverId) {
+        Server server = serverService.getServerById(serverId);
+        Member currentMember = memberService.getCurrentMember();
+
+        if (!serverMemberService.isOwner(currentMember, server)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        serverService.deleteServer(server);
+    }
 }
