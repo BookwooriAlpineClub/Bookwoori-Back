@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.server.facade;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -10,11 +11,13 @@ import org.bookwoori.core.domain.category.dto.response.CategoryResponseDto;
 import org.bookwoori.core.domain.category.entity.Category;
 import org.bookwoori.core.domain.category.service.CategoryService;
 import org.bookwoori.core.domain.channel.dto.response.ChannelResponseDto;
+import org.bookwoori.core.domain.channel.entity.Channel;
 import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
+import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
 import org.bookwoori.core.domain.server.dto.response.ServerCategoryListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerDetailsResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerItemDto;
@@ -67,6 +70,7 @@ public class ServerFacade {
         channelService.makeDefaultChannels(category);
     }
 
+    @Transactional(readOnly = true)
     public ServerDetailsResponseDto getServerDetails(Long serverId) {
         Server server = serverService.getServerById(serverId);
         Member owner = serverMemberService.getOwner(server);
@@ -77,24 +81,49 @@ public class ServerFacade {
             currentMember.equals(owner));
     }
 
+    @Transactional(readOnly = true)
     public ServerMemberListResponseDto getServerMemberList(Long serverId) {
         Server server = serverService.getServerById(serverId);
         return new ServerMemberListResponseDto(serverMemberService.getAllMembersByServer(server));
     }
 
+    @Transactional(readOnly = true)
     public ServerCategoryListResponseDto getServerCategoryList(Long serverId) {
         Server server = serverService.getServerById(serverId);
-        List<Category> categories = categoryService.getCategoriesWithChannels(server);
+        List<Category> categories = sortCategory(categoryService.getCategoriesWithChannels(server));
         List<CategoryResponseDto> categoryDtoList = categories.stream()
             .map(category -> {
-                List<ChannelResponseDto> channelDtoList = category.getChannels().stream()
+                List<ChannelResponseDto> channelDtoList = sortChannel(
+                    category.getChannels()).stream()
                     .map(ChannelResponseDto::from).toList();
                 return CategoryResponseDto.from(category, channelDtoList);
             }).collect(Collectors.toList());
         return new ServerCategoryListResponseDto(categoryDtoList);
     }
 
+    private List<Category> sortCategory(List<Category> categories) {
+        List<Category> sortedList = new ArrayList<>();
+        Category currentCategory = categories.stream()
+            .filter(category -> category.getBeforeNode() == null).findFirst().orElse(null);
+        while (currentCategory != null) {
+            sortedList.add(currentCategory);
+            currentCategory = currentCategory.getNextNode();
+        }
+        return sortedList;
+    }
 
+    private List<Channel> sortChannel(List<Channel> channels) {
+        List<Channel> sortedList = new ArrayList<>();
+        Channel currentChannel = channels.stream()
+            .filter(channel -> channel.getBeforeNode() == null).findFirst().orElse(null);
+        while (currentChannel != null) {
+            sortedList.add(currentChannel);
+            currentChannel = currentChannel.getNextNode();
+        }
+        return sortedList;
+    }
+
+    @Transactional
     public String getOrCreateInviteCode(Long serverId) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
         String inviteCode = ops.get(String.valueOf(serverId));
@@ -108,6 +137,7 @@ public class ServerFacade {
         }
     }
 
+    @Transactional
     public void createServerMember(String inviteCode) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
 //        System.out.println(ops.get(inviteCode)); // 디버깅용
@@ -123,11 +153,10 @@ public class ServerFacade {
         } else {
             serverMemberService.saveServerMember(currentMember, server,
                 ServerRole.MEMBER); // 서버멤버 생성
-
         }
     }
 
-
+    @Transactional(readOnly = true)
     public ServerListResponseDto getServerList() {
         Member member = memberService.getCurrentMember();
         List<Server> servers = serverMemberService.getServerListByMember(member);
@@ -173,5 +202,25 @@ public class ServerFacade {
         }
 
         server.updateServerImg(s3Util.uploadImage(newImage, "server"));
+    }
+
+    @Transactional
+    public void delegateServerRole(Long serverId, ServerRoleDelegateRequestDto requestDto) {
+        Server server = serverService.getServerById(serverId);
+        Member currentMember = memberService.getCurrentMember();
+        Member newOwner = memberService.getMemberById(requestDto.memberId());
+        serverMemberService.delegateServerRole(server, currentMember, newOwner);
+    }
+
+    @Transactional
+    public void deleteServer(Long serverId) {
+        Server server = serverService.getServerById(serverId);
+        Member currentMember = memberService.getCurrentMember();
+
+        if (!serverMemberService.isOwner(currentMember, server)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        serverService.deleteServer(server);
     }
 }
