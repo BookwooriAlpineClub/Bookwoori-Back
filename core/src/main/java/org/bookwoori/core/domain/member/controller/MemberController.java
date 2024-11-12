@@ -9,8 +9,10 @@ import org.bookwoori.core.domain.member.dto.request.UpdateMemberRequestDto;
 import org.bookwoori.core.domain.member.facade.MemberFacade;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,5 +31,11 @@ public class MemberController {
         @ModelAttribute @Valid UpdateMemberRequestDto requestDto) {
         memberFacade.updateMember(requestDto);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "유저 서재 조회", description = "유저의 서재를 조회합니다.")
+    @GetMapping(value = "/{memberId}/library")
+    public ResponseEntity<?> getMemberLibrary(@PathVariable("memberId") final Long memberId) {
+        return ResponseEntity.ok(memberFacade.getMemberLibrary(memberId));
     }
 }
