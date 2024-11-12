@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ChannelRepository extends JpaRepository<Channel, Long> {
 
     Optional<Channel> findChannelByCategoryAndNextNodeIsNull(Category category);
+
+    Optional<Channel> findChannelByCategoryAndBeforeNodeIsNull(Category category);
 }

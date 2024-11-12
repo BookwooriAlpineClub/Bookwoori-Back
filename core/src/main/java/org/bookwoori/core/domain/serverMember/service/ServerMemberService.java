@@ -30,6 +30,11 @@ public class ServerMemberService {
     }
 
     @Transactional(readOnly = true)
+    public boolean isOwner(Member member, Server server) {
+        return serverMemberRepository.existsByMemberAndServerAndRole(member, server);
+    }
+
+    @Transactional(readOnly = true)
     public Member getOwner(Server server) {
         return serverMemberRepository.findOwnerByServer(server)
             .orElseThrow(() -> new CustomException(ErrorCode.SERVER_OWNER_NOT_FOUND));
@@ -45,6 +50,16 @@ public class ServerMemberService {
         return serverMemberRepository.findAllByServer(server).stream().map(
                 serverMember -> ServerMemberDto.from(serverMember.getMember(), serverMember.getRole()))
             .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Server> getServerListByMember(Member member) {
+        return serverMemberRepository.findAllByMember(member).stream()
+            .map(ServerMember::getServer).toList();
+    }
+
+    public void deleteServerMember(Server server, Member member) {
+        serverMemberRepository.deleteByServerAndMember(server, member);
     }
 
 }

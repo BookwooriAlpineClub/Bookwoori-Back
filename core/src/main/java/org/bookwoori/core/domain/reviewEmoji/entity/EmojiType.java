@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 
-public enum Emoji {
+public enum EmojiType {
     GOOD,
     HEART,
     SMILE,
@@ -12,9 +12,9 @@ public enum Emoji {
     THINK;
 
     @JsonCreator
-    public static Emoji from(String s) {
+    public static EmojiType from(String s) {
         try {
-            return Emoji.valueOf(s.toUpperCase());
+            return EmojiType.valueOf(s.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
         }

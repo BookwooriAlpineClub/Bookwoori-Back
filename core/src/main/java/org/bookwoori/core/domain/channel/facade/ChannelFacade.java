@@ -31,4 +31,11 @@ public class ChannelFacade {
         Channel channel = channelService.getChannelById(channelId);
         channel.modifyName(requestDto.name());
     }
+
+    @Transactional
+    public void deleteChannel(Long channelId) {
+        Channel channel = channelService.getChannelById(channelId);
+        channelService.detach(channel);
+        channelService.deleteChannel(channel);
+    }
 }

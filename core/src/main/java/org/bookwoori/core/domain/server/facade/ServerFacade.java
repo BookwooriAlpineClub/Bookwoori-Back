@@ -14,9 +14,12 @@ import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
+import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
 import org.bookwoori.core.domain.server.dto.response.ServerCategoryListResponseDto;
+import org.bookwoori.core.domain.server.dto.response.ServerDetailsResponseDto;
+import org.bookwoori.core.domain.server.dto.response.ServerItemDto;
+import org.bookwoori.core.domain.server.dto.response.ServerListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto;
-import org.bookwoori.core.domain.server.dto.response.ServerResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
@@ -29,6 +32,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @RequiredArgsConstructor
@@ -37,7 +41,6 @@ public class ServerFacade {
 
     private final S3Util s3Util;
     private final StringRedisTemplate redisTemplate;
-
 
     private final ServerService serverService;
     private final MemberService memberService;
@@ -64,12 +67,14 @@ public class ServerFacade {
         channelService.makeDefaultChannels(category);
     }
 
-    public ServerResponseDto getServerDetails(Long serverId) {
+    public ServerDetailsResponseDto getServerDetails(Long serverId) {
         Server server = serverService.getServerById(serverId);
         Member owner = serverMemberService.getOwner(server);
         int memberCount = serverMemberService.getMemberCount(server);
+        Member currentMember = memberService.getCurrentMember();
 
-        return ServerResponseDto.from(server, owner.getNickname(), memberCount);
+        return ServerDetailsResponseDto.from(server, owner.getNickname(), memberCount,
+            currentMember.equals(owner));
     }
 
     public ServerMemberListResponseDto getServerMemberList(Long serverId) {
@@ -120,8 +125,53 @@ public class ServerFacade {
                 ServerRole.MEMBER); // 서버멤버 생성
 
         }
-
     }
 
 
+    public ServerListResponseDto getServerList() {
+        Member member = memberService.getCurrentMember();
+        List<Server> servers = serverMemberService.getServerListByMember(member);
+        List<ServerItemDto> serverDtoList = servers.stream().map(ServerItemDto::from).toList();
+        return new ServerListResponseDto(serverDtoList);
+    }
+
+    @Transactional
+    public void leaveServer(Long serverId) {
+        Member member = memberService.getCurrentMember();
+        Server server = serverService.getServerById(serverId);
+
+        if (serverMemberService.isOwner(member, server)) {
+            throw new CustomException(ErrorCode.DELEGATION_REQUIRED);
+        }
+
+        serverMemberService.deleteServerMember(server, member);
+    }
+
+    @Transactional
+    public void updateServerInfo(Long serverId, ServerInfoUpdateRequestDto requestDto) {
+        Member member = memberService.getCurrentMember();
+        Server server = serverService.getServerById(serverId);
+
+        if (!serverMemberService.isOwner(member, server)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        server.updateInfo(requestDto.name(), requestDto.description());
+    }
+
+    @Transactional
+    public void updateServerImage(Long serverId, MultipartFile newImage) {
+        Member member = memberService.getCurrentMember();
+        Server server = serverService.getServerById(serverId);
+
+        if (!serverMemberService.isOwner(member, server)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        if (server.getServerImg() != null) {
+            s3Util.deleteImage(server.getServerImg());
+        }
+
+        server.updateServerImg(s3Util.uploadImage(newImage, "server"));
+    }
 }

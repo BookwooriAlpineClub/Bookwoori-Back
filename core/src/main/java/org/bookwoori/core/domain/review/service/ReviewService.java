@@ -3,8 +3,6 @@ package org.bookwoori.core.domain.review.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
-import org.bookwoori.core.domain.climbing.entity.Climbing;
-import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.bookwoori.core.domain.review.repository.ReviewRepository;
 import org.bookwoori.core.global.exception.CustomException;
@@ -19,19 +17,13 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     @Transactional(readOnly = true)
-    public Review getReviewByMemberAndClimbing(Member currentMember, Climbing climbing) {
-        return reviewRepository.findByRecordMemberAndRecordBook(currentMember, climbing.getBook())
-            .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
-    }
-
-    @Transactional(readOnly = true)
     public Review getReviewById(Long reviewId) {
         return reviewRepository.findById(reviewId)
             .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
-    public List<Review> findByMembersAndBook(List<Long> members, Book book) {
+    public List<Review> getReviewsByMembersAndBook(List<Long> members, Book book) {
         return reviewRepository.findByMemberIdsAndBook(members, book);
     }
 }

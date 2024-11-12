@@ -47,20 +47,20 @@ public class ClimbingMemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<ClimbingMember> findByClimbing(Climbing climbing) {
+    public List<ClimbingMember> getMembersByClimbing(Climbing climbing) {
         return climbingMemberRepository.findByClimbingWithMember(climbing);
     }
 
     @Transactional(readOnly = true)
-    public ClimbingMember findByMemberAndClimbing(Member member, Long climbingId) {
+    public ClimbingMember getMemberInClimbing(Member member, Long climbingId) {
         return climbingMemberRepository.findByMemberAndClimbing_ClimbingId(member, climbingId)
             .orElseThrow(() -> new CustomException(ErrorCode.CLIMBINGMEMBER_NOT_FOUND));
     }
 
     public void delegateClimbingRole(Long climbingId, Member currentMember,
         Member newOwner) {
-        ClimbingMember currentClimbingMember = findByMemberAndClimbing(currentMember, climbingId);
-        ClimbingMember newClimbingOwner = findByMemberAndClimbing(newOwner, climbingId);
+        ClimbingMember currentClimbingMember = getMemberInClimbing(currentMember, climbingId);
+        ClimbingMember newClimbingOwner = getMemberInClimbing(newOwner, climbingId);
         if (currentClimbingMember.getRole() != ClimbingRole.OWNER) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
@@ -69,7 +69,12 @@ public class ClimbingMemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<Long> findSharedMemberIdsByClimbing(Climbing climbing) {
+    public List<Long> getSharedMemberIds(Climbing climbing) {
         return climbingMemberRepository.findSharedMemberIdsByClimbing(climbing);
+    }
+
+    @Transactional(readOnly = true)
+    public ClimbingMember getClimbingMemberWithMember(Long climbingId, Long memberId) {
+        return climbingMemberRepository.findClimbingMemberWithMember(climbingId, memberId);
     }
 }

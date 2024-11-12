@@ -52,6 +52,6 @@ public class ReviewEmoji {
     @Column(name = "emoji")
     @NotNull
     @Enumerated(EnumType.STRING)
-    private Emoji emoji;
+    private EmojiType emoji;
 
 }

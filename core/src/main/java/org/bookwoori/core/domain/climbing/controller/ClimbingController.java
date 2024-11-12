@@ -10,7 +10,7 @@ import org.bookwoori.core.domain.climbing.dto.request.ClimbingMemoUpdateRequestD
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingRoleDelegateRequestDto;
 import org.bookwoori.core.domain.climbing.facade.ClimbingFacade;
 import org.bookwoori.core.domain.climbing.facade.ClimbingMemberFacade;
-import org.bookwoori.core.domain.reviewEmoji.entity.Emoji;
+import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -96,7 +96,7 @@ public class ClimbingController {
     @PatchMapping("/{climbingId}/reviews")
     public ResponseEntity<?> shareReviewToClimbing(
         @PathVariable("climbingId") final Long climbingId) {
-        climbingMemberFacade.shareReviewWithClimbing(climbingId);
+        climbingMemberFacade.shareReviewToClimbing(climbingId);
         return ResponseEntity.ok().build();
     }
 
@@ -109,11 +109,11 @@ public class ClimbingController {
 
     @Operation(summary = "클라이밍 채널 참여자 감상평 반응 추가 <-> 삭제", description = "클라이밍 채널 참여자가 공유한 감상평에 반응을 추가 <-> 삭제합니다.")
     @PutMapping("/{climbingId}/reviews/{reviewId}/emojis/{emoji}")
-    public ResponseEntity<?> toggleClimbingReviewEmoji(
+    public ResponseEntity<?> toggleReviewReaction(
         @PathVariable("climbingId") final Long climbingId,
         @PathVariable("reviewId") final Long reviewId,
-        @PathVariable("emoji") final Emoji emoji) {
-        boolean isCreated = climbingMemberFacade.toggleClimbingReviewEmoji(climbingId, reviewId,
+        @PathVariable("emoji") final EmojiType emoji) {
+        boolean isCreated = climbingMemberFacade.toggleReviewReaction(climbingId, reviewId,
             emoji);
         if (isCreated) {
             return ResponseEntity.ok().build();
@@ -122,13 +122,12 @@ public class ClimbingController {
         }
     }
 
-    @Operation(summary = "클라이밍 채널 참여자 감상평 반응 리스트 조회", description = "클라이밍 채널 참여자가 공유한 감상평의 반응마다 멤버 리스트를 조회합니다.")
-    @GetMapping("/{climbingId}/reviews/{reviewId}/emojis/{emoji}")
+    @Operation(summary = "클라이밍 채널 참여자 감상평 반응 리스트 조회", description = "클라이밍 채널 감상평 반응들과 반응을 남긴 멤버 리스트를 조회합니다.")
+    @GetMapping("/{climbingId}/reviews/{reviewId}/emojis")
     public ResponseEntity<?> getEmojiMemberList(
         @PathVariable("climbingId") final Long climbingId,
-        @PathVariable("reviewId") final Long reviewId,
-        @PathVariable("emoji") final Emoji emoji) {
+        @PathVariable("reviewId") final Long reviewId) {
         return ResponseEntity.ok(
-            climbingMemberFacade.getEmojiMemberList(reviewId, emoji));
+            climbingMemberFacade.getEmojiMemberList(reviewId));
     }
 }
