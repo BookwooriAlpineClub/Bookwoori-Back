@@ -38,4 +38,10 @@ public class MemberController {
     public ResponseEntity<?> getMemberLibrary(@PathVariable("memberId") final Long memberId) {
         return ResponseEntity.ok(memberFacade.getMemberLibrary(memberId));
     }
+
+    @Operation(summary = "유저 프로필 조회", description = "유저의 프로필을 조회합니다.")
+    @GetMapping(value = "/{memberId}")
+    public ResponseEntity<?> getMemberProfile(@PathVariable("memberId") final Long memberId) {
+        return ResponseEntity.ok(memberFacade.getMemberProfile(memberId));
+    }
 }

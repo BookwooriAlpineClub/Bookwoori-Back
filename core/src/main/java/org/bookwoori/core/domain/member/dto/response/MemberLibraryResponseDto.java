@@ -7,7 +7,6 @@ import org.bookwoori.core.domain.member.entity.Member;
 public record MemberLibraryResponseDto(
     boolean isMine,
     String nickname,
-    String profileImg,
     int level,
     String mountain,
     int height,
@@ -17,12 +16,10 @@ public record MemberLibraryResponseDto(
         return MemberLibraryResponseDto.builder()
             .isMine(isMine)
             .nickname(member.getNickname())
-            .profileImg(member.getProfileImg())
             .level(member.getGrade().getLevel())
             .mountain(member.getGrade().getMountain())
             .height(member.getGrade().getHeight())
             .totalPage(member.getTotalPage())
             .build();
     }
-
 }
