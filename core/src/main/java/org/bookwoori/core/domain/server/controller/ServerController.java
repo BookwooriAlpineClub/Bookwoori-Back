@@ -130,6 +130,13 @@ public class ServerController {
         return ResponseEntity.ok(serverFacade.createInviteCode(serverId));
     }
 
+    @Operation(summary = "초대코드로 서버 정보 조회", description = "초대코드로 서버 정보를 조회합니다.")
+    @GetMapping("/code/{inviteCode}")
+    public ResponseEntity<?> getServerByInviteCode(@PathVariable final String inviteCode) {
+        return ResponseEntity.ok(serverFacade.getServerByInviteCode(inviteCode));
+    }
+
+
     @Operation(summary = "초대코드로 서버 참가", description = "초대코드로 서버에 참가합니다.")
     @PostMapping("/join/{inviteCode}")
     public ResponseEntity<?> createServerMember(@PathVariable final String inviteCode) {

@@ -19,6 +19,7 @@ import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
+import org.bookwoori.core.domain.server.dto.response.InviteCodeServerResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerCategoryListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerDetailsResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerItemDto;
@@ -138,6 +139,28 @@ public class ServerFacade {
 
         ops.set(inviteCode, "serverId: " + serverId, 1, TimeUnit.DAYS); // Redis에 저장, TTL 1일
         return inviteCode;
+
+    }
+
+    @Transactional(readOnly = true)
+    public Object getServerByInviteCode(String inviteCode) {
+
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+
+        String value = ops.get(inviteCode); // 형식은 "serverId: 1"
+        Long serverId;
+
+        if (value != null) { // 초대코드 맞는 경우
+            serverId = Long.parseLong(value.split(" ")[1]);
+        } else { // 초대코드 틀린 경우
+            serverId = 0L;
+        }
+
+        Server server = serverService.getServerById(serverId);
+        Member owner = serverMemberService.getOwner(server);
+        int memberCount = serverMemberService.getMemberCount(server);
+
+        return InviteCodeServerResponseDto.from(server, owner.getNickname(), memberCount);
 
     }
 
