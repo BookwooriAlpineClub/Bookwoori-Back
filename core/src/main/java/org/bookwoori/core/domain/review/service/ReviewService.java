@@ -34,7 +34,7 @@ public class ReviewService {
     }
 
     public boolean existsReviewByMemberAndBook(Member member, Book book) {
-        return reviewRepository.existsByMemberAndBook(member, book);
+        return reviewRepository.existsByRecord_MemberAndRecord_Book(member, book);
     }
 
 }
