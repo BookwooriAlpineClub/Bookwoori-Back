@@ -6,6 +6,7 @@ import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.entity.Record;
+import org.bookwoori.core.domain.review.entity.Review;
 
 
 public record RecordRequestDto(
@@ -16,11 +17,11 @@ public record RecordRequestDto(
     Integer star,
     LocalDate startDate,
     Integer currentPage,
-    String review
+    String reviewContent
 
 ) {
 
-    public Record toEntity(Member currentMember, Book book) {
+    public Record toRecordEntity(Member currentMember, Book book) {
         return Record.builder()
             .member(currentMember)
             .book(book)
@@ -28,8 +29,16 @@ public record RecordRequestDto(
             .star(this.star)
             .startDate(this.startDate)
             .currentPage(this.currentPage)
-            .review(this.review)
-            .isbn13(this.isbn13)
+//            .review(this.review)
+//            .isbn13(this.isbn13)
             .build();
     }
+
+    public Review toReviewEntity(Record record, String content) {
+        return Review.builder()
+            .record(record)
+            .content(content)
+            .build();
+    }
+
 }

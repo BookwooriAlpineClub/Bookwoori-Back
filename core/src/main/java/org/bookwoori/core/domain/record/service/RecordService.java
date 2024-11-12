@@ -34,8 +34,8 @@ public class RecordService {
 
 
     @Transactional
-    public void saveRecord(Record record) {
-        recordRepository.save(record);
+    public Record saveRecord(Record record) {
+        return recordRepository.save(record);
     }
 
     @Transactional

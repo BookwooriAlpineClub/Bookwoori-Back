@@ -14,4 +14,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         @Param("book") Book book);
 
 
+    Review findByRecord_RecordId(Long recordId);
+
+    void deleteByRecord_RecordId(Long recordId);
+
 }

@@ -14,6 +14,8 @@ import org.bookwoori.core.domain.record.dto.response.ReviewResponseDto;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.record.service.RecordService;
+import org.bookwoori.core.domain.review.entity.Review;
+import org.bookwoori.core.domain.review.service.ReviewService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,25 +27,34 @@ public class RecordFacade {
     private final RecordService recordService;
     private final MemberService memberService;
     private final BookService bookService;
+    private final ReviewService reviewService;
 
     @Transactional
-    public void createRecord(RecordRequestDto requestDto) {
-
+    public void createRecordAndReview(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
-        Record record = requestDto.toEntity(currentMember, book);
-        recordService.saveRecord(record);
+
+        Record savedRecord = recordService.saveRecord(
+            requestDto.toRecordEntity(currentMember, book));
+        reviewService.saveReview(
+            requestDto.toReviewEntity(savedRecord, requestDto.reviewContent()));
+
     }
 
     @Transactional
-    public Record updateRecord(Long recordId, RecordRequestDto requestDto) {
+    public void updateRecordAndReview(Long recordId, RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Record record = recordService.getRecordById(recordId);
-        return record.updateRecord(requestDto.toEntity(currentMember, record.getBook()));
+        Review review = reviewService.getReviewByRecordId(recordId);
+
+        record.updateRecord(requestDto.toRecordEntity(currentMember, record.getBook()));
+        review.updateReview(requestDto.reviewContent());
+
     }
 
     @Transactional
-    public void deleteRecord(Long recordId) {
+    public void deleteRecordAndReview(Long recordId) {
+        reviewService.deleteReviewByRecordId(recordId);
         recordService.deleteRecord(recordId);
     }
 
@@ -60,13 +71,16 @@ public class RecordFacade {
         return recordResponseDtoList;
     }
 
+    @Transactional
     public List<ReviewResponseDto> getReviews() {
         List<ReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
         List<Record> recordList = recordService.getRecordsByMember(
             memberService.getCurrentMember());
 
         recordList.stream().forEach(record -> {
-            ReviewResponseDto reviewResponseDto = ReviewResponseDto.from(record);
+
+            Review review = reviewService.getReviewByRecordId(record.getRecordId());
+            ReviewResponseDto reviewResponseDto = ReviewResponseDto.from(record, review);
             reviewResponseDtoList.add(reviewResponseDto);
         });
 

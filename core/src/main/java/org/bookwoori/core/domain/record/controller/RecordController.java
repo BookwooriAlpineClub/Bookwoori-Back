@@ -29,21 +29,22 @@ public class RecordController {
     @Operation(summary = "책 기록 추가", description = "수정 페이지_책기록 에서 새로운 책기록을 추가합니다.")
     @PostMapping
     public ResponseEntity<?> createRecord(@RequestBody RecordRequestDto requestDto) {
-        recordFacade.createRecord(requestDto);
+        recordFacade.createRecordAndReview(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Operation(summary = "책 기록 수정", description = "수정 페이지_책기록 에서 기존 책기록을 수정합니다.")
     @PutMapping("/{recordId}")
-    public ResponseEntity<?> updateRecord(@PathVariable Long recordId,
+    public ResponseEntity<?> updateRecordAndReview(@PathVariable Long recordId,
         @RequestBody RecordRequestDto requestDto) {
-        return ResponseEntity.ok(recordFacade.updateRecord(recordId, requestDto));
+        recordFacade.updateRecordAndReview(recordId, requestDto);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "책 기록 삭제", description = "책기록을 삭제합니다.")
     @DeleteMapping("/{recordId}")
     public ResponseEntity<?> deleteRecord(@PathVariable Long recordId) {
-        recordFacade.deleteRecord(recordId);
+        recordFacade.deleteRecordAndReview(recordId);
         return ResponseEntity.ok().build();
     }
 

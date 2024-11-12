@@ -26,7 +26,6 @@ public record RecordResponseDto(
             .star(record.getStar())
             .currentPage(record.getCurrentPage())
             .maxPage(record.getMaxPage())
-            .review(record.getReview())
             .bookInfo(BookInfoDto.from(record.getBook()))
             .build();
     }
