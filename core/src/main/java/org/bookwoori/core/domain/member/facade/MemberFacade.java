@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.dto.request.UpdateMemberRequestDto;
 import org.bookwoori.core.domain.member.dto.response.MemberLibraryResponseDto;
+import org.bookwoori.core.domain.member.dto.response.MemberProfileResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.global.s3.S3Util;
@@ -32,5 +33,13 @@ public class MemberFacade {
         Member currentMember = memberService.getCurrentMember();
         boolean isMine = member.equals(currentMember);
         return MemberLibraryResponseDto.from(member, isMine);
+    }
+
+    @Transactional(readOnly = true)
+    public MemberProfileResponseDto getMemberProfile(Long memberId) {
+        Member member = memberService.getMemberById(memberId);
+        Member currentMember = memberService.getCurrentMember();
+        boolean isMine = member.equals(currentMember);
+        return MemberProfileResponseDto.from(member, isMine);
     }
 }
