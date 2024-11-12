@@ -2,6 +2,7 @@ package org.bookwoori.core.domain.record.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
+import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.entity.Record;
@@ -19,9 +20,10 @@ public record RecordRequestDto(
 
 ) {
 
-    public Record toEntity(Member currentMember) {
+    public Record toEntity(Member currentMember, Book book) {
         return Record.builder()
             .member(currentMember)
+            .book(book)
             .status(this.status)
             .star(this.star)
             .startDate(this.startDate)

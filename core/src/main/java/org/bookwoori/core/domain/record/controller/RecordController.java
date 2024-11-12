@@ -4,15 +4,18 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.record.dto.request.RecordRequestDto;
+import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.facade.RecordFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -43,4 +46,17 @@ public class RecordController {
         recordFacade.deleteRecord(recordId);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "진행도별 책 목록 조회", description = "내 서재의 책 목록을 진행도 별로 조회합니다.")
+    @GetMapping()
+    public ResponseEntity<?> getRecordsByStatus(@RequestParam ReadingStatus status) {
+        return ResponseEntity.ok(recordFacade.getRecordsByStatus(status));
+    }
+
+    @Operation(summary = "내 감상평 목록 조회", description = "내 서재의 감상평을 조회합니다.")
+    @GetMapping("/reviews")
+    public ResponseEntity<?> getReviews() {
+        return ResponseEntity.ok(recordFacade.getReviews());
+    }
+
 }

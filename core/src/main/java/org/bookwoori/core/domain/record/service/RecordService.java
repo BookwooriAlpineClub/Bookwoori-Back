@@ -1,8 +1,12 @@
 package org.bookwoori.core.domain.record.service;
 
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
+import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.record.repository.RecordRepository;
 import org.bookwoori.core.global.exception.CustomException;
@@ -41,7 +45,20 @@ public class RecordService {
             .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
     }
 
+    @Transactional
     public void deleteRecord(Long recordId) {
         recordRepository.deleteById(recordId);
     }
+
+    @Transactional
+    public List<Record> getRecordsByStatus(ReadingStatus status) {
+        return recordRepository.findAllByStatus(status);
+    }
+
+    @Transactional
+    public List<Record> getRecordsByMember(Member member) {
+        return recordRepository.findAllByMember(member);
+    }
+
+
 }
