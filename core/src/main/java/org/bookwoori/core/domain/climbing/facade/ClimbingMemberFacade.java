@@ -133,6 +133,9 @@ public class ClimbingMemberFacade {
         List<Long> sharedMemberIds = climbingMemberService.getSharedMemberIds(climbing);
         List<Review> sharedReviews = reviewService.getReviewsByMembersAndBook(sharedMemberIds,
             climbing.getBook());
+        if (sharedReviews == null || sharedReviews.isEmpty()) {
+            return new ClimbingReviewListResponseDto(true, Collections.emptyList());
+        }
         // reviewMap: memberId(key), Review 객체(value)
         Map<Long, Review> reviewMap = sharedReviews.stream()
             .collect(Collectors.toMap(
