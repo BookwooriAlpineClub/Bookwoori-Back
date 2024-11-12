@@ -2,6 +2,7 @@ package org.bookwoori.core.domain.review.repository;
 
 import java.util.List;
 import org.bookwoori.core.domain.book.entity.Book;
+import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByMemberIdsAndBook(@Param("memberIds") List<Long> memberIds,
         @Param("book") Book book);
 
+    boolean existsByMemberAndBook(Member member, Book book);
+
+    @Query("SELECT r FROM Review r WHERE r.record.member = :member AND r.record.book = :book")
+    Review findByMemberAndBook(@Param("member") Member member, @Param("book") Book book);
 
     Review findByRecord_RecordId(Long recordId);
 

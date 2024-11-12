@@ -100,11 +100,22 @@ public class ClimbingController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "클라이밍 채널 감상평 리스트 조회", description = "클라이밍 채널에 공유된 감상평 목록을 조회합니다.")
+    @Operation(summary = "클라이밍 채널 감상평 공유 가능 여부/리스트 조회", description = "클라이밍 채널 감상평 공유 가능 여부 또는 리스트를 조회합니다.")
     @GetMapping("/{climbingId}/reviews")
-    public ResponseEntity<?> getClimbingReviewList(
+    public ResponseEntity<?> getClimbingReview(
         @PathVariable("climbingId") final Long climbingId) {
-        return ResponseEntity.ok(climbingMemberFacade.getClimbingReviewList(climbingId));
+        boolean hasShared = climbingMemberFacade.isHasShared(climbingId);
+        if (hasShared) {
+            return ResponseEntity.ok(climbingMemberFacade.getClimbingReviewList(climbingId));
+        } else {
+            boolean allowsShare = climbingMemberFacade.isAllowsShare(climbingId);
+            if (allowsShare) {
+                return ResponseEntity.ok(climbingMemberFacade.getReviewWithAllowShare(climbingId));
+            } else {
+                return ResponseEntity.ok(
+                    climbingMemberFacade.getReviewWithoutAllowShare(climbingId));
+            }
+        }
     }
 
     @Operation(summary = "클라이밍 채널 참여자 감상평 반응 추가 <-> 삭제", description = "클라이밍 채널 참여자가 공유한 감상평에 반응을 추가 <-> 삭제합니다.")
