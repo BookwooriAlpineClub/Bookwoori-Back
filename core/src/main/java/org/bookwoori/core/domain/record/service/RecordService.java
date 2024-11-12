@@ -14,7 +14,6 @@ import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-;
 
 @Service
 @RequiredArgsConstructor
