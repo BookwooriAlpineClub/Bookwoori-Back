@@ -2,6 +2,7 @@ package org.bookwoori.core.domain.server.facade;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -124,27 +125,37 @@ public class ServerFacade {
     }
 
     @Transactional
-    public String getOrCreateInviteCode(Long serverId) {
+    public Object createInviteCode(Long serverId) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        String inviteCode = ops.get(String.valueOf(serverId));
+        String uuid = UUID.randomUUID().toString();
 
-        if (inviteCode != null) { // 이미 존재하는 경우
-            return inviteCode;
-        } else { // 존재하지 않는 경우
-            inviteCode = UUID.randomUUID().toString(); // 새로 생성
-            ops.set(String.valueOf(serverId), inviteCode, 7, TimeUnit.DAYS); // Redis에 저장, TTL 7일
-            return inviteCode;
-        }
+        Random random = new Random();
+        int length = 10 + random.nextInt(3); // 길이 10-12
+        int startIndex = random.nextInt(uuid.length() - length);
+        int endIndex = startIndex + length;
+
+        String inviteCode = uuid.substring(startIndex, endIndex);
+
+        ops.set(inviteCode, "serverId: " + serverId, 1, TimeUnit.DAYS); // Redis에 저장, TTL 1일
+        return inviteCode;
+
     }
 
     @Transactional
     public void createServerMember(String inviteCode) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-//        System.out.println(ops.get(inviteCode)); // 디버깅용
-        Server server = serverService.getServerById(Long.valueOf(ops.get(inviteCode)));
-        //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
+
+        String value = ops.get(inviteCode); // 형식은 "serverId: 1"
+        Long serverId;
+        if (value != null) { // 초대코드 맞는 경우
+            serverId = Long.parseLong(value.split(" ")[1]);
+        } else { // 초대코드 틀린 경우
+            serverId = 0L;
+        }
+
+        Server server = serverService.getServerById(serverId);
         Member currentMember = memberService.getCurrentMember();
-//        Member member = memberService.getMemberById(1L); // 테스트용
+
         boolean isJoined = serverMemberRepository.findByMemberAndServer(currentMember, server)
             .isPresent();
 
