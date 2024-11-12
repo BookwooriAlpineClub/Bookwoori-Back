@@ -18,6 +18,10 @@ public class ServerService {
         return serverRepository.save(server);
     }
 
+    public void deleteServer(Server server) {
+        serverRepository.delete(server);
+    }
+
     @Transactional(readOnly = true)
     public Server getServerById(Long serverId) {
         return serverRepository.findById(serverId)
