@@ -128,7 +128,7 @@ public class ServerFacade {
     @Transactional
     public Object createInviteCode(Long serverId) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        String uuid = UUID.randomUUID().toString();
+        String uuid = UUID.randomUUID().toString().replace("-", "");
 
         Random random = new Random();
         int length = 10 + random.nextInt(3); // 길이 10-12
