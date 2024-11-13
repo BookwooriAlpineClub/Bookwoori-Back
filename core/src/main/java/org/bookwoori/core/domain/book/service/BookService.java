@@ -7,19 +7,15 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.dto.response.BookDetailResponseDto;
 import org.bookwoori.core.domain.book.dto.response.BookResponseDto;
+import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.book.repository.BookRepository;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.bookwoori.core.domain.book.entity.Book;
-import org.bookwoori.core.domain.book.repository.BookRepository;
-import org.bookwoori.core.global.exception.CustomException;
-import org.bookwoori.core.global.exception.ErrorCode;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional
@@ -60,7 +56,7 @@ public class BookService {
                 }
             }
         } catch (Exception e) {
-            throw new CustomException(ErrorCode.API_CALL_ERROR);
+            throw new CustomException(ErrorCode.BOOK_NOT_FOUND);
         }
 
         return bookList;
@@ -84,36 +80,32 @@ public class BookService {
                 return BookDetailResponseDto.from(item);
             }
         } catch (Exception e) {
-            throw new CustomException(ErrorCode.API_CALL_ERROR);
+            throw new CustomException(ErrorCode.BOOK_NOT_FOUND);
         }
 
         return null; // 데이터가 없거나 오류 발생 시 null 반환
     }
 
-
-}
-    private final BookRepository bookRepository;
-
     public Book getOrCreateBookByIsbn(String isbn) {
         return bookRepository.findByIsbn(isbn)
-                .orElseGet(() -> {
-                    Book newBook = Book.builder()
-                            .isbn(isbn)
-                            .title("테스트 제목")
-                            .writer("테스트 저자 ")
-                            .publisher("테스트 출판사")
-                            .pageCount(0)
-                            .coverImg(null)
-                            .description(null)
-                            .build();
-                    return bookRepository.save(newBook);
-                });
+            .orElseGet(() -> {
+                Book newBook = Book.builder()
+                    .isbn(isbn)
+                    .title("테스트 제목")
+                    .writer("테스트 저자 ")
+                    .publisher("테스트 출판사")
+                    .pageCount(0)
+                    .coverImg(null)
+                    .description(null)
+                    .build();
+                return bookRepository.save(newBook);
+            });
     }
 
     @Transactional(readOnly = true)
     public Book getBookById(Long bookId) {
         return bookRepository.findById(bookId)
-                .orElseThrow(() -> new CustomException(ErrorCode.BOOK_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorCode.BOOK_NOT_FOUND));
     }
 
 }
