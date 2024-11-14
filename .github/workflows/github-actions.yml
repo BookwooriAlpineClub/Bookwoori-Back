@@ -24,7 +24,7 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          cd ./
+          cd ./core
           chmod +x ./gradlew
           ./gradlew build -x test
 
@@ -37,7 +37,7 @@ jobs:
       - name: Core Server build & push
         uses: docker/build-push-action@v6
         with:
-          context: ./
+          context: ./core
           file: ./Dockerfile
           platforms: linux/arm64/v8
           push: true
