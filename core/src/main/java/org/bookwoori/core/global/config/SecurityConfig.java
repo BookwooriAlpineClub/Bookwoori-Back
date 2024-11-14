@@ -89,10 +89,8 @@ public class SecurityConfig {
                 config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .logout(AbstractHttpConfigurer::disable)
             // jwt
-            .addFilterBefore(new TokenExceptionFilter(),
-                jwtAuthenticationFilter.getClass()) // 토큰 예외 핸들링
-            .addFilterBefore(jwtAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new TokenExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/success", "auth/refresh").permitAll()
                 //todo Auth 서버 분리 시 수정해야 하는 부분
