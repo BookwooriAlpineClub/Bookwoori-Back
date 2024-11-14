@@ -38,7 +38,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./core
-          file: ./Dockerfile
+          file: ./core/Dockerfile
           platforms: linux/arm64/v8
           push: true
           tags: ${{ secrets.DOCKER_REPO_CORE }}:latest
