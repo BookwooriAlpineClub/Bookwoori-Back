@@ -1,7 +1,8 @@
-FROM arm64v8/eclipse-temurin:21-jdk-focal
+FROM openjdk:21-slim
 
 ARG JAR_FILE=build/libs/*.jar
 
 COPY ${JAR_FILE} app.jar
 
-ENTRYPOINT ["java", "-Duser.timezone=Asia/Seoul", "-jar", "/app.jar"]
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "-Duser.timezone=Asia/Seoul", "app.jar"]
