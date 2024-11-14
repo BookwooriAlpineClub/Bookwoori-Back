@@ -56,9 +56,21 @@ public class CategoryService {
             .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
+    @Transactional
     public void detach(Category category) {
         category.connectBeforeAndAfterNodes();
         categoryRepository.flush();
+    }
+
+    @Transactional
+    public void insert(Category categoryToInsert, Category beforeCategory) {
+        Category nextCategory = beforeCategory.getNextNode();
+        beforeCategory.disconnect();
+        categoryRepository.flush();
+        categoryToInsert.setBeforeNode(beforeCategory);
+        if (nextCategory != null) {
+            nextCategory.setBeforeNode(categoryToInsert);
+        }
     }
 
     public void delete(Category category) {

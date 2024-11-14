@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.category.dto.request.CategoryCreateRequestDto;
+import org.bookwoori.core.domain.category.dto.request.CategoryLocateRequestDto;
 import org.bookwoori.core.domain.category.dto.request.CategoryUpdateRequestDto;
 import org.bookwoori.core.domain.category.facade.CategoryFacade;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,14 @@ public class CategoryController {
     public ResponseEntity<?> updateCategoryName(@PathVariable final Long categoryId,
         @Valid @RequestBody CategoryUpdateRequestDto requestDto) {
         categoryFacade.updateCategoryName(categoryId, requestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "카테고리 위치 변경", description = "카테고리의 위치를 변경합니다.")
+    @PatchMapping("/{categoryId}/locate")
+    public ResponseEntity<?> locateCategory(@PathVariable final Long categoryId,
+        @Valid @RequestBody CategoryLocateRequestDto requestDto) {
+        categoryFacade.locateCategory(categoryId, requestDto);
         return ResponseEntity.ok().build();
     }
 }
