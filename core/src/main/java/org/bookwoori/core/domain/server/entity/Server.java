@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.domain.category.entity.Category;
+import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.serverMember.entity.ServerMember;
 import org.bookwoori.core.global.BaseTimeEntity;
 
@@ -47,6 +48,17 @@ public class Server extends BaseTimeEntity {
     private List<Category> categories = new ArrayList<>();
 
     @OneToMany(mappedBy = "server", cascade = CascadeType.ALL)
+    private List<Climbing> climbingChannels = new ArrayList<>();
+
+    @OneToMany(mappedBy = "server", cascade = CascadeType.ALL)
     private List<ServerMember> members = new ArrayList<>();
 
+    public void updateInfo(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public void updateServerImg(String url) {
+        this.serverImg = url;
+    }
 }

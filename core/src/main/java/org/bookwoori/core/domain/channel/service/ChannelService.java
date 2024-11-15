@@ -36,14 +36,38 @@ public class ChannelService {
         channelRepository.save(voiceChannel);
     }
 
+    public void deleteChannel(Channel channel) {
+        channelRepository.delete(channel);
+    }
+
     @Transactional(readOnly = true)
     public Channel getLastNodeByCategory(Category category) {
         return channelRepository.findChannelByCategoryAndNextNodeIsNull(category).orElse(null);
     }
 
     @Transactional(readOnly = true)
+    public Channel getFirstNodeByCategory(Category category) {
+        return channelRepository.findChannelByCategoryAndBeforeNodeIsNull(category).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
     public Channel getChannelById(Long channelId) {
         return channelRepository.findById(channelId)
             .orElseThrow(() -> new CustomException(ErrorCode.CHANNEL_NOT_FOUND));
+    }
+
+    @Transactional
+    public void detach(Channel channel) {
+        channel.connectBeforeAndNextNodes();
+        channelRepository.flush();
+    }
+
+    @Transactional
+    public void moveChannelsToCategory(Category from, Category to) {
+        Channel nextChannel = getFirstNodeByCategory(from);
+        if (nextChannel != null) {
+            nextChannel.setBeforeNode(getLastNodeByCategory(to));
+        }
+        from.getChannels().forEach(channel -> channel.modifyCategory(to));
     }
 }

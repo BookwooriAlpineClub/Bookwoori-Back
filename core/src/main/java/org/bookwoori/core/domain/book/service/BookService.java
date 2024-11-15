@@ -1,12 +1,16 @@
 package org.bookwoori.core.domain.book.service;
 
+
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.book.repository.BookRepository;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional
@@ -30,6 +34,7 @@ public class BookService {
                 return bookRepository.save(newBook);
             });
     }
+
 
     @Transactional(readOnly = true)
     public Book getBookById(Long bookId) {

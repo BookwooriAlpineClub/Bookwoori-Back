@@ -1,16 +1,16 @@
 package org.bookwoori.core.global.config;
 
+import java.util.Arrays;
+import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.global.exception.TokenExceptionFilter;
 import org.bookwoori.core.global.jwt.CustomAccessDeniedHandler;
 import org.bookwoori.core.global.jwt.CustomAuthenticationEntryPoint;
 import org.bookwoori.core.global.jwt.JwtAuthenticationFilter;
-import org.bookwoori.core.global.oauth.OAuth2UserService;
 import org.bookwoori.core.global.oauth.OAuth2SuccessHandler;
-import lombok.RequiredArgsConstructor;
+import org.bookwoori.core.global.oauth.OAuth2UserService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -28,8 +28,6 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -95,8 +93,7 @@ public class SecurityConfig {
             .addFilterBefore(new TokenExceptionFilter(),
                 jwtAuthenticationFilter.getClass()) // 토큰 예외 핸들링
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/success", "/signup", "/login", "/token").permitAll()
-                .requestMatchers(HttpMethod.GET, "/playlists/**").permitAll()
+                .requestMatchers("/auth/success", "auth/refresh").permitAll()
                 .anyRequest().authenticated())
             // 인증 예외 핸들링
             .exceptionHandling((exceptions) -> exceptions

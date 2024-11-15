@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.category.dto.request.CategoryCreateRequestDto;
+import org.bookwoori.core.domain.category.dto.request.CategoryLocateRequestDto;
 import org.bookwoori.core.domain.category.dto.request.CategoryUpdateRequestDto;
 import org.bookwoori.core.domain.category.facade.CategoryFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,11 +34,26 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Operation(summary = "카테고리 삭제", description = "카테고리를 삭제합니다.")
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<?> deleteCategory(@PathVariable final Long categoryId) {
+        categoryFacade.deleteCategory(categoryId);
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "카테고리 이름 변경", description = "카테고리 이름을 변경합니다.")
     @PatchMapping("/{categoryId}/name")
     public ResponseEntity<?> updateCategoryName(@PathVariable final Long categoryId,
         @Valid @RequestBody CategoryUpdateRequestDto requestDto) {
         categoryFacade.updateCategoryName(categoryId, requestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "카테고리 위치 변경", description = "카테고리의 위치를 변경합니다.")
+    @PatchMapping("/{categoryId}/locate")
+    public ResponseEntity<?> locateCategory(@PathVariable final Long categoryId,
+        @Valid @RequestBody CategoryLocateRequestDto requestDto) {
+        categoryFacade.locateCategory(categoryId, requestDto);
         return ResponseEntity.ok().build();
     }
 }

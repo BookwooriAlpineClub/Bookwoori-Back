@@ -30,6 +30,11 @@ public class ServerMemberService {
     }
 
     @Transactional(readOnly = true)
+    public boolean isOwner(Member member, Server server) {
+        return serverMemberRepository.existsByMemberAndServerAndRole(member, server);
+    }
+
+    @Transactional(readOnly = true)
     public Member getOwner(Server server) {
         return serverMemberRepository.findOwnerByServer(server)
             .orElseThrow(() -> new CustomException(ErrorCode.SERVER_OWNER_NOT_FOUND));
@@ -45,6 +50,34 @@ public class ServerMemberService {
         return serverMemberRepository.findAllByServer(server).stream().map(
                 serverMember -> ServerMemberDto.from(serverMember.getMember(), serverMember.getRole()))
             .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<Server> getServerListByMember(Member member) {
+        return serverMemberRepository.findAllByMember(member).stream()
+            .map(ServerMember::getServer).toList();
+    }
+
+    public void deleteServerMember(Server server, Member member) {
+        serverMemberRepository.deleteByServerAndMember(server, member);
+    }
+
+    public ServerMember getByMemberAndServer(Member member, Server server) {
+        return serverMemberRepository.findByMemberAndServer(member, server)
+            .orElseThrow(() -> new CustomException(ErrorCode.SERVER_MEMBER_NOT_FOUND));
+    }
+
+    @Transactional
+    public void delegateServerRole(Server server, Member from, Member to) {
+        ServerMember owner = getByMemberAndServer(from, server);
+
+        if (!owner.getRole().equals(ServerRole.OWNER)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        ServerMember newOwner = getByMemberAndServer(to, server);
+        owner.updateRole(ServerRole.MEMBER);
+        newOwner.updateRole(ServerRole.OWNER);
     }
 
 }

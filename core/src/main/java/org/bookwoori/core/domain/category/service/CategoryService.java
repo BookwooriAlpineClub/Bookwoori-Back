@@ -29,6 +29,12 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
+    @Transactional
+    public Category getDefaultCategoryByServer(Server server) {
+        return categoryRepository.findDefaultCategoryByServer(server)
+            .orElseGet(() -> makeDefaultCategory(server));
+    }
+
     @Transactional(readOnly = true)
     public Category getLastNodeByServer(Server server) {
         return categoryRepository.findCategoryByServerAndNextNodeIsNull(server).orElse(null);
@@ -41,6 +47,33 @@ public class CategoryService {
     }
 
     public List<Category> getCategoriesWithChannels(Server server) {
-        return categoryRepository.findCategoryByServer(server);
+        return categoryRepository.findCategoriesByServer(server);
+    }
+
+    @Transactional(readOnly = true)
+    public Category getCategoryWithChannels(Long categoryId) {
+        return categoryRepository.findCategoryWithChannelsById(categoryId)
+            .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+    }
+
+    @Transactional
+    public void detach(Category category) {
+        category.connectBeforeAndAfterNodes();
+        categoryRepository.flush();
+    }
+
+    @Transactional
+    public void insert(Category categoryToInsert, Category beforeCategory) {
+        Category nextCategory = beforeCategory.getNextNode();
+        beforeCategory.disconnect();
+        categoryRepository.flush();
+        categoryToInsert.setBeforeNode(beforeCategory);
+        if (nextCategory != null) {
+            nextCategory.setBeforeNode(categoryToInsert);
+        }
+    }
+
+    public void delete(Category category) {
+        categoryRepository.delete(category);
     }
 }
