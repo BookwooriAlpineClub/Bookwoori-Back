@@ -30,23 +30,33 @@ public class RecordFacade {
     private final BookService bookService;
     private final ReviewService reviewService;
 
-    public void createRecordAndReview(RecordRequestDto requestDto) {
+    public void createRecord(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
 
-        Record savedRecord = recordService.saveRecord(
-            requestDto.toRecordEntity(currentMember, book));
-        reviewService.saveReview(
-            requestDto.toReviewEntity(savedRecord, requestDto.reviewContent()));
+        recordService.saveRecord(requestDto.toRecordEntity(currentMember, book));
 
     }
 
-    public void updateRecordAndReview(Long recordId, RecordRequestDto requestDto) {
+    public void createReview(RecordRequestDto requestDto) {
+        Member currentMember = memberService.getCurrentMember();
+        Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
+        Record record = recordService.getRecordByMemberAndBook(currentMember, book);
+        reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.reviewContent()));
+
+    }
+
+    public void updateRecord(Long recordId, RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Record record = recordService.getRecordById(recordId);
-        Review review = reviewService.getReviewByRecordId(recordId);
 
         record.updateRecord(requestDto.toRecordEntity(currentMember, record.getBook()));
+
+    }
+
+    public void updateReview(Long recordId, RecordRequestDto requestDto) {
+        Review review = reviewService.getReviewByRecordId(recordId);
+
         review.updateReview(requestDto.reviewContent());
 
     }

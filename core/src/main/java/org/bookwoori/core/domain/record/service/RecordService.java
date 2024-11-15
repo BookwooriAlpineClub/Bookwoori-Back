@@ -45,6 +45,12 @@ public class RecordService {
     }
 
     @Transactional
+    public Record getRecordByMemberAndBook(Member member, Book book) {
+        return recordRepository.findByMemberAndBook(member, book)
+            .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
+    }
+
+    @Transactional
     public void deleteRecord(Long recordId) {
         recordRepository.deleteById(recordId);
     }
