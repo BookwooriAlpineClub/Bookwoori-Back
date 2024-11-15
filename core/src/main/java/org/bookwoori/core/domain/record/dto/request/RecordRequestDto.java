@@ -1,6 +1,7 @@
 package org.bookwoori.core.domain.record.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.member.entity.Member;
@@ -12,11 +13,11 @@ import org.bookwoori.core.domain.review.entity.Review;
 public record RecordRequestDto(
     @NotBlank
     String isbn13,
-    @NotBlank
+    @NotNull
     ReadingStatus status,
-    Integer star,
+    int star,
     LocalDate startDate,
-    Integer currentPage,
+    int currentPage,
     String reviewContent
 
 ) {
