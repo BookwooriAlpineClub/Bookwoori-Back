@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Log4j2
+@Transactional
 public class RecordFacade {
 
     private final RecordService recordService;
@@ -29,7 +30,6 @@ public class RecordFacade {
     private final BookService bookService;
     private final ReviewService reviewService;
 
-    @Transactional
     public void createRecordAndReview(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
@@ -41,7 +41,6 @@ public class RecordFacade {
 
     }
 
-    @Transactional
     public void updateRecordAndReview(Long recordId, RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Record record = recordService.getRecordById(recordId);
@@ -52,7 +51,6 @@ public class RecordFacade {
 
     }
 
-    @Transactional
     public void deleteRecordAndReview(Long recordId) {
         reviewService.deleteReviewByRecordId(recordId);
         recordService.deleteRecord(recordId);
