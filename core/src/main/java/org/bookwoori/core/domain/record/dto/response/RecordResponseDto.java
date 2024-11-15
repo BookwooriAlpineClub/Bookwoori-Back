@@ -13,7 +13,6 @@ public record RecordResponseDto(
     int star,
     int currentPage,
     int maxPage,
-    String review,
     BookInfoDto bookInfo
 
 ) {
