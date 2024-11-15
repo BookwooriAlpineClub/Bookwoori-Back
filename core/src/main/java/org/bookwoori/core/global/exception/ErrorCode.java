@@ -50,6 +50,7 @@ public enum ErrorCode {
 
     // Category (3200 ~ 3299)
     CATEGORY_NOT_FOUND(404, 3200, "카테고리를 찾을 수 없습니다."),
+    CATEGORY_LOCATE_EXCEPTION(400, 3201, "카테고리 위치를 변경할 수 없습니다."),
     DEFAULT_CATEGORY_EXCEPTION(403, 3250, "기본 카테고리는 수정 또는 삭제가 불가능합니다."),
 
     // Channel (3300 ~ 3399)
