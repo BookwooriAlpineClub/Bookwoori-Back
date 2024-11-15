@@ -137,7 +137,8 @@ public class ServerFacade {
 
         String inviteCode = uuid.substring(startIndex, endIndex);
 
-        ops.set(inviteCode, "serverId: " + serverId, 1, TimeUnit.DAYS); // Redis에 저장, TTL 1일
+        ops.set("server:invitation:" + inviteCode, String.valueOf(serverId), 1,
+            TimeUnit.DAYS); // Redis에 저장, TTL 1일
         return inviteCode;
 
     }
@@ -147,14 +148,11 @@ public class ServerFacade {
 
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
 
-        String value = ops.get(inviteCode); // 형식은 "serverId: 1"
-        Long serverId;
-
-        if (value != null) { // 초대코드 맞는 경우
-            serverId = Long.parseLong(value.split(" ")[1]);
-        } else { // 초대코드 틀린 경우
-            serverId = 0L;
+        String value = ops.get("server:invitation:" + inviteCode);
+        if (value == null) {
+            throw new CustomException(ErrorCode.INVALID_INVITE_CODE);
         }
+        Long serverId = Long.valueOf(value);
 
         Server server = serverService.getServerById(serverId);
         Member owner = serverMemberService.getOwner(server);
@@ -168,13 +166,11 @@ public class ServerFacade {
     public void createServerMember(String inviteCode) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
 
-        String value = ops.get(inviteCode); // 형식은 "serverId: 1"
-        Long serverId;
-        if (value != null) { // 초대코드 맞는 경우
-            serverId = Long.parseLong(value.split(" ")[1]);
-        } else { // 초대코드 틀린 경우
-            serverId = 0L;
+        String value = ops.get("server:invitation:" + inviteCode);
+        if (value == null) {
+            throw new CustomException(ErrorCode.INVALID_INVITE_CODE);
         }
+        Long serverId = Long.valueOf(value);
 
         Server server = serverService.getServerById(serverId);
         Member currentMember = memberService.getCurrentMember();
