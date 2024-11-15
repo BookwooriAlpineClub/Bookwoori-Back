@@ -56,7 +56,7 @@ public class BookFacade {
                 }
             }
         } catch (Exception e) {
-            throw new CustomException(ErrorCode.BOOK_NOT_FOUND);
+            throw new CustomException(ErrorCode.ALADIN_API_EXCEPTION);
         }
 
         return bookList;
@@ -80,7 +80,7 @@ public class BookFacade {
                 return BookDetailResponseDto.from(item);
             }
         } catch (Exception e) {
-            throw new CustomException(ErrorCode.BOOK_NOT_FOUND);
+            throw new CustomException(ErrorCode.ALADIN_API_EXCEPTION);
         }
 
         return null; // 데이터가 없거나 오류 발생 시 null 반환
