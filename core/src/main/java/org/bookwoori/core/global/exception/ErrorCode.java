@@ -66,6 +66,7 @@ public enum ErrorCode {
 
     // Book (3500 ~ 3599)
     BOOK_NOT_FOUND(404, 3500, "책을 찾을 수 없습니다."),
+    ALADIN_API_EXCEPTION(404, 3501, "알라딘 API 호출에 실패했습니다.");
 
     // Record (3600 ~ 3699)
     RECORD_NOT_FOUND(404, 3600, "레코드를 찾을 수 없습니다."),
