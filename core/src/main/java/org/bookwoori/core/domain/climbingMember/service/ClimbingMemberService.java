@@ -54,7 +54,7 @@ public class ClimbingMemberService {
     @Transactional(readOnly = true)
     public ClimbingMember getMemberInClimbing(Member member, Long climbingId) {
         return climbingMemberRepository.findByMemberAndClimbing_ClimbingId(member, climbingId)
-            .orElseThrow(() -> new CustomException(ErrorCode.CLIMBINGMEMBER_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorCode.CLIMBING_MEMBER_NOT_FOUND));
     }
 
     public void delegateClimbingRole(Long climbingId, Member currentMember,
