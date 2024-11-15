@@ -11,6 +11,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.domain.record.entity.Record;
@@ -19,7 +21,9 @@ import org.bookwoori.core.global.BaseTimeEntity;
 @Entity
 @Table(name = "review")
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Review extends BaseTimeEntity {
 
     @Id
@@ -34,4 +38,8 @@ public class Review extends BaseTimeEntity {
 
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
+
+    public void updateReview(String content) {
+        this.content = content;
+    }
 }
