@@ -58,6 +58,7 @@ public class RecordFacade {
         recordService.deleteRecord(recordId);
     }
 
+    @Transactional(readOnly = true)
     public List<RecordResponseDto> getRecordsByStatus(ReadingStatus status) {
 
         List<RecordResponseDto> recordResponseDtoList = new ArrayList<>();
@@ -71,7 +72,7 @@ public class RecordFacade {
         return recordResponseDtoList;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ReviewResponseDto> getReviews() {
         List<ReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
         List<Record> recordList = recordService.getRecordsByMember(
