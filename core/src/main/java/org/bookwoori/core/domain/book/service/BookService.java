@@ -6,11 +6,8 @@ import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.book.repository.BookRepository;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @Transactional
@@ -20,14 +17,14 @@ public class BookService {
     private final BookRepository bookRepository;
 
     public Book getOrCreateBookByIsbn(String isbn) {
-        return bookRepository.findByIsbn(isbn)
+        return bookRepository.findByIsbn13(isbn)
             .orElseGet(() -> {
                 Book newBook = Book.builder()
-                    .isbn(isbn)
+                    .isbn13(isbn)
                     .title("테스트 제목")
-                    .writer("테스트 저자 ")
+                    .author("테스트 저자 ")
                     .publisher("테스트 출판사")
-                    .pageCount(0)
+                    .itemPage(0)
                     .coverImg(null)
                     .description(null)
                     .build();
