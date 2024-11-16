@@ -47,7 +47,7 @@ public enum ErrorCode {
     DELEGATION_REQUIRED(409, 3102, "해당 요청 처리를 위해서는 서버장 권한을 위임해야 합니다."),
     SERVER_MEMBER_NOT_FOUND(404, 3150, "해당 서버에 사용자가 존재하지 않습니다."),
     SERVER_OWNER_NOT_FOUND(404, 3151, "서버 주인을 찾을 수 없습니다."),
-    INVALID_INVITE_CODE(404, 3200, "유효하지 않은 초대코드입니다."),
+    INVALID_INVITE_CODE(404, 3190, "유효하지 않은 초대코드입니다."),
 
     // Category (3200 ~ 3299)
     CATEGORY_NOT_FOUND(404, 3200, "카테고리를 찾을 수 없습니다."),
