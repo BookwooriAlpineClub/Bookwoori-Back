@@ -92,7 +92,8 @@ public class SecurityConfig {
             .addFilterBefore(new TokenExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/success", "/auth/refresh").permitAll()
+                .requestMatchers("/auth/success", "/auth/refresh", "/v3/api-docs/**",
+                    "/swagger-ui/**").permitAll()
                 .anyRequest().authenticated())
             // 인증 예외 핸들링
             .exceptionHandling((exceptions) -> exceptions
