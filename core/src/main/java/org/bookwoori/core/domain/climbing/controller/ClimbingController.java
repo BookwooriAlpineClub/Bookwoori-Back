@@ -104,12 +104,12 @@ public class ClimbingController {
     @GetMapping("/{climbingId}/reviews")
     public ResponseEntity<?> getClimbingReview(
         @PathVariable("climbingId") final Long climbingId) {
-        boolean hasShared = climbingMemberFacade.isHasShared(climbingId);
+        boolean hasShared = climbingMemberFacade.getHasShared(climbingId);
         if (hasShared) {
             return ResponseEntity.ok(climbingMemberFacade.getClimbingReviewList(climbingId));
         } else {
-            boolean allowsShare = climbingMemberFacade.AllowsShare(climbingId);
-            if (allowsShare) {
+            boolean isShareable = climbingMemberFacade.isShareable(climbingId);
+            if (isShareable) {
                 return ResponseEntity.ok(climbingMemberFacade.getReviewWithAllowShare(climbingId));
             } else {
                 return ResponseEntity.ok(
