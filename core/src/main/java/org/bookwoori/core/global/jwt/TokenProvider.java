@@ -85,7 +85,7 @@ public class TokenProvider {
 
     public Map<String, String> renewAccessAndRefreshToken(String refreshToken) {
         if (validateToken(refreshToken, true)) {
-            Claims claims = parseClaims(refreshToken, refreshKey);
+            Claims claims = parseClaims(refreshToken, refreshKey, true);
             Long kakaoId = Long.valueOf(claims.getSubject());
             // 새 accessToken 및 refreshToken 생성
             List<String> roles = getRolesFromClaims(claims);
@@ -116,32 +116,26 @@ public class TokenProvider {
 
     public boolean validateToken(String token, boolean isRefreshToken) {
         try {
-            Claims claims = parseClaims(token, isRefreshToken ? refreshKey : accessKey);
+            Claims claims = parseClaims(token, isRefreshToken ? refreshKey : accessKey,
+                isRefreshToken);
             return claims.getExpiration().after(new Date());
         } catch (ExpiredJwtException e) {
-            if (isRefreshToken) {
-                throw new TokenException(ErrorCode.EXPIRED_REFRESH_TOKEN);
-            } else {
-                throw new TokenException(ErrorCode.EXPIRED_ACCESS_TOKEN);
-            }
+            throw new TokenException(
+                isRefreshToken ? ErrorCode.EXPIRED_REFRESH_TOKEN : ErrorCode.EXPIRED_ACCESS_TOKEN);
+        } catch (io.jsonwebtoken.SignatureException e) {
+            throw new TokenException(ErrorCode.INVALID_JWT_SIGNATURE);
         } catch (JwtException e) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
         }
     }
 
     public Authentication getAuthentication(String token, boolean isRefreshToken) {
-        Claims claims;
-        if (isRefreshToken) {
-            claims = parseClaims(token, refreshKey);
-        } else {
-            claims = parseClaims(token, accessKey);
-        }
+        Claims claims = parseClaims(token, isRefreshToken ? refreshKey : accessKey, isRefreshToken);
         List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), token, authorities);
     }
 
     public void saveRefreshToken(Long kakaoId, String refreshToken) {
-        Long memberId = memberService.getMemberIdByKakaoId(kakaoId);
         redisTemplate.opsForValue()
             .set(kakaoId.toString(), refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
     }
@@ -157,7 +151,7 @@ public class TokenProvider {
             .collect(Collectors.toList());
     }
 
-    private Claims parseClaims(String token, SecretKey key) {
+    private Claims parseClaims(String token, SecretKey key, boolean isRefreshToken) {
         try {
             return Jwts.parser()
                 .setSigningKey(key)
@@ -165,11 +159,16 @@ public class TokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
         } catch (ExpiredJwtException e) {
-            return e.getClaims();
+            if (isRefreshToken) {
+                throw new TokenException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+            } else {
+                throw new TokenException(ErrorCode.EXPIRED_ACCESS_TOKEN);
+            }
         } catch (JwtException e) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
         }
     }
+
 }
 
 

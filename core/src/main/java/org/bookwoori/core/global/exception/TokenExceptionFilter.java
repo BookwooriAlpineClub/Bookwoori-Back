@@ -24,7 +24,8 @@ public class TokenExceptionFilter extends OncePerRequestFilter {
             log.error("TokenException occurred: {}", e.getMessage(), e);
 
             ErrorCode errorCode = e.getErrorCode();
-            
+
+            // ErrorDto 생성
             ErrorDto errorDto = ErrorDto.builder()
                 .timestamp(LocalDateTime.now().toString())
                 .status(errorCode.getStatus())
@@ -33,12 +34,15 @@ public class TokenExceptionFilter extends OncePerRequestFilter {
                 .path(request.getRequestURI())
                 .build();
 
+            // HTTP 응답 설정
             response.setStatus(errorDto.getStatus());
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
 
+            // 에러 정보를 JSON으로 변환하여 응답에 작성
             String responseJson = objectMapper.writeValueAsString(errorDto);
             response.getWriter().write(responseJson);
         }
     }
+
 }
