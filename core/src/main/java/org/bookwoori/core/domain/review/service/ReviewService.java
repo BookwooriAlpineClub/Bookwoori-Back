@@ -26,4 +26,18 @@ public class ReviewService {
     public List<Review> getReviewsByMembersAndBook(List<Long> members, Book book) {
         return reviewRepository.findByMemberIdsAndBook(members, book);
     }
+
+    @Transactional
+    public void saveReview(Review review) {
+        reviewRepository.save(review);
+    }
+
+    @Transactional(readOnly = true)
+    public Review getReviewByRecordId(Long recordId) {
+        return reviewRepository.findByRecord_RecordId(recordId);
+    }
+
+    public void deleteReviewByRecordId(Long recordId) {
+        reviewRepository.deleteByRecord_RecordId(recordId);
+    }
 }

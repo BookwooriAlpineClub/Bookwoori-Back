@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.record.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +15,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
@@ -22,7 +25,9 @@ import org.bookwoori.core.domain.member.entity.Member;
 @Entity
 @Table(name = "record")
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Record {
 
     @Id
@@ -33,11 +38,13 @@ public class Record {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", updatable = false)
     @NotNull
+    @JsonIgnore
     private Book book;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", updatable = false)
     @NotNull
+    @JsonIgnore
     private Member member;
 
     @Column(name = "status")
@@ -57,7 +64,12 @@ public class Record {
     @Column(name = "max_page")
     private int maxPage;
 
-    @Column(name = "expectation", columnDefinition = "TEXT")
-    private String expectation;
+
+    public void updateRecord(Record record) {
+        this.status = record.status;
+        this.star = record.star;
+        this.startDate = record.startDate;
+        this.currentPage = record.currentPage;
+    }
 
 }

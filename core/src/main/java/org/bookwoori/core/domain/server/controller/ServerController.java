@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.climbing.facade.ClimbingFacade;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
+import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
 import org.bookwoori.core.domain.server.facade.ServerFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,6 +61,13 @@ public class ServerController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "서버 삭제", description = "서버를 삭제합니다.")
+    @DeleteMapping("/{serverId}")
+    public ResponseEntity<?> deleteServer(@PathVariable final Long serverId) {
+        serverFacade.deleteServer(serverId);
+        return ResponseEntity.ok().build();
+    }
+
     @Operation(summary = "서버 이미지 편집", description = "서버 이미지를 수정 또는 삭제합니다.")
     @PatchMapping(value = "/{serverId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateServerImage(@PathVariable final Long serverId,
@@ -72,6 +80,14 @@ public class ServerController {
     @GetMapping("/{serverId}/members")
     public ResponseEntity<?> getServerMemberList(@PathVariable final Long serverId) {
         return ResponseEntity.ok(serverFacade.getServerMemberList(serverId));
+    }
+
+    @Operation(summary = "서버장 권한 위임", description = "서버장 권한을 같은 서버의 다른 멤버에게 이전합니다.")
+    @PatchMapping("/{serverId}/members")
+    public ResponseEntity<?> delegateServerRole(@PathVariable final Long serverId,
+        @RequestBody @Valid ServerRoleDelegateRequestDto requestDto) {
+        serverFacade.delegateServerRole(serverId, requestDto);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "서버 나가기", description = "로그인한 유저를 해당 서버에서 나가게 합니다.")
@@ -108,15 +124,22 @@ public class ServerController {
         return ResponseEntity.ok(climbingFacade.getReadyClimbingList(serverId));
     }
 
-    @Operation(summary = "초대코드 조회 또는 생성", description = "특정 서버에 대한 초대 코드를 조회 또는 생성합니다.")
-    @PostMapping("/{serverId}/code")
-    public ResponseEntity<?> getOrCreateInviteCode(@PathVariable final Long serverId) {
-        return ResponseEntity.ok(serverFacade.getOrCreateInviteCode(serverId));
+    @Operation(summary = "초대코드 생성", description = "특정 서버에 대한 초대 코드를 생성합니다.")
+    @PostMapping("/code/{serverId}")
+    public ResponseEntity<?> createInviteCode(@PathVariable final Long serverId) {
+        return ResponseEntity.ok(serverFacade.createInviteCode(serverId));
     }
 
-    @Operation(summary = "초대 수락", description = "사용자를 초대코드에 해당하는 서버에 멤버로 추가합니다.")
+    @Operation(summary = "초대코드로 서버 정보 조회", description = "초대코드로 서버 정보를 조회합니다.")
+    @GetMapping("/code/{inviteCode}")
+    public ResponseEntity<?> getServerByInviteCode(@PathVariable final String inviteCode) {
+        return ResponseEntity.ok(serverFacade.getServerByInviteCode(inviteCode));
+    }
+
+
+    @Operation(summary = "초대코드로 서버 참가", description = "초대코드로 서버에 참가합니다.")
     @PostMapping("/join/{inviteCode}")
-    public ResponseEntity<?> createServerMember(@PathVariable String inviteCode) {
+    public ResponseEntity<?> createServerMember(@PathVariable final String inviteCode) {
         serverFacade.createServerMember(inviteCode);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
