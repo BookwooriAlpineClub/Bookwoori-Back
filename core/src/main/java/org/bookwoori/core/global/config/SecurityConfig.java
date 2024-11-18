@@ -54,7 +54,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",
-            "http://localhost:8080"));
+            "http://localhost:8080",
+            "https://api.bookwoori.p-e.kr"));
         configuration.setAllowedMethods(
             Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.addAllowedHeader("*");
@@ -88,10 +89,8 @@ public class SecurityConfig {
                 config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .logout(AbstractHttpConfigurer::disable)
             // jwt
-            .addFilterBefore(jwtAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(new TokenExceptionFilter(),
-                jwtAuthenticationFilter.getClass()) // 토큰 예외 핸들링
+            .addFilterBefore(new TokenExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/success", "auth/refresh").permitAll()
                 .anyRequest().authenticated())
