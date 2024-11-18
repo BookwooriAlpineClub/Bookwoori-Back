@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bookwoori.core.domain.member.dto.request.TokenRequestDto;
 import org.bookwoori.core.domain.member.dto.response.LoginResponseDto;
 import org.bookwoori.core.domain.member.facade.AuthFacade;
 import org.bookwoori.core.global.exception.ErrorCode;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,25 +42,18 @@ public class AuthController {
 
     @Operation(summary = "토큰 재발급", description = "액세스 토큰 및 리프레쉬 토큰을 재발급합니다.")
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(
-        @CookieValue(name = "refreshToken") String refreshToken, HttpServletResponse response) {
-        try {
-            // accessToken과 refreshToken을 모두 재발급
-            Map<String, String> tokens = tokenProvider.renewAccessAndRefreshToken(refreshToken);
-            String newAccessToken = tokens.get("accessToken");
-            String newRefreshToken = tokens.get("refreshToken");
+    public ResponseEntity<?> refreshAccessToken(@RequestBody TokenRequestDto requestDto,
+        HttpServletResponse response) {
+        Map<String, String> tokens = authFacade.refreshAccessToken(requestDto);
+        String newAccessToken = tokens.get("accessToken");
+        String newRefreshToken = tokens.get("refreshToken");
 
-            // 새로운 refreshToken을 쿠키에 설정 (CookieUtil 사용)
-            cookieUtil.addCookie(response, "refreshToken", newRefreshToken,
-                CookieUtil.REFRESH_TOKEN_MAX_AGE);
-
-            // 응답: accessToken은 Authorization 헤더에 설정
-            return ResponseEntity.ok()
-                .header("Authorization", "Bearer " + newAccessToken)
-                .body("New access and refresh tokens issued");
-        } catch (IllegalArgumentException e) {
-            throw new TokenException(ErrorCode.INVALID_TOKEN);
-        }
+        // 새로운 refreshToken 쿠키에 저장
+        cookieUtil.addCookie(response, "refreshToken", newRefreshToken,
+            CookieUtil.REFRESH_TOKEN_MAX_AGE);
+        return ResponseEntity.ok()
+            .header("Authorization", "Bearer " + newAccessToken)
+            .body("New access and refresh tokens issued");
     }
 
 
