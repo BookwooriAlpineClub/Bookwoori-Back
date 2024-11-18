@@ -82,7 +82,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//          .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(
@@ -92,7 +92,7 @@ public class SecurityConfig {
             .addFilterBefore(new TokenExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/success", "auth/refresh").permitAll()
+                .requestMatchers("/auth/success", "/auth/refresh").permitAll()
                 .anyRequest().authenticated())
             // 인증 예외 핸들링
             .exceptionHandling((exceptions) -> exceptions
