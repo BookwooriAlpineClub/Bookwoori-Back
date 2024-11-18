@@ -87,6 +87,13 @@ public class Category {
         this.nextNode = null;
     }
 
+    public void disconnect() {
+        if (this.nextNode != null) {
+            this.nextNode.setBeforeNode(null);
+        }
+        this.nextNode = null;
+    }
+
     public void modifyName(String name) {
         this.name = name;
     }

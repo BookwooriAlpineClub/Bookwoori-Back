@@ -1,8 +1,8 @@
 package org.bookwoori.core.domain.category.facade;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.bookwoori.core.domain.category.dto.request.CategoryCreateRequestDto;
+import org.bookwoori.core.domain.category.dto.request.CategoryLocateRequestDto;
 import org.bookwoori.core.domain.category.dto.request.CategoryUpdateRequestDto;
 import org.bookwoori.core.domain.category.entity.Category;
 import org.bookwoori.core.domain.category.service.CategoryService;
@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-@Log4j2
 public class CategoryFacade {
 
     private final ChannelService channelService;
@@ -53,5 +52,27 @@ public class CategoryFacade {
         //카테고리 순서 재설정
         categoryService.detach(categoryToDelete);
         categoryService.delete(categoryToDelete);
+    }
+
+    @Transactional
+    public void locateCategory(Long categoryId, CategoryLocateRequestDto requestDto) {
+        Category categoryToMove = categoryService.getCategoryById(categoryId);
+        Category beforeCategory = categoryService.getCategoryById(requestDto.beforeCategoryId());
+
+        if (categoryToMove.isDefault()) {
+            throw new CustomException(ErrorCode.DEFAULT_CATEGORY_EXCEPTION);
+        }
+
+        if (categoryToMove.getCategoryId().equals(beforeCategory.getCategoryId())) {
+            return;
+        }
+
+        //두 카테고리가 서로 다른 서버에 있을 경우 예외 처리
+        if (!categoryToMove.getServer().equals(beforeCategory.getServer())) {
+            throw new CustomException(ErrorCode.CATEGORY_LOCATE_EXCEPTION);
+        }
+
+        categoryService.detach(categoryToMove);
+        categoryService.insert(categoryToMove, beforeCategory);
     }
 }

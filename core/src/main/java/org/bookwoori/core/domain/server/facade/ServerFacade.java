@@ -2,6 +2,7 @@ package org.bookwoori.core.domain.server.facade;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
+import org.bookwoori.core.domain.server.dto.response.InviteCodeServerResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerCategoryListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerDetailsResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerItemDto;
@@ -124,27 +126,55 @@ public class ServerFacade {
     }
 
     @Transactional
-    public String getOrCreateInviteCode(Long serverId) {
+    public Object createInviteCode(Long serverId) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-        String inviteCode = ops.get(String.valueOf(serverId));
+        String uuid = UUID.randomUUID().toString().replace("-", "");
 
-        if (inviteCode != null) { // 이미 존재하는 경우
-            return inviteCode;
-        } else { // 존재하지 않는 경우
-            inviteCode = UUID.randomUUID().toString(); // 새로 생성
-            ops.set(String.valueOf(serverId), inviteCode, 7, TimeUnit.DAYS); // Redis에 저장, TTL 7일
-            return inviteCode;
+        Random random = new Random();
+        int length = 10 + random.nextInt(3); // 길이 10-12
+        int startIndex = random.nextInt(uuid.length() - length);
+        int endIndex = startIndex + length;
+
+        String inviteCode = uuid.substring(startIndex, endIndex);
+
+        ops.set("server:invitation:" + inviteCode, String.valueOf(serverId), 1,
+            TimeUnit.DAYS); // Redis에 저장, TTL 1일
+        return inviteCode;
+
+    }
+
+    @Transactional(readOnly = true)
+    public Object getServerByInviteCode(String inviteCode) {
+
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+
+        String value = ops.get("server:invitation:" + inviteCode);
+        if (value == null) {
+            throw new CustomException(ErrorCode.INVALID_INVITE_CODE);
         }
+        Long serverId = Long.valueOf(value);
+
+        Server server = serverService.getServerById(serverId);
+        Member owner = serverMemberService.getOwner(server);
+        int memberCount = serverMemberService.getMemberCount(server);
+
+        return InviteCodeServerResponseDto.from(server, owner.getNickname(), memberCount);
+
     }
 
     @Transactional
     public void createServerMember(String inviteCode) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
-//        System.out.println(ops.get(inviteCode)); // 디버깅용
-        Server server = serverService.getServerById(Long.valueOf(ops.get(inviteCode)));
-        //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
+
+        String value = ops.get("server:invitation:" + inviteCode);
+        if (value == null) {
+            throw new CustomException(ErrorCode.INVALID_INVITE_CODE);
+        }
+        Long serverId = Long.valueOf(value);
+
+        Server server = serverService.getServerById(serverId);
         Member currentMember = memberService.getCurrentMember();
-//        Member member = memberService.getMemberById(1L); // 테스트용
+
         boolean isJoined = serverMemberRepository.findByMemberAndServer(currentMember, server)
             .isPresent();
 

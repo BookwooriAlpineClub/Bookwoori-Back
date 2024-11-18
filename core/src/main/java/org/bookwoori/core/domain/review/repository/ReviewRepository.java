@@ -18,4 +18,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Review findByMemberAndBook(@Param("member") Member member, @Param("book") Book book);
 
     boolean existsByRecord_MemberAndRecord_Book(Member member, Book book);
+
+    Review findByRecord_RecordId(Long recordId);
+
+    void deleteByRecord_RecordId(Long recordId);
+
 }

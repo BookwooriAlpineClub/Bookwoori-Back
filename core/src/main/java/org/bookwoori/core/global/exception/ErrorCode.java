@@ -47,9 +47,11 @@ public enum ErrorCode {
     DELEGATION_REQUIRED(409, 3102, "해당 요청 처리를 위해서는 서버장 권한을 위임해야 합니다."),
     SERVER_MEMBER_NOT_FOUND(404, 3150, "해당 서버에 사용자가 존재하지 않습니다."),
     SERVER_OWNER_NOT_FOUND(404, 3151, "서버 주인을 찾을 수 없습니다."),
+    INVALID_INVITE_CODE(404, 3190, "유효하지 않은 초대코드입니다."),
 
     // Category (3200 ~ 3299)
     CATEGORY_NOT_FOUND(404, 3200, "카테고리를 찾을 수 없습니다."),
+    CATEGORY_LOCATE_EXCEPTION(400, 3201, "카테고리 위치를 변경할 수 없습니다."),
     DEFAULT_CATEGORY_EXCEPTION(403, 3250, "기본 카테고리는 수정 또는 삭제가 불가능합니다."),
 
     // Channel (3300 ~ 3399)
@@ -65,6 +67,7 @@ public enum ErrorCode {
 
     // Book (3500 ~ 3599)
     BOOK_NOT_FOUND(404, 3500, "책을 찾을 수 없습니다."),
+    ALADIN_API_EXCEPTION(404, 3501, "알라딘 API 호출에 실패했습니다."),
 
     // Record (3600 ~ 3699)
     RECORD_NOT_FOUND(404, 3600, "레코드를 찾을 수 없습니다."),
