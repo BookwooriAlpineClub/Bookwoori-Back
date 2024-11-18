@@ -9,6 +9,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,9 +18,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.exception.TokenException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -39,6 +42,8 @@ public class TokenProvider {
     private SecretKey refreshKey;
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
     public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final MemberService memberService;
 
     @PostConstruct
     private void setSecretKey() {
@@ -97,11 +102,17 @@ public class TokenProvider {
     }
 
     public Long extractKakaoId(Authentication authentication) {
-        if (authentication.getPrincipal() instanceof OAuth2User oAuth2User) {
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof OAuth2User oAuth2User) {
             return Long.valueOf(oAuth2User.getAttributes().get("id").toString());
+        } else if (principal instanceof String) {
+            // UsernamePasswordAuthenticationToken의 경우
+            return Long.valueOf((String) principal);
+        } else {
+            throw new TokenException(ErrorCode.MEMBER_NOT_FOUND);
         }
-        throw new TokenException(ErrorCode.MEMBER_NOT_FOUND);
     }
+
 
     public boolean validateToken(String token, boolean isRefreshToken) {
         try {
@@ -118,10 +129,21 @@ public class TokenProvider {
         }
     }
 
-    public Authentication getAuthentication(String token) {
-        Claims claims = parseClaims(token, accessKey);
+    public Authentication getAuthentication(String token, boolean isRefreshToken) {
+        Claims claims;
+        if (isRefreshToken) {
+            claims = parseClaims(token, refreshKey);
+        } else {
+            claims = parseClaims(token, accessKey);
+        }
         List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), token, authorities);
+    }
+
+    public void saveRefreshToken(Long kakaoId, String refreshToken) {
+        Long memberId = memberService.getMemberIdByKakaoId(kakaoId);
+        redisTemplate.opsForValue()
+            .set(kakaoId.toString(), refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
     }
 
     private List<String> getRolesFromClaims(Claims claims) {
