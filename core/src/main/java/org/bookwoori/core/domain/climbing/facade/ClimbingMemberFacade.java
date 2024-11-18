@@ -119,7 +119,7 @@ public class ClimbingMemberFacade {
     }
 
     @Transactional(readOnly = true)
-    public boolean isAllowsShare(Long climbingId) {
+    public boolean AllowsShare(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
         return reviewService.existsReviewByMemberAndBook(currentMember, climbing.getBook());
