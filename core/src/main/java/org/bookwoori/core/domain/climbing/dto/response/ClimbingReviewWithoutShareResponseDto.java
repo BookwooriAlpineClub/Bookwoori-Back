@@ -7,14 +7,14 @@ import org.bookwoori.core.domain.climbing.entity.Climbing;
 @Builder
 public record ClimbingReviewWithoutShareResponseDto(
     boolean hasShared,
-    boolean allowsShare,
+    boolean isShareable,
     BookInfoDto bookInfo
 ) {
 
     public static ClimbingReviewWithoutShareResponseDto from(Climbing climbing) {
         return ClimbingReviewWithoutShareResponseDto.builder()
             .hasShared(false)
-            .allowsShare(false)
+            .isShareable(false)
             .bookInfo(BookInfoDto.from(climbing.getBook()))
             .build();
     }
