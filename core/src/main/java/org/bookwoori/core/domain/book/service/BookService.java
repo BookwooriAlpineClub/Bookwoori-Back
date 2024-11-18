@@ -26,7 +26,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private static final String ALADIN_API_URL_SEARCH = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx";
     private static final String ALADIN_API_URL_LOOKUP = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx";
-    private final BookService bookService;
+
     @Autowired
     private final RestTemplate restTemplate;
     @Autowired
