@@ -108,7 +108,7 @@ public class ClimbingController {
         if (hasShared) {
             return ResponseEntity.ok(climbingMemberFacade.getClimbingReviewList(climbingId));
         } else {
-            boolean allowsShare = climbingMemberFacade.isAllowsShare(climbingId);
+            boolean allowsShare = climbingMemberFacade.AllowsShare(climbingId);
             if (allowsShare) {
                 return ResponseEntity.ok(climbingMemberFacade.getReviewWithAllowShare(climbingId));
             } else {
