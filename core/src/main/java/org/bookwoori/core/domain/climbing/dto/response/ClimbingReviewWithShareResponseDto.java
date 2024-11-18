@@ -8,7 +8,7 @@ import org.bookwoori.core.domain.review.entity.Review;
 @Builder
 public record ClimbingReviewWithShareResponseDto(
     boolean hasShared,
-    boolean allowsShare,
+    boolean isShareable,
     BookInfoDto bookInfo,
     Long reviewId,
     int star,
@@ -18,7 +18,7 @@ public record ClimbingReviewWithShareResponseDto(
     public static ClimbingReviewWithShareResponseDto from(Climbing climbing, Review review) {
         return ClimbingReviewWithShareResponseDto.builder()
             .hasShared(false)
-            .allowsShare(true)
+            .isShareable(true)
             .bookInfo(BookInfoDto.from(climbing.getBook()))
             .reviewId(review.getReviewId())
             .star(review.getRecord().getStar())
