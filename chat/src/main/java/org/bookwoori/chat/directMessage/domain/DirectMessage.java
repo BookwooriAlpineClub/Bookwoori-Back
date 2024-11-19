@@ -1,10 +1,12 @@
 package org.bookwoori.chat.directMessage.domain;
 
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.bookwoori.chat.global.MessageType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -22,9 +24,15 @@ public class DirectMessage {
 
     private Long memberId;
 
-    private String type;
+    private String nickname;
+
+    private String profileImg;
+
+    private MessageType type;
 
     private String content;
+
+    private LocalDateTime createdAt;
 
     @Override
     public String toString() {
@@ -32,8 +40,11 @@ public class DirectMessage {
             "id='" + id + '\'' +
             ", messageRoomId=" + messageRoomId +
             ", memberId=" + memberId +
-            ", contentType='" + type + '\'' +
+            ", nickname='" + nickname + '\'' +
+            ", profileImg='" + profileImg + '\'' +
+            ", type=" + type +
             ", content='" + content + '\'' +
+            ", createdAt=" + createdAt +
             '}';
     }
 }
