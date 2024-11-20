@@ -48,8 +48,6 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.4'
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    // api gateway
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
 }
 
 tasks.named('test') {
