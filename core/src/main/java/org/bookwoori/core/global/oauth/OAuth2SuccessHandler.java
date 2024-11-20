@@ -44,7 +44,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         tokenProvider.saveRefreshToken(kakaoId, refreshToken);
 
         // 리다이렉트 URL 설정 및 accessToken 전달
-        String redirectUrl = UriComponentsBuilder.fromUriString(URI)
+        String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:3000")
             .queryParam("accessToken", accessToken)
             .build().toUriString();
 
