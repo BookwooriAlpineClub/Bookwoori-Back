@@ -22,7 +22,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
     private final CookieUtil cookieUtil;
-    private static final String URI = "/auth/success";
+    private static final String URI = "http://localhost:3000/auth/success";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
     private final MemberService memberService;
     private final AuthFacade authFacade;
@@ -44,7 +44,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         tokenProvider.saveRefreshToken(kakaoId, refreshToken);
 
         // 리다이렉트 URL 설정 및 accessToken 전달
-        String redirectUrl = UriComponentsBuilder.fromUriString("http://localhost:3000")
+        String redirectUrl = UriComponentsBuilder.fromUriString(URI)
             .queryParam("accessToken", accessToken)
             .build().toUriString();
 
