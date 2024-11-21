@@ -54,7 +54,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",
-            "http://localhost:8080"));
+            "http://localhost:8080",
+            "https://api.bookwoori.p-e.kr"));
         configuration.setAllowedMethods(
             Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.addAllowedHeader("*");
@@ -81,18 +82,18 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(
                 config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .logout(AbstractHttpConfigurer::disable)
             // jwt
-            .addFilterBefore(jwtAuthenticationFilter,
-                UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(new TokenExceptionFilter(),
-                jwtAuthenticationFilter.getClass()) // 토큰 예외 핸들링
+            .addFilterBefore(new TokenExceptionFilter(), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/success", "/auth/refresh", "/v3/api-docs/**",
+                    "/swagger-ui/**").permitAll()
                 .requestMatchers("/auth/success", "auth/refresh").permitAll()
                 //todo Auth 서버 분리 시 수정해야 하는 부분
                 .requestMatchers("/messageRooms/{messageRoomId}/members").permitAll()

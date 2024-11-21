@@ -13,6 +13,8 @@ import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberResponseDto
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberReviewUnitDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingMemberUnitDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingReviewListResponseDto;
+import org.bookwoori.core.domain.climbing.dto.response.ClimbingReviewWithShareResponseDto;
+import org.bookwoori.core.domain.climbing.dto.response.ClimbingReviewWithoutShareResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiListCountDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiListDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiMemberListResponseDto;
@@ -109,6 +111,21 @@ public class ClimbingMemberFacade {
     }
 
     @Transactional(readOnly = true)
+    public boolean getHasShared(Long climbingId) {
+        Member currentMember = memberService.getCurrentMember();
+        ClimbingMember climbingMember = climbingMemberService.getMemberInClimbing(currentMember,
+            climbingId);
+        return climbingMember.isHasShared();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isShareable(Long climbingId) {
+        Member currentMember = memberService.getCurrentMember();
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        return reviewService.existsReviewByMemberAndBook(currentMember, climbing.getBook());
+    }
+
+    @Transactional(readOnly = true)
     public ClimbingReviewListResponseDto getClimbingReviewList(Long climbingId) {
         Climbing climbing = climbingService.getClimbingById(climbingId);
         // sharedReviews: hasShared true인 ClimbingMember의 Review 리스트
@@ -116,6 +133,9 @@ public class ClimbingMemberFacade {
         List<Long> sharedMemberIds = climbingMemberService.getSharedMemberIds(climbing);
         List<Review> sharedReviews = reviewService.getReviewsByMembersAndBook(sharedMemberIds,
             climbing.getBook());
+        if (sharedReviews == null || sharedReviews.isEmpty()) {
+            return new ClimbingReviewListResponseDto(true, Collections.emptyList());
+        }
         // reviewMap: memberId(key), Review 객체(value)
         Map<Long, Review> reviewMap = sharedReviews.stream()
             .collect(Collectors.toMap(
@@ -151,7 +171,21 @@ public class ClimbingMemberFacade {
                 return ClimbingMemberReviewUnitDto.from(climbingMember, review, reviewEmojiList);
             })
             .collect(Collectors.toList());
-        return new ClimbingReviewListResponseDto(climbingReviews);
+        return new ClimbingReviewListResponseDto(true, climbingReviews);
+    }
+
+    @Transactional(readOnly = true)
+    public ClimbingReviewWithShareResponseDto getReviewWithAllowShare(Long climbingId) {
+        Member currentMember = memberService.getCurrentMember();
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        Review review = reviewService.getReviewByMemberAndBook(currentMember, climbing.getBook());
+        return ClimbingReviewWithShareResponseDto.from(climbing, review);
+    }
+
+    @Transactional(readOnly = true)
+    public ClimbingReviewWithoutShareResponseDto getReviewWithoutAllowShare(Long climbingId) {
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        return ClimbingReviewWithoutShareResponseDto.from(climbing);
     }
 
     public boolean toggleReviewReaction(Long climbingId, Long reviewId, EmojiType emoji) {
@@ -196,6 +230,5 @@ public class ClimbingMemberFacade {
             .collect(Collectors.toList());
         return new ReviewEmojiMemberListResponseDto(emojiLists);
     }
-
 
 }
