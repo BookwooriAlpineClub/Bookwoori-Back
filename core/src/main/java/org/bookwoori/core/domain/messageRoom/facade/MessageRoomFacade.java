@@ -1,6 +1,8 @@
 package org.bookwoori.core.domain.messageRoom.facade;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.core.domain.member.dto.response.MemberProfileResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.messageRoom.dto.request.MessageRoomCreateRequestDto;
@@ -33,5 +35,15 @@ public class MessageRoomFacade {
         return MessageRoomInfoResponseDto.from(messageRoom);
     }
 
+    @Transactional(readOnly = true)
+    public Map<Long, MemberProfileResponseDto> getMembersProfile(Long messageRoomId) {
+        MessageRoom messageRoom = messageRoomService.getMessageRoomById(messageRoomId);
+        Member sender = messageRoom.getSender();
+        Member receiver = messageRoom.getReceiver();
+        Map<Long, MemberProfileResponseDto> profiles = Map.of(
+            sender.getMemberId(), MemberProfileResponseDto.from(sender),
+            receiver.getMemberId(), MemberProfileResponseDto.from(receiver));
+        return profiles;
+    }
 
 }

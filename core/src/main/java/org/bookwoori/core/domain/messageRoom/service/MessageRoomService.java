@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.messageRoom.entity.MessageRoom;
 import org.bookwoori.core.domain.messageRoom.repository.MessageRoomRepository;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,5 +26,8 @@ public class MessageRoomService {
                 .build()));
     }
 
-
+    public MessageRoom getMessageRoomById(Long messageRoomId) {
+        return messageRoomRepository.findById(messageRoomId)
+            .orElseThrow(() -> new CustomException(ErrorCode.MESSAGE_ROOM_NOT_FOUND));
+    }
 }

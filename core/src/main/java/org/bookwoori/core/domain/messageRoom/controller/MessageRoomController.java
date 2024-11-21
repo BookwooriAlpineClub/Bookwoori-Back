@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.messageRoom.dto.request.MessageRoomCreateRequestDto;
 import org.bookwoori.core.domain.messageRoom.facade.MessageRoomFacade;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,5 +29,9 @@ public class MessageRoomController {
         return ResponseEntity.ok(messageRoomFacade.getOrCreateMessageRoom(requestDto));
     }
 
-
+    @GetMapping("/{messageRoomId}/members")
+    public ResponseEntity<?> getMembersProfile(@PathVariable final Long messageRoomId) {
+        return ResponseEntity.ok(messageRoomFacade.getMembersProfile(messageRoomId));
+    }
+    
 }
