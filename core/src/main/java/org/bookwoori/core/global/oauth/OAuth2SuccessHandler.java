@@ -13,7 +13,6 @@ import org.bookwoori.core.global.jwt.TokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,13 +42,23 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // refreshToken Redis에 저장
         tokenProvider.saveRefreshToken(kakaoId, refreshToken);
 
-        // 리다이렉트 URL 설정 및 accessToken 전달
-        String redirectUrl = UriComponentsBuilder.fromUriString(URI)
-            .queryParam("accessToken", accessToken)
-            .build().toUriString();
+//        // 리다이렉트 URL 설정 및 accessToken 전달
+//        String redirectUrl = UriComponentsBuilder.fromUriString(URI)
+//            .queryParam("accessToken", accessToken)
+//            .build().toUriString();
+//
+//        // refreshToken -> /auth/refresh 엔드포인트로 요청
+//        response.sendRedirect(redirectUrl);
+//
 
-        // refreshToken -> /auth/refresh 엔드포인트로 요청
-        response.sendRedirect(redirectUrl);
+        // JSON형식 응답 설정
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // AccessToken 토큰 전달
+        String jsonResponse = String.format("{\"accessToken\":\"%s\"}", accessToken);
+        response.getWriter().write(jsonResponse);
+        response.getWriter().flush();
     }
 }
 
