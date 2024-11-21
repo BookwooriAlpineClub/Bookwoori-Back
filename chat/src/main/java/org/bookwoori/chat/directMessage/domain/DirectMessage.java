@@ -47,4 +47,9 @@ public class DirectMessage {
             ", createdAt=" + createdAt +
             '}';
     }
+
+    public void syncMemberProfile(String nickname, String profileImg) {
+        this.nickname = nickname;
+        this.profileImg = profileImg;
+    }
 }
