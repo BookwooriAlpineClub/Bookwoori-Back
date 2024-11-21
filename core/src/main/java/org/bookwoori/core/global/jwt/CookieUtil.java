@@ -19,9 +19,11 @@ public class CookieUtil {
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
 
+        // SameSite 설정 추가
+        String sameSiteValue = "None";
         response.addHeader("Set-Cookie",
-            String.format("%s=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=None%s",
-                name, value, maxAge, cookie.getSecure() ? "; Secure" : ""));
+            String.format("%s=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=%s%s",
+                name, value, maxAge, sameSiteValue, cookie.getSecure() ? "; Secure" : ""));
     }
 
     public Cookie getCookie(HttpServletRequest request, String name) {
