@@ -27,11 +27,17 @@ public class CookieUtil {
 //    }
 
     public void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        String cookie = String.format(
-            "%s=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=None;",
-            name, value, maxAge
-        );
-        response.addHeader("Set-Cookie", cookie);
+        StringBuilder cookieHeader = new StringBuilder();
+        cookieHeader.append(name).append("=").append(value).append(";");
+        cookieHeader.append("Max-Age=").append(maxAge).append(";");
+        cookieHeader.append("Expires=")
+            .append(new java.util.Date(System.currentTimeMillis() + maxAge * 1000L)).append(";");
+        cookieHeader.append("Path=/;");
+        cookieHeader.append("HttpOnly;");
+        cookieHeader.append("Secure;");
+        cookieHeader.append("SameSite=None;");
+        response.addHeader("Set-Cookie", cookieHeader.toString());
+
     }
 
     public Cookie getCookie(HttpServletRequest request, String name) {
