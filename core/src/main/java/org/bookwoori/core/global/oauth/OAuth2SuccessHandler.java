@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bookwoori.core.domain.member.facade.AuthFacade;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.global.jwt.CookieUtil;
 import org.bookwoori.core.global.jwt.TokenProvider;
@@ -22,10 +21,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
     private final CookieUtil cookieUtil;
-    private static final String URI = "http://localhost:8080/auth/success";
+    private static final String URI = "http://localhost:3000/auth/success";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
     private final MemberService memberService;
-    private final AuthFacade authFacade;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
