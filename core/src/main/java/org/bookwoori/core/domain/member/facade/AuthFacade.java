@@ -37,9 +37,6 @@ public class AuthFacade {
         // Redis에서 kakaoId를 key로 하는 refreshToken 가져옴
         String storedRefreshToken = redisTemplate.opsForValue()
             .get(kakaoId.toString());
-        // refreshToken 유효성 검증
-        tokenProvider.validateToken(requestDto.refreshToken(), true);
-
         // 전달받은 리프레시 토큰과 Redis에 저장된 리프레시 토큰이 일치하는지 확인
         if (storedRefreshToken == null || !storedRefreshToken.equals(requestDto.refreshToken())) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
