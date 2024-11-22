@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.messageRoom.facade;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +59,7 @@ public class MessageRoomFacade {
 
     @Transactional(readOnly = true)
     public MessageRoomListResponseDto getMyMessageRoomList(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("modifiedAt").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         //회원이 참여 중인 DM 방 조회
         Member currentMember = memberService.getCurrentMember();
         Page<MessageRoom> messageRooms = messageRoomService.getMessageRoomsByMember(currentMember,
@@ -81,7 +82,10 @@ public class MessageRoomFacade {
                 RecentDirectMessageResponseDto message = messages.get(
                     messageRoom.getMessageRoomId());
                 return MessageRoomItemDto.from(messageRoom.getMessageRoomId(), partner, message);
-            }).toList();
+            }).sorted(Comparator.comparing(
+                MessageRoomItemDto::recentMessageTime,
+                Comparator.nullsLast(Comparator.reverseOrder())
+            )).toList();
         return new MessageRoomListResponseDto(messageRoomItems);
     }
 

@@ -37,7 +37,7 @@ public class DirectMessageController {
 
     @GetMapping("/messageRooms/recentMessage")
     public ResponseEntity<?> getRecentMessageFromMessageRoom(
-        @RequestParam List<Long> messageRoomIdList) {
+        @RequestParam("messageRoomIdList") List<Long> messageRoomIdList) {
         return ResponseEntity.ok(
             directMessageService.getRecentMessageFromMessageRoom(messageRoomIdList));
     }
