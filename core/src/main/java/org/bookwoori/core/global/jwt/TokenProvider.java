@@ -41,7 +41,7 @@ public class TokenProvider {
     private SecretKey accessKey;
     private SecretKey refreshKey;
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
-    public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
+    public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 3L;
     private final RedisTemplate<String, String> redisTemplate;
     private final MemberService memberService;
 
@@ -130,6 +130,9 @@ public class TokenProvider {
     }
 
     public Authentication getAuthentication(String token, boolean isRefreshToken) {
+        if (isRefreshToken) {
+            validateToken(token, true);
+        }
         Claims claims = parseClaims(token, isRefreshToken ? refreshKey : accessKey, isRefreshToken);
         List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), token, authorities);
