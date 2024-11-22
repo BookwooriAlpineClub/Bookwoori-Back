@@ -14,7 +14,6 @@ public class MessageListener { //토픽에 발행된 이벤트를 가져와 처�
 
     @KafkaListener(topics = KafkaConstants.DIRECT_CHAT_TOPIC)
     public void directChatListener(DirectMessage message) {
-        System.out.println("hey");
         messagingTemplate.convertAndSend("/topic/direct/" + message.getMessageRoomId(), message);
     }
 }

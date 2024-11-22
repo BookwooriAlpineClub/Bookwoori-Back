@@ -10,7 +10,6 @@ import org.bookwoori.chat.directMessage.dto.response.DirectMessageListResponseDt
 import org.bookwoori.chat.directMessage.dto.response.RecentDirectMessageResponseDto;
 import org.bookwoori.chat.directMessage.repository.DirectMessageRepository;
 import org.bookwoori.chat.global.feignClient.CoreClient;
-import org.bookwoori.chat.global.feignClient.dto.MemberProfileResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,13 +29,6 @@ public class DirectMessageService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<DirectMessage> directMessageList =
             directMessageRepository.findByMessageRoomId(roomId, pageable);
-
-        Map<Long, MemberProfileResponseDto> profiles = coreClient.getMembersByMessageRoomId(roomId);
-        directMessageList.forEach(directMessage -> {
-            MemberProfileResponseDto profile = profiles.get(directMessage.getMemberId());
-            directMessage.syncMemberProfile(profile.nickname(), profile.profileImg());
-        });
-
         List<DirectMessageItemDto> directMessageDtoList = directMessageList.stream()
             .map(DirectMessageItemDto::from).toList();
         return new DirectMessageListResponseDto(directMessageDtoList);
