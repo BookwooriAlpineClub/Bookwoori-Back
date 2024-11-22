@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import lombok.RequiredArgsConstructor;
-import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.exception.TokenException;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +42,6 @@ public class TokenProvider {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
     public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 7;
     private final RedisTemplate<String, String> redisTemplate;
-    private final MemberService memberService;
 
     @PostConstruct
     private void setSecretKey() {
