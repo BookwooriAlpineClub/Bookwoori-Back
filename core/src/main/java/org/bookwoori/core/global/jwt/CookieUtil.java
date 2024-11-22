@@ -3,8 +3,8 @@ package org.bookwoori.core.global.jwt;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
 import java.util.Arrays;
+import org.springframework.stereotype.Component;
 
 @Component
 public class CookieUtil {
@@ -18,6 +18,12 @@ public class CookieUtil {
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
         response.addCookie(cookie);
+
+        // SameSite 설정 추가
+        String sameSiteValue = "None";
+        response.addHeader("Set-Cookie",
+            String.format("%s=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=%s%s",
+                name, value, maxAge, sameSiteValue, cookie.getSecure() ? "; Secure" : ""));
     }
 
     public Cookie getCookie(HttpServletRequest request, String name) {
