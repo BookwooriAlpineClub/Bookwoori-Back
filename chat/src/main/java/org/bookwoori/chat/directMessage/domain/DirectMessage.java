@@ -24,10 +24,6 @@ public class DirectMessage {
 
     private Long memberId;
 
-    private String nickname;
-
-    private String profileImg;
-
     private MessageType type;
 
     private String content;
@@ -40,16 +36,9 @@ public class DirectMessage {
             "id='" + id + '\'' +
             ", messageRoomId=" + messageRoomId +
             ", memberId=" + memberId +
-            ", nickname='" + nickname + '\'' +
-            ", profileImg='" + profileImg + '\'' +
             ", type=" + type +
             ", content='" + content + '\'' +
             ", createdAt=" + createdAt +
             '}';
-    }
-
-    public void syncMemberProfile(String nickname, String profileImg) {
-        this.nickname = nickname;
-        this.profileImg = profileImg;
     }
 }

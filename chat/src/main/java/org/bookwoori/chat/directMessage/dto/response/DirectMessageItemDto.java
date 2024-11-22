@@ -9,8 +9,6 @@ public record DirectMessageItemDto(
     String id,
     Long messageRoomId,
     Long memberId,
-    String nickname,
-    String profileImg,
     String content,
     LocalDateTime createdAt
 ) {
@@ -20,8 +18,6 @@ public record DirectMessageItemDto(
             .id(directMessage.getId())
             .messageRoomId(directMessage.getMessageRoomId())
             .memberId(directMessage.getMemberId())
-            .nickname(directMessage.getNickname())
-            .profileImg(directMessage.getProfileImg())
             .content(directMessage.getContent())
             .createdAt(directMessage.getCreatedAt())
             .build();
