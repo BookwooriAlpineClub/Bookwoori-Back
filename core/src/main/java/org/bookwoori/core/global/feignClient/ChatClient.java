@@ -12,5 +12,5 @@ public interface ChatClient {
 
     @GetMapping("/messageRooms/recentMessage")
     public Map<Long, RecentDirectMessageResponseDto> getRecentMessageFromMessageRoom(
-        @RequestParam List<Long> messageRoomIdList);
+        @RequestParam("messageRoomIdList") List<Long> messageRoomIdList);
 }
