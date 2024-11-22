@@ -94,6 +94,9 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/success", "/auth/refresh", "/v3/api-docs/**",
                     "/swagger-ui/**").permitAll()
+                .requestMatchers("/auth/success", "auth/refresh").permitAll()
+                //todo Auth 서버 분리 시 수정해야 하는 부분
+                .requestMatchers("/messageRooms/{messageRoomId}/members").permitAll()
                 .anyRequest().authenticated())
             // 인증 예외 핸들링
             .exceptionHandling((exceptions) -> exceptions
