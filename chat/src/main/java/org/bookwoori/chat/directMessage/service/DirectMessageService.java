@@ -2,10 +2,12 @@ package org.bookwoori.chat.directMessage.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.chat.directMessage.domain.DirectMessage;
 import org.bookwoori.chat.directMessage.dto.response.DirectMessageItemDto;
 import org.bookwoori.chat.directMessage.dto.response.DirectMessageListResponseDto;
+import org.bookwoori.chat.directMessage.dto.response.RecentDirectMessageResponseDto;
 import org.bookwoori.chat.directMessage.repository.DirectMessageRepository;
 import org.bookwoori.chat.global.feignClient.CoreClient;
 import org.bookwoori.chat.global.feignClient.dto.MemberProfileResponseDto;
@@ -38,5 +40,18 @@ public class DirectMessageService {
         List<DirectMessageItemDto> directMessageDtoList = directMessageList.stream()
             .map(DirectMessageItemDto::from).toList();
         return new DirectMessageListResponseDto(directMessageDtoList);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, RecentDirectMessageResponseDto> getRecentMessageFromMessageRoom(
+        List<Long> messageRoomIdList) {
+        return messageRoomIdList.stream()
+            .collect(Collectors.toMap(
+                messageRoomId -> messageRoomId,
+                messageRoomId -> directMessageRepository
+                    .findTopByMessageRoomIdOrderByCreatedAtDesc(messageRoomId)
+                    .map(RecentDirectMessageResponseDto::from)
+                    .orElseGet(() -> new RecentDirectMessageResponseDto(null, null))
+            ));
     }
 }

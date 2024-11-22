@@ -1,5 +1,6 @@
 package org.bookwoori.chat.directMessage.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.chat.directMessage.dto.request.DirectMessageSendRequestDto;
 import org.bookwoori.chat.directMessage.dto.response.DirectMessageListResponseDto;
@@ -32,5 +33,12 @@ public class DirectMessageController {
         DirectMessageListResponseDto responseDto =
             directMessageService.getDirectMessageHistory(roomId, page, size);
         return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/messageRooms/recentMessage")
+    public ResponseEntity<?> getRecentMessageFromMessageRoom(
+        @RequestParam List<Long> messageRoomIdList) {
+        return ResponseEntity.ok(
+            directMessageService.getRecentMessageFromMessageRoom(messageRoomIdList));
     }
 }

@@ -40,4 +40,8 @@ public class MessageRoom extends BaseTimeEntity {
     @JoinColumn(name = "receiver_id", updatable = false)
     @NotNull
     private Member receiver;
+
+    public Member getPartner(Member member) {
+        return this.sender.equals(member) ? this.receiver : this.sender;
+    }
 }
