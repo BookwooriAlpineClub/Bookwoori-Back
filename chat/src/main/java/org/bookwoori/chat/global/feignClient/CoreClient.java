@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "core", url = "localhost:8080")
+@FeignClient(name = "core", url = "${client.url.core}")
 public interface CoreClient {
 
     @GetMapping("/messageRooms/{messageRoomId}/members")
