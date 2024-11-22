@@ -54,7 +54,6 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",
-            "https://localhost:3000",
             "http://localhost:8080",
             "https://api.bookwoori.p-e.kr"));
         configuration.setAllowedMethods(

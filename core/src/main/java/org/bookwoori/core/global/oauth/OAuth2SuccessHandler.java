@@ -21,7 +21,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
     private final CookieUtil cookieUtil;
-    private static final String URI = "https://localhost:3000/auth/success";
+    private static final String URI = "http://localhost:3000/auth/success";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
     private final MemberService memberService;
 
