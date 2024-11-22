@@ -28,12 +28,12 @@ public class CookieUtil {
 
     public void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         String cookie = String.format(
-            "%s=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=None; Secure",
+            "%s=%s; Max-Age=%d; Path=/; HttpOnly; SameSite=None;",
             name, value, maxAge
         );
         response.addHeader("Set-Cookie", cookie);
     }
-    
+
     public Cookie getCookie(HttpServletRequest request, String name) {
         if (request.getCookies() != null) {
             return Arrays.stream(request.getCookies())
