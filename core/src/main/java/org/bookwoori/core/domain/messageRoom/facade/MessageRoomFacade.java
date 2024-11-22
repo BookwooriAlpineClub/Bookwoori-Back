@@ -4,10 +4,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.core.domain.member.dto.response.MemberProfileResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.messageRoom.dto.request.MessageRoomCreateRequestDto;
-import org.bookwoori.core.domain.messageRoom.dto.response.MessageRoomInfoResponseDto;
+import org.bookwoori.core.domain.messageRoom.dto.response.MessageRoomDetailsResponseDto;
 import org.bookwoori.core.domain.messageRoom.dto.response.MessageRoomItemDto;
 import org.bookwoori.core.domain.messageRoom.dto.response.MessageRoomListResponseDto;
 import org.bookwoori.core.domain.messageRoom.entity.MessageRoom;
@@ -32,7 +33,7 @@ public class MessageRoomFacade {
     private final MemberService memberService;
 
     @Transactional
-    public MessageRoomInfoResponseDto getOrCreateMessageRoom(
+    public MessageRoomDetailsResponseDto getOrCreateMessageRoom(
         MessageRoomCreateRequestDto requestDto) {
         Member sender = memberService.getCurrentMember();
         Member receiver = memberService.getMemberById(requestDto.memberId());
@@ -41,8 +42,13 @@ public class MessageRoomFacade {
             throw new CustomException(ErrorCode.BAD_REQUEST);
         }
 
+        Map<Long, MemberProfileResponseDto> members = Map.of(
+            sender.getMemberId(), MemberProfileResponseDto.from(sender),
+            receiver.getMemberId(), MemberProfileResponseDto.from(receiver)
+        );
+
         MessageRoom messageRoom = messageRoomService.getOrCreateMessageRoom(sender, receiver);
-        return MessageRoomInfoResponseDto.from(messageRoom);
+        return MessageRoomDetailsResponseDto.from(messageRoom, receiver.getNickname(), members);
     }
 
     @Transactional(readOnly = true)
