@@ -11,6 +11,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.domain.member.entity.Member;
@@ -20,6 +22,8 @@ import org.bookwoori.core.global.BaseTimeEntity;
 @Table(name = "message_room")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class MessageRoom extends BaseTimeEntity {
 
     @Id
@@ -36,4 +40,8 @@ public class MessageRoom extends BaseTimeEntity {
     @JoinColumn(name = "receiver_id", updatable = false)
     @NotNull
     private Member receiver;
+
+    public Member getPartner(Member member) {
+        return this.sender.equals(member) ? this.receiver : this.sender;
+    }
 }
