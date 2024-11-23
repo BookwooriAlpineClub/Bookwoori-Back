@@ -2,7 +2,7 @@ name: bookwoori CI/CD with Docker
 
 on:
   push:
-    branches: [ "deploy", "develop" ]
+    branches: [ "deploy", "main" ]
 
 jobs:
   deploy:
