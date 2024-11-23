@@ -1,11 +1,15 @@
 package org.bookwoori.notification.controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.notification.dto.request.ChannelMessageRequest;
+import org.bookwoori.notification.dto.request.ChatMessageRequest;
 import org.bookwoori.notification.dto.request.DirectMessageRequest;
+import org.bookwoori.notification.dto.request.EmojiMessageRequest;
 import org.bookwoori.notification.dto.response.CommonResponse;
 import org.bookwoori.notification.service.NotificationService;
 import org.bookwoori.notification.service.ResponseService;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@Tag(name = "Notification")
 @RequestMapping("/notification-server")
 @RequiredArgsConstructor
 public class NotificationController {
@@ -24,6 +29,7 @@ public class NotificationController {
     private final ResponseService responseService;
     private final NotificationService notificationService;
 
+    @Operation(summary = "DM 알림", description = "DM 알림을 보냅니다.")
     @PostMapping("/direct")
     public CommonResponse sendDirectMessage(@Valid @RequestBody DirectMessageRequest request) {
         log.info("POST /notification-server/direct / {}", request.getTarget());
@@ -36,6 +42,7 @@ public class NotificationController {
         return responseService.getSuccessResponse();
     }
 
+    @Operation(summary = "채널 생성 알림", description = "채널 생성 알림을 보냅니다.")
     @PostMapping("/channel")
     public CommonResponse sendChannelMessage(@Valid @RequestBody ChannelMessageRequest request) {
         log.info("POST /notification-server/channel / {}", request.getTarget());
@@ -47,4 +54,32 @@ public class NotificationController {
         }
         return responseService.getSuccessResponse();
     }
+
+    @Operation(summary = "감상평 이모지 알림", description = "감상평 이모지 알림을 보냅니다.")
+    @PostMapping("/emoji")
+    public CommonResponse sendEmojiMessage(@Valid @RequestBody EmojiMessageRequest request) {
+        log.info("POST /notification-server/emoji / {}", request.getTarget());
+        try {
+            notificationService.send(request);
+        } catch (Exception e) {
+            log.error("NOTIFICATION ERROR - EMOJI");
+            e.printStackTrace();
+        }
+        return responseService.getSuccessResponse();
+    }
+
+    @Operation(summary = "채팅 채널 알림", description = "채팅 채널에 달린 채팅에 대한 알림을 보냅니다.")
+    @PostMapping("/chat")
+    public CommonResponse sendChatMessage(@Valid @RequestBody ChatMessageRequest request) {
+        log.info("POST /notification-server/chat / {}", request.getTarget());
+        try {
+            notificationService.send(request);
+        } catch (Exception e) {
+            log.error("NOTIFICATION ERROR - CHAT");
+            e.printStackTrace();
+        }
+        return responseService.getSuccessResponse();
+    }
+
+
 }

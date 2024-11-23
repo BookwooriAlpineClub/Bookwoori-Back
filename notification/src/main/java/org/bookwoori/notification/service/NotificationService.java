@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.notification.domain.Device;
 import org.bookwoori.notification.dto.request.ChannelMessageRequest;
+import org.bookwoori.notification.dto.request.ChatMessageRequest;
 import org.bookwoori.notification.dto.request.DirectMessageRequest;
+import org.bookwoori.notification.dto.request.EmojiMessageRequest;
 import org.bookwoori.notification.dto.response.DeviceTokenResponse;
 import org.bookwoori.notification.exception.CustomException;
 import org.bookwoori.notification.repository.DeviceRepository;
@@ -55,6 +57,25 @@ public class NotificationService {
         }
         saveLog(request, targetTokensByPlatform);
     }
+
+    public void send(EmojiMessageRequest request) {
+        Map<Long, DeviceTokenResponse> deviceTokens = getDeviceTokens(request.getTarget());
+        Map<String, List<String>> targetTokensByPlatform = getTokensByPlatform(deviceTokens);
+        for (Entry<String, List<String>> platform : targetTokensByPlatform.entrySet()) {
+            sendMessage(platform.getValue(), request, platform.getKey());
+        }
+        saveLog(request, targetTokensByPlatform);
+    }
+
+    public void send(ChatMessageRequest request) {
+        Map<Long, DeviceTokenResponse> deviceTokens = getDeviceTokens(request.getTarget());
+        Map<String, List<String>> targetTokensByPlatform = getTokensByPlatform(deviceTokens);
+        for (Entry<String, List<String>> platform : targetTokensByPlatform.entrySet()) {
+            sendMessage(platform.getValue(), request, platform.getKey());
+        }
+        saveLog(request, targetTokensByPlatform);
+    }
+
 
     // 토큰 조회 시 캐시 먼저 조회하고 없는 정보만 DB에서 조회하기
     private Map<Long, DeviceTokenResponse> getDeviceTokens(String target) {
@@ -150,6 +171,38 @@ public class NotificationService {
         }
     }
 
+    private void sendMessage(List<String> targetTokens, EmojiMessageRequest request, String platform) {
+        try {
+            MulticastMessage msg = fcm.makeMessage(
+                    targetTokens,
+                    fcm.makeTitle(request.getUsername(), null),
+                    fcm.makeBody(request.getType(), request.getContent()),
+                    fcm.makeImage(request.getType(), request.getContent()),
+                    platform,
+                    fcm.makeCustomData(null, null)
+            );
+            fcm.sendMessage(msg);
+        } catch (FirebaseMessagingException e) {
+            log.error("FIREBASE ERROR : {}", e);
+        }
+    }
+
+    private void sendMessage(List<String> targetTokens, ChatMessageRequest request, String platform) {
+        try {
+            MulticastMessage msg = fcm.makeMessage(
+                    targetTokens,
+                    fcm.makeTitle(request.getUsername(), request.getChannelName()),
+                    fcm.makeBody(request.getType(), request.getContent()),
+                    fcm.makeImage(request.getType(), request.getContent()),
+                    platform,
+                    fcm.makeCustomData(request.getCommunityId(), request.getChannelId())
+            );
+            fcm.sendMessage(msg);
+        } catch (FirebaseMessagingException e) {
+            log.error("FIREBASE ERROR : {}", e);
+        }
+    }
+
     private void saveLog(DirectMessageRequest request, Map<String, List<String>> target) {
         Notification notification = new Notification(
                 request.getUserId().toString(),
@@ -175,4 +228,34 @@ public class NotificationService {
         );
         mongoTemplate.insert(notification);
     }
+
+    private void saveLog(EmojiMessageRequest request, Map<String, List<String>> target) {
+
+        Notification notification = new Notification(
+                request.getUserId().toString(),
+                request.getUsername(),
+                request.getType(),
+                request.getContent(),
+                request.getReviewId().toString(),
+                null,
+                request.getTarget()
+        );
+        mongoTemplate.insert(notification);
+
+    }
+
+    private void saveLog(ChatMessageRequest request, Map<String, List<String>> target) {
+        Notification notification = new Notification(
+                request.getUserId().toString(),
+                request.getUsername(),
+                request.getType(),
+                request.getContent(),
+                request.getChannelId().toString(),
+                request.getChannelName(),
+                request.getTarget()
+        );
+        mongoTemplate.insert(notification);
+    }
+
+
 }

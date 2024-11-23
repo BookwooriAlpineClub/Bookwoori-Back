@@ -1,6 +1,8 @@
 package org.bookwoori.notification.controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
+@Tag(name = "Notification(Device)")
 @RequestMapping("/notification-server/device")
 @RequiredArgsConstructor
 public class DeviceController {
@@ -22,6 +25,7 @@ public class DeviceController {
     private final ResponseService responseService;
     private final DeviceService deviceService;
 
+    @Operation(summary = "등록 정보 조회", description = "등록 정보를 조회합니다.")
     @GetMapping("/{id}")
     public DataResponse<DeviceResponse> getDevice(@PathVariable("id") Long userId) {
         log.info("GET /notification-server/device/{}", userId);
@@ -29,6 +33,7 @@ public class DeviceController {
         return responseService.getDataResponse(response);
     }
 
+    @Operation(summary = "기기 등록", description = "기기를 등록합니다.")
     @PostMapping
     public CommonResponse register(@Valid @RequestBody RegisterRequest request) {
         log.info("POST /notification-server/device");
@@ -36,6 +41,7 @@ public class DeviceController {
         return responseService.getSuccessResponse();
     }
 
+    @Operation(summary = "기기 삭제", description = "기기를 삭제합니다.")
     @DeleteMapping({"/{id}"})
     public CommonResponse delete(@PathVariable("id") Long userId) {
         log.info("DELETE /notification-server/device/{}", userId);
