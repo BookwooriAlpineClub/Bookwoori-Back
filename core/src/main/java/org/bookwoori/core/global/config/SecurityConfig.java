@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.global.jwt.CustomAccessDeniedHandler;
 import org.bookwoori.core.global.jwt.CustomAuthenticationEntryPoint;
 import org.bookwoori.core.global.jwt.JwtAuthenticationFilter;
-import org.bookwoori.core.global.oauth.OAuth2SuccessHandler;
-import org.bookwoori.core.global.oauth.OAuth2UserService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,8 +30,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final OAuth2UserService oAuth2UserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
@@ -41,7 +37,8 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
             .requestMatchers("/error", "/favicon.ico",
-                "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**")
+                "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**",
+                "/core/v3/api-docs", "/core/v3/api-docs/**")
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
@@ -87,9 +84,6 @@ public class SecurityConfig {
             .exceptionHandling((exceptions) -> exceptions
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
                 .accessDeniedHandler(customAccessDeniedHandler))
-            .oauth2Login(oauth -> oauth
-                .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
-                .successHandler(oAuth2SuccessHandler))
             .logout(logout -> logout
                 .logoutUrl("/auth/logout")
                 .deleteCookies("refreshToken")

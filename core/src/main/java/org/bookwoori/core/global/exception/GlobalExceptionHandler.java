@@ -29,19 +29,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDto, HttpStatusCode.valueOf(e.getErrorCode().getStatus()));
     }
 
-    @ExceptionHandler({TokenException.class})
-    protected ResponseEntity<ErrorDto> handleTokenException(TokenException e,
-        HttpServletRequest request) {
-        log.error(e);
-        ErrorDto errorDto = ErrorDto.builder()
-            .timestamp(LocalDateTime.now().toString())
-            .status(e.getErrorCode().getStatus())
-            .code(e.getErrorCode().getCode())
-            .message(e.getErrorCode().getMessage())
-            .path(request.getRequestURI())
-            .build();
-        return new ResponseEntity<>(errorDto, HttpStatusCode.valueOf(e.getErrorCode().getStatus()));
-    }
+//    @ExceptionHandler({TokenException.class})
+//    protected ResponseEntity<ErrorDto> handleTokenException(TokenException e,
+//        HttpServletRequest request) {
+//        ErrorDto errorDto = ErrorDto.builder()
+//            .timestamp(LocalDateTime.now().toString())
+//            .status(e.getErrorCode().getStatus())
+//            .code(e.getErrorCode().getCode())
+//            .message(e.getErrorCode().getMessage())
+//            .path(request.getRequestURI())
+//            .build();
+//        return new ResponseEntity<>(errorDto, HttpStatusCode.valueOf(e.getErrorCode().getStatus()));
+//    }
 
     @ExceptionHandler({BindException.class})
     protected ResponseEntity<ErrorDto> handleBindException(BindException e,
