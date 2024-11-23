@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
+import org.bookwoori.gateway.exception.CustomException;
 import org.bookwoori.gateway.exception.ErrorCode;
 import org.bookwoori.gateway.exception.ErrorDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,7 +37,6 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
 
     @Value("${jwt.secret.access}")
     private String accessSecret;
-
     private SecretKey secretKey;
 
     private final ServerSecurityContextRepository securityContextRepository;
@@ -55,6 +55,13 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
+            String path = request.getURI().getPath();
+
+            // Swagger 관련 경로 JWT 검증에서 제외
+            if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith("/webjars") || path.startsWith("/core/v3/api-docs") || path.startsWith("/auth/v3/api-docs") ) {
+                return chain.filter(exchange);
+            }
+
             String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 return onError(exchange, ErrorCode.INVALID_TOKEN);
@@ -62,18 +69,13 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             String jwt = authHeader.substring(7);
 
             if (!isJwtValid(jwt)) {
-                log.info("JWT 검증 실패: {}", jwt);
                 return onError(exchange, ErrorCode.INVALID_TOKEN);
             }
 
             // Authentication 객체 생성
             String memberId = getMemberIdFromJwt(jwt);
-            if (memberId == null) {
-                return onError(exchange, ErrorCode.INVALID_TOKEN);
-            }
-
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                memberId,  // String 타입 memberId 사용
+                memberId,
                 null, // password 없음
                 List.of(new SimpleGrantedAuthority("ROLE_USER"))
             );
@@ -98,7 +100,6 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
                 .getBody()
                 .getSubject();
         } catch (Exception ex) {
-            log.error("JWT validation failed: {}", ex.getMessage());
             returnValue = false;
         }
         if (subject == null || subject.isEmpty()) {
@@ -115,11 +116,9 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
                 .parseClaimsJws(jwt)
                 .getBody();
             String memberId = claims.getSubject();
-            log.info("Extracted memberId: {}", memberId);
             return memberId; // String 타입의 memberId
         } catch (Exception e) {
-            log.error("Failed to extract member ID from JWT", e);
-            return null; // 추후 에러처리 추가
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
     }
 
@@ -147,7 +146,6 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.writeValueAsBytes(errorDto);
         } catch (JsonProcessingException e) {
-            log.error("Error serializing ErrorDto", e);
             return new byte[0];
         }
     }
