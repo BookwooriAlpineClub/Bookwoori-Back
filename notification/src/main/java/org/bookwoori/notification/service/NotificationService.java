@@ -8,6 +8,7 @@ import com.google.firebase.messaging.MulticastMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.notification.domain.Device;
+import org.bookwoori.notification.domain.Notification;
 import org.bookwoori.notification.dto.request.ChannelMessageRequest;
 import org.bookwoori.notification.dto.request.ChatMessageRequest;
 import org.bookwoori.notification.dto.request.DirectMessageRequest;

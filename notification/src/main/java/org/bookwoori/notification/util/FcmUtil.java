@@ -2,9 +2,13 @@ package org.bookwoori.notification.util;
 
 import com.google.firebase.messaging.*;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.notification.exception.CustomException;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+
+import static org.bookwoori.notification.exception.CustomExceptionStatus.MESSAGE_TYPE_ERROR;
+import static org.bookwoori.notification.util.MessageType.*;
 
 
 @Component
