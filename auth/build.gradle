@@ -1,0 +1,70 @@
+plugins {
+	id 'org.springframework.boot' version '3.3.4'
+	id 'io.spring.dependency-management' version '1.1.6'
+	id 'java'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	set('springCloudVersion', "2023.0.2")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+
+dependencies {
+	// MySQL
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// Spring Boot Starter
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-logging'
+
+	// Spring Cloud 
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	// JWT
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.4'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.4'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.4'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// RestTemplate
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// Jwt
+	implementation group: 'com.auth0', name: 'java-jwt', version: '3.14.0'
+
+	// Oauth2
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.4'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.4'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.4'
+}
