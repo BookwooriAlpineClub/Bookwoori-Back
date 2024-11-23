@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bookwoori.core.domain.member.dto.request.GetOrSaveMemberRequestDto;
 import org.bookwoori.core.domain.member.dto.request.TokenRequestDto;
 import org.bookwoori.core.domain.member.dto.response.LoginResponseDto;
 import org.bookwoori.core.domain.member.facade.AuthFacade;
@@ -72,6 +73,14 @@ public class AuthController {
     public ResponseEntity<?> deleteMember() {
         authFacade.deleteMember();
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "멤버 조회 또는 저장", description = "멤버 정보를 kakaoId로 조회하거나 새로운 멤버로 저장합니다.")
+    @PostMapping("/members")
+    public ResponseEntity<?> getOrSaveMember(
+        @RequestBody @Valid GetOrSaveMemberRequestDto requestDto) {
+        return ResponseEntity.ok(authFacade.getOrSaveMemberByKakaoId(
+            requestDto));
     }
 
 }

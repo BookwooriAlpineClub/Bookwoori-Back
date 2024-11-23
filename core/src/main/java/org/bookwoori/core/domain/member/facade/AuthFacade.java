@@ -3,7 +3,9 @@ package org.bookwoori.core.domain.member.facade;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bookwoori.core.domain.member.dto.request.GetOrSaveMemberRequestDto;
 import org.bookwoori.core.domain.member.dto.request.TokenRequestDto;
+import org.bookwoori.core.domain.member.dto.response.GetMemberResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.global.exception.ErrorCode;
@@ -48,5 +50,21 @@ public class AuthFacade {
         // 새로운 refreshToken을 Redis에 설정
         tokenProvider.saveRefreshToken(kakaoId, newRefreshToken);
         return tokens;
+    }
+
+    public GetMemberResponseDto getOrSaveMemberByKakaoId(GetOrSaveMemberRequestDto requestDto) {
+        boolean isMember = memberService.existsByKakaoId(requestDto.kakaoId());
+        if (isMember) {
+            Member member = memberService.getMemberByKakaoId(requestDto.kakaoId());
+            return GetMemberResponseDto.from(member);
+        } else {
+            Member member = Member.builder()
+                .kakaoId(requestDto.kakaoId())
+                .nickname(requestDto.nickname())
+                .profileImg(requestDto.profileImg())
+                .build();
+            memberService.saveMember(member);
+            return GetMemberResponseDto.from(member);
+        }
     }
 }
