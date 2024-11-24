@@ -35,12 +35,16 @@ public class MemberService {
         try {
             String memberIdString = (String) authentication.getPrincipal();
             Long memberId = Long.valueOf(memberIdString);
-            return getMemberById(memberId);
+            Member member = getMemberById(memberId);
+            if (member.getStatus() == Status.INACTIVE) {
+                throw new CustomException(ErrorCode.MEMBER_INACTIVE);
+            }
+            return member;
         } catch (NumberFormatException e) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
     }
-    
+
     @Transactional(readOnly = true)
     public Member getMemberByKakaoId(Long kakaoId) {
         Member member = memberRepository.findByKakaoId(kakaoId)
