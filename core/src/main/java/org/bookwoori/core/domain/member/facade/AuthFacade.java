@@ -1,11 +1,13 @@
 package org.bookwoori.core.domain.member.facade;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.dto.request.GetOrSaveMemberRequestDto;
 import org.bookwoori.core.domain.member.dto.response.GetMemberResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.global.s3.S3Util;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,12 +18,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthFacade {
 
     private final MemberService memberService;
+    private final S3Util s3Util;
 
     public void deleteMember() {
         Member currentMember = memberService.getCurrentMember();
+        Optional.ofNullable(currentMember.getProfileImg())
+            .ifPresent(s3Util::deleteImage);
+        Optional.ofNullable(currentMember.getBackgroundImg())
+            .ifPresent(s3Util::deleteImage);
         currentMember.deleteMember();
     }
-
+    
     public GetMemberResponseDto getOrSaveMemberByKakaoId(GetOrSaveMemberRequestDto requestDto) {
         boolean isMember = memberService.existsByKakaoId(requestDto.kakaoId());
         if (isMember) {
