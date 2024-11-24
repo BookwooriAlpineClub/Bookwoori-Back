@@ -22,7 +22,9 @@ public class MemberFacade {
     public void updateMember(UpdateMemberRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         String profileImgUrl = s3Util.uploadImage(requestDto.profileImg(), "member/profile-image");
-        currentMember.updateMember(requestDto.nickname(), profileImgUrl);
+        String backgroundImgUrl = s3Util.uploadImage(requestDto.backgroundImg(),
+            "member/background-image");
+        currentMember.updateMember(requestDto.nickname(), profileImgUrl, backgroundImgUrl);
         memberService.saveMember(currentMember);
     }
 
