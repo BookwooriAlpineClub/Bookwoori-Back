@@ -8,8 +8,7 @@ public record GetMemberResponseDto(
     Long memberId,
     Long kakaoId,
     String nickname,
-    String profileImg,
-    String backgroundImg
+    String profileImg
 ) {
 
     public static GetMemberResponseDto from(Member member) {
@@ -17,8 +16,6 @@ public record GetMemberResponseDto(
             .memberId(member.getMemberId())
             .kakaoId(member.getKakaoId())
             .nickname(member.getNickname())
-            .profileImg(member.getProfileImg())
-            .backgroundImg(member.getBackgroundImg())
             .build();
     }
 }

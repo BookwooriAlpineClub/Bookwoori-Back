@@ -33,6 +33,8 @@ public class SwaggerConfig {
         corsConfig.setMaxAge(3600L);
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfig.setAllowedHeaders(Arrays.asList("*"));
+        corsConfig.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
+//        corsConfig.setAllowCredentials(true);
 
         org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource source =
             new org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource();

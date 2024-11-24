@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberFacade {
 
     private final MemberService memberService;
+
     private final S3Util s3Util;
 
     public void updateMember(UpdateMemberRequestDto requestDto) {

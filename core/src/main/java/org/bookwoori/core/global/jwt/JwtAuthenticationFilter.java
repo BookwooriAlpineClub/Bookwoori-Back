@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +22,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+
+        // Preflight 요청
+        if (HttpMethod.OPTIONS.name().equalsIgnoreCase(httpRequest.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String memberId = request.getHeader("memberId");
         if (memberId != null) {
             // 사용자 인증 정보 설정
