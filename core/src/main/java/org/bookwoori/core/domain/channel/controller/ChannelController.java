@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.channel.dto.request.ChannelCreateRequestDto;
-import org.bookwoori.core.domain.channel.dto.request.ChannelUpdateRequestDto;
+import org.bookwoori.core.domain.channel.dto.request.ChannelModifyRequestDto;
 import org.bookwoori.core.domain.channel.facade.ChannelFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +39,11 @@ public class ChannelController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "채널 이름 변경", description = "채팅/음성 채널의 이름을 변경합니다.")
-    @PatchMapping("/{channelId}/name")
+    @Operation(summary = "채널 편집", description = "채팅/음성 채널의 이름 또는 속한 카테고리를 수정합니다.")
+    @PatchMapping("/{channelId}")
     public ResponseEntity<?> updateChannelName(@PathVariable final Long channelId,
-        @Valid @RequestBody ChannelUpdateRequestDto requestDto) {
-        channelFacade.updateChannelName(channelId, requestDto);
+        @Valid @RequestBody ChannelModifyRequestDto requestDto) {
+        channelFacade.modifyChannel(channelId, requestDto);
         return ResponseEntity.ok().build();
     }
 }
