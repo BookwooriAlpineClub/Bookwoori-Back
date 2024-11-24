@@ -33,4 +33,10 @@ public class MemberFacade {
         boolean isMine = member.equals(currentMember);
         return MemberResponseDto.from(member, isMine);
     }
+
+    @Transactional(readOnly = true)
+    public MemberResponseDto getMyProfile() {
+        Member currentMember = memberService.getCurrentMember();
+        return MemberResponseDto.from(currentMember, true);
+    }
 }
