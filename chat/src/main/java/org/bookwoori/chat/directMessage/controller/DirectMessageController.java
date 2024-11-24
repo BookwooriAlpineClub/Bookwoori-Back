@@ -26,7 +26,7 @@ public class DirectMessageController {
         messageSender.sendDirectMessage(requestDto);
     }
 
-    @GetMapping("/messageRooms/{messageRoomId}")
+    @GetMapping("/messageRooms/{messageRoomId}/messages")
     public ResponseEntity<?> getDirectMessageHistory(
         @PathVariable(value = "messageRoomId") final Long roomId,
         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size) {
