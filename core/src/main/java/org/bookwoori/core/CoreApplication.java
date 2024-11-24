@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableFeignClients
 @OpenAPIDefinition(
     servers = {
+        @Server(url = "http://localhost:8000", description = "Local Gateway Server"),
         @Server(url = "http://localhost:8080", description = "Local Development Server"),
         @Server(url = "https://api.bookwoori.p-e.kr", description = "Production Server")
     }
