@@ -2,7 +2,7 @@ package org.bookwoori.chat.channelMessage.dto.request;
 
 import java.time.LocalDateTime;
 import org.bookwoori.chat.channelMessage.domain.ChannelMessage;
-import org.bookwoori.chat.global.MessageType;
+import org.bookwoori.chat.global.common.MessageType;
 
 public record ChannelMessageSendRequestDto(
     Long channelId,

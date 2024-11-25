@@ -29,7 +29,6 @@ public class DirectMessageController {
         messageSender.sendDirectMessage(requestDto);
     }
 
-    @GetMapping
     @MessageMapping("/direct/react")
     public void reactToDirectMessage(@Payload DirectMessageReactRequestDto requestDto) {
         messageSender.reactToDirectMessage(requestDto);
@@ -40,7 +39,7 @@ public class DirectMessageController {
         messageSender.replyToDirectMessage(requestDto);
     }
 
-    @GetMapping("/messageRooms/{messageRoomId}")
+    @GetMapping
     public ResponseEntity<?> getDirectMessageHistory(
         @RequestParam(value = "messageRoomId") final Long roomId,
         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size) {
