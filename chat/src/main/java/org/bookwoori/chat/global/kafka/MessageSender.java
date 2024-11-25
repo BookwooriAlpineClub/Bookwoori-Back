@@ -4,8 +4,12 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bookwoori.chat.directMessage.domain.DirectMessage;
+import org.bookwoori.chat.directMessage.dto.request.DirectMessageReactRequestDto;
 import org.bookwoori.chat.directMessage.dto.request.DirectMessageSendRequestDto;
 import org.bookwoori.chat.directMessage.repository.DirectMessageRepository;
+import org.bookwoori.chat.global.ActionType;
+import org.bookwoori.chat.global.exception.CustomException;
+import org.bookwoori.chat.global.exception.ErrorCode;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +23,18 @@ public class MessageSender { //토픽에 이벤트를 발행
 
     public void sendDirectMessage(DirectMessageSendRequestDto requestDto) {
         DirectMessage directMessage = requestDto.toEntity(LocalDateTime.now());
+        directMessageRepository.save(directMessage);
+        kafkaTemplate.send(KafkaConstants.DIRECT_CHAT_TOPIC, directMessage);
+    }
+
+    public void reactToDirectMessage(DirectMessageReactRequestDto requestDto) {
+        DirectMessage directMessage = directMessageRepository.findById(requestDto.id())
+            .orElseThrow(() -> new CustomException(ErrorCode.DIRECT_MESSAGE_NOT_FOUND));
+        if (requestDto.action().equals(ActionType.ADD)) {
+            directMessage.addReaction(requestDto.emoji(), requestDto.memberId());
+        } else if (requestDto.action().equals(ActionType.REMOVE)) {
+            directMessage.removeReaction(requestDto.emoji(), requestDto.memberId());
+        }
         directMessageRepository.save(directMessage);
         kafkaTemplate.send(KafkaConstants.DIRECT_CHAT_TOPIC, directMessage);
     }

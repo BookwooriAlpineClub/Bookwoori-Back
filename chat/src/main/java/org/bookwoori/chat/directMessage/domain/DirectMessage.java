@@ -1,11 +1,16 @@
 package org.bookwoori.chat.directMessage.domain;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.bookwoori.chat.global.EmojiType;
 import org.bookwoori.chat.global.MessageType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -30,6 +35,8 @@ public class DirectMessage {
 
     private LocalDateTime createdAt;
 
+    private Map<EmojiType, Set<Long>> reactions = new HashMap<>();
+
     @Override
     public String toString() {
         return "DirectMessage{" +
@@ -39,6 +46,21 @@ public class DirectMessage {
             ", type=" + type +
             ", content='" + content + '\'' +
             ", createdAt=" + createdAt +
+            ", reactions=" + reactions +
             '}';
+    }
+
+    public void addReaction(EmojiType emoji, Long memberId) {
+        reactions.putIfAbsent(emoji, new HashSet<>());
+        reactions.get(emoji).add(memberId);
+    }
+
+    public void removeReaction(EmojiType emoji, Long memberId) {
+        if (reactions.containsKey(emoji)) {
+            reactions.get(emoji).remove(memberId);
+            if (reactions.get(emoji).isEmpty()) {
+                reactions.remove(emoji);
+            }
+        }
     }
 }
