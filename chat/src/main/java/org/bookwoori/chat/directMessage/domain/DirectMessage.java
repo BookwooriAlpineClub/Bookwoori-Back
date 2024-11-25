@@ -1,5 +1,6 @@
 package org.bookwoori.chat.directMessage.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,8 +12,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.chat.global.common.EmojiType;
+import org.bookwoori.chat.global.common.EventType;
 import org.bookwoori.chat.global.common.MessageType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "directMessage")
@@ -33,11 +36,24 @@ public class DirectMessage {
 
     private String content;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     private Map<EmojiType, Set<Long>> reactions = new HashMap<>();
 
     private String parentId;
+
+    /*
+     * 데이터베이스에 저장되지 않는 필드
+     */
+    @Transient
+    private String parentContent;
+
+    @Transient
+    private EventType eventType;
+
+    @Transient
+    private EmojiType targetEmoji;
 
     public void addReaction(EmojiType emoji, Long memberId) {
         reactions.putIfAbsent(emoji, new HashSet<>());
@@ -51,5 +67,13 @@ public class DirectMessage {
                 reactions.remove(emoji);
             }
         }
+    }
+
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
+
+    public void setTargetEmoji(EmojiType emoji) {
+        this.targetEmoji = emoji;
     }
 }

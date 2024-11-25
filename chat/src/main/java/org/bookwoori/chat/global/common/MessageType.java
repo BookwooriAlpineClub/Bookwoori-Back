@@ -5,7 +5,7 @@ import org.bookwoori.chat.global.exception.CustomException;
 import org.bookwoori.chat.global.exception.ErrorCode;
 
 public enum MessageType {
-    TALK, FILE;
+    TEXT, IMAGE, FILE;
 
 
     @JsonCreator
