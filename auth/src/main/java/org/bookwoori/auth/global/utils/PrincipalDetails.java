@@ -1,6 +1,6 @@
-package org.bookwoori.core.global.oauth;
+package org.bookwoori.auth.global.utils;
 
-import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.auth.global.feignClient.dto.GetMemberResponseDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -9,13 +9,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-public record PrincipalDetails (
-        Map<String, Object> attributes,
-        String attributeKey,
-        Member member) implements OAuth2User, UserDetails {
+public record PrincipalDetails(
+    Map<String, Object> attributes,
+    String attributeKey,
+    GetMemberResponseDto responseDto) implements OAuth2User, UserDetails {
 
-    public Member getMember() {
-        return member;
+    public GetMemberResponseDto getMemberResponseDto() {
+        return responseDto;
     }
 
     @Override
@@ -35,14 +35,13 @@ public record PrincipalDetails (
 
     @Override
     public String getPassword() {
-        return null;  // OAuth2 로그인에서는 패스워드를 사용하지 않음
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return String.valueOf(member.getKakaoId());
+        return String.valueOf(responseDto.memberId());
     }
-
 
     @Override
     public boolean isAccountNonExpired() {
@@ -63,5 +62,5 @@ public record PrincipalDetails (
     public boolean isEnabled() {
         return true;
     }
-
 }
+
