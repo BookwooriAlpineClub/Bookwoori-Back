@@ -31,13 +31,16 @@ public class MemberFacade {
     }
 
     private String updateImage(MultipartFile newImage, String oldImageUrl, String path) {
-        if (newImage != null && !newImage.isEmpty()) {
-            if (oldImageUrl != null) {
-                s3Util.deleteImage(oldImageUrl);
-            }
-            return s3Util.uploadImage(newImage, path);
+        if (newImage == null) {
+            return null;
         }
-        return oldImageUrl;
+        if (oldImageUrl != null && s3Util.isSameImage(newImage, oldImageUrl)) {
+            return oldImageUrl;
+        }
+        if (oldImageUrl != null) {
+            s3Util.deleteImage(oldImageUrl);
+        }
+        return s3Util.uploadImage(newImage, path);
     }
 
     @Transactional(readOnly = true)
