@@ -1,10 +1,12 @@
 package org.bookwoori.chat.channelMessage.domain;
 
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.bookwoori.chat.global.MessageType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -22,9 +24,11 @@ public class ChannelMessage {
 
     private Long memberId;
 
-    private String type;
+    private MessageType type;
 
     private String content;
+
+    private LocalDateTime createdAt;
 
     @Override
     public String toString() {
@@ -34,6 +38,7 @@ public class ChannelMessage {
             ", memberId=" + memberId +
             ", type='" + type + '\'' +
             ", content='" + content + '\'' +
+            ", createdAt=" + createdAt +
             '}';
     }
 }

@@ -16,6 +16,8 @@ public class KafkaTopicConfig {
     private String bootstrapAddress;
     @Value("${spring.kafka.topic.direct-chat}")
     private String directChatTopic;
+    @Value("${spring.kafka.topic.channel-chat}")
+    private String channelChatTopic;
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -32,4 +34,8 @@ public class KafkaTopicConfig {
         return new NewTopic(directChatTopic, 1, (short) 1);
     }
 
+    @Bean
+    public NewTopic channelChatTopic() {
+        return new NewTopic(channelChatTopic, 1, (short) 1);
+    }
 }
