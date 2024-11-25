@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.auth.global.exception.TokenExceptionFilter;
 import org.bookwoori.auth.global.handler.CustomAccessDeniedHandler;
 import org.bookwoori.auth.global.handler.CustomAuthenticationEntryPoint;
+import org.bookwoori.auth.global.handler.CustomLogoutHandler;
 import org.bookwoori.auth.global.jwt.JwtAuthenticationFilter;
 import org.bookwoori.auth.global.handler.OAuth2SuccessHandler;
 import org.bookwoori.auth.global.service.OAuth2UserService;
@@ -41,6 +42,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomLogoutHandler customLogoutHandler;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -109,6 +111,7 @@ public class SecurityConfig {
             // logout
             .logout(logout -> logout
                 .logoutUrl("/auth/logout")
+                .addLogoutHandler(customLogoutHandler)
                 .deleteCookies("refreshToken")
                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK)));
         return http.build();

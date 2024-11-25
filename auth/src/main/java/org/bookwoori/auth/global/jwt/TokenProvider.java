@@ -149,6 +149,12 @@ public class TokenProvider {
             .set(memberId.toString(), refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
     }
 
+    public void deleteRefreshToken(String refreshToken) {
+        Claims claims = parseClaims(refreshToken, refreshKey, true);
+        Long memberId = Long.valueOf(claims.getSubject());
+        redisTemplate.delete(memberId.toString());
+    }
+
     private List<String> getRolesFromClaims(Claims claims) {
         String roles = claims.get("role", String.class);
         return roles == null ? List.of("ROLE_USER") : List.of(roles.split(","));
