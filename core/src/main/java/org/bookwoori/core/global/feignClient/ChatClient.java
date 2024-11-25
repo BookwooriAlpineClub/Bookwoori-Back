@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "core", url = "${client.url.chat}")
 public interface ChatClient {
 
-    @GetMapping("/messageRooms/recentMessage")
+    @GetMapping("/directMessages/recent")
     public Map<Long, RecentDirectMessageResponseDto> getRecentMessageFromMessageRoom(
         @RequestParam("messageRoomIdList") List<Long> messageRoomIdList);
 }

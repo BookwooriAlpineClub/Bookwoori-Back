@@ -10,12 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/directMessages")
 public class DirectMessageController {
 
     private final MessageSender messageSender;
@@ -26,16 +27,16 @@ public class DirectMessageController {
         messageSender.sendDirectMessage(requestDto);
     }
 
-    @GetMapping("/messageRooms/{messageRoomId}")
+    @GetMapping
     public ResponseEntity<?> getDirectMessageHistory(
-        @PathVariable(value = "messageRoomId") final Long roomId,
+        @RequestParam(value = "messageRoomId") final Long roomId,
         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size) {
         DirectMessageListResponseDto responseDto =
             directMessageService.getDirectMessageHistory(roomId, page, size);
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/messageRooms/recentMessage")
+    @GetMapping("/recent")
     public ResponseEntity<?> getRecentMessageFromMessageRoom(
         @RequestParam("messageRoomIdList") List<Long> messageRoomIdList) {
         return ResponseEntity.ok(
