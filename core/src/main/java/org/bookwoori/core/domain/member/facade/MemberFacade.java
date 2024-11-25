@@ -28,7 +28,6 @@ public class MemberFacade {
         String backgroundImgUrl = updateImage(requestDto.backgroundImg(),
             currentMember.getBackgroundImg(), "member/background-image");
         currentMember.updateMember(requestDto.nickname(), profileImgUrl, backgroundImgUrl);
-        memberService.saveMember(currentMember);
     }
 
     private String updateImage(MultipartFile newImage, String oldImageUrl, String path) {
