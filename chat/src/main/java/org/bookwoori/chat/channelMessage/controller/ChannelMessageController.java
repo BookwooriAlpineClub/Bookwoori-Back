@@ -9,12 +9,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/channelMessages")
 public class ChannelMessageController {
 
     private final MessageSender messageSender;
@@ -25,9 +26,9 @@ public class ChannelMessageController {
         messageSender.sendChannelMessage(requestDto);
     }
 
-    @GetMapping("/channels/{channelId}/messages")
+    @GetMapping
     public ResponseEntity<?> getChannelMessageHistory(
-        @PathVariable(value = "channelId") final Long channelId,
+        @RequestParam(value = "channelId") final Long channelId,
         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size) {
         ChannelMessageListResponseDto responseDto =
             channelMessageService.getChannelMessageHistory(channelId, page, size);
