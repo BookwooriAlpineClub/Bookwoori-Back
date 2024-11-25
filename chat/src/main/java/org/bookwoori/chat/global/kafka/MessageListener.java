@@ -1,6 +1,7 @@
 package org.bookwoori.chat.global.kafka;
 
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.chat.channelMessage.domain.ChannelMessage;
 import org.bookwoori.chat.directMessage.domain.DirectMessage;
 import org.bookwoori.chat.directMessage.dto.response.DirectMessageReactResponseDto;
 import org.bookwoori.chat.directMessage.dto.response.DirectMessageReplyResponseDto;
@@ -23,6 +24,11 @@ public class MessageListener { //토픽에 발행된 이벤트를 가져와 처�
             directMessage.getMessageRoomId(), DirectMessageSendResponseDto.from(directMessage));
         messagingTemplate.convertAndSend("/topic/direct/" + directMessage.getMessageRoomId(),
             response);
+    }
+
+    @KafkaListener(topics = KafkaConstants.CHANNEL_CHAT_TOPIC)
+    public void channelChatListener(ChannelMessage message) {
+        messagingTemplate.convertAndSend("/topic/channel/" + message.getChannelId(), message);
     }
 
     @KafkaListener(topics = KafkaConstants.DIRECT_CHAT_EVENT_TOPIC)

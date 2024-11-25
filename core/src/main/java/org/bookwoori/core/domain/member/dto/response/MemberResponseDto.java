@@ -8,6 +8,7 @@ public record MemberResponseDto(
     boolean isMine,
     String nickname,
     String profileImg,
+    String backgroundImg,
     int level,
     String mountain,
     int height,
@@ -18,6 +19,7 @@ public record MemberResponseDto(
             .isMine(isMine)
             .nickname(member.getNickname())
             .profileImg(member.getProfileImg())
+            .backgroundImg(member.getBackgroundImg())
             .level(member.getGrade().getLevel())
             .mountain(member.getGrade().getMountain())
             .height(member.getGrade().getHeight())

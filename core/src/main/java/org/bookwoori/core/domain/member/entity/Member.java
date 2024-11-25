@@ -37,6 +37,9 @@ public class Member extends BaseTimeEntity {
     @Column(name = "profile_image", columnDefinition = "TEXT")
     private String profileImg;
 
+    @Column(name = "background_image", columnDefinition = "TEXT")
+    private String backgroundImg;
+
     @Column(name = "grade")
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -56,6 +59,7 @@ public class Member extends BaseTimeEntity {
         this.kakaoId = kakaoId;
         this.nickname = nickname;
         this.profileImg = profileImg;
+        this.backgroundImg = null;
         this.grade = Grade.Dongsan;
         this.status = Status.ACTIVE;
         this.totalPage = 0;
@@ -64,11 +68,13 @@ public class Member extends BaseTimeEntity {
     public void deleteMember() {
         this.nickname = "(알 수 없음)";
         this.profileImg = null; // 추후 수정
+        this.backgroundImg = null;
         this.status = Status.INACTIVE;
     }
 
-    public void updateMember(String nickname, String profileImgUrl) {
+    public void updateMember(String nickname, String profileImgUrl, String backgroundImg) {
         this.nickname = nickname;
         this.profileImg = profileImgUrl;
+        this.backgroundImg = backgroundImg;
     }
 }
