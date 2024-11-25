@@ -21,13 +21,13 @@ jobs:
           cd ./core/src/main/resources
           touch ./application.yml
           echo "${{ secrets.APPLICATION_CORE }}" > ./application.yml
-          cd ../../../../auth/src/main/resources
+          mkdir -p ./auth/src/main/resources
           touch ./application.yml
           echo "${{ secrets.APPLICATION_AUTH }}" > ./application.yml
-          cd ../../../../chat/src/main/resources
+          mkdir -p ./auth/src/main/resources
           touch ./application.yml
           echo "${{ secrets.APPLICATION_CHAT }}" > ./application.yml
-          cd ../../../../gateway/src/main/resources
+          mkdir -p ./auth/src/main/resources
           touch ./application.yml
           echo "${{ secrets.APPLICATION_GATEWAY }}" > ./application.yml
 
