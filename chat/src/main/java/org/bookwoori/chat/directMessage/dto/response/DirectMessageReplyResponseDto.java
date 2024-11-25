@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import org.bookwoori.chat.directMessage.domain.DirectMessage;
-import org.bookwoori.chat.global.common.EventType;
 import org.bookwoori.chat.global.common.MessageType;
 
 @Builder
 public record DirectMessageReplyResponseDto(
-    EventType eventType,
     String id,
     Long messageRoomId,
     Long memberId,
@@ -23,7 +21,6 @@ public record DirectMessageReplyResponseDto(
 
     public static DirectMessageReplyResponseDto from(DirectMessage directMessage) {
         return DirectMessageReplyResponseDto.builder()
-            .eventType(EventType.REPLY)
             .id(directMessage.getId())
             .messageRoomId(directMessage.getMessageRoomId())
             .memberId(directMessage.getMemberId())
