@@ -69,6 +69,7 @@ jobs:
           platforms: linux/arm64/v8
           push: true
           tags: ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
+
       - name: Core Server build & push
         uses: docker/build-push-action@v6
         with:
@@ -94,7 +95,7 @@ jobs:
           file: ./chat/Dockerfile
           platforms: linux/arm64/v8
           push: true
-          tags: ${{ secrets.DOCKER_REPO_CORE }}:v2
+          tags: ${{ secrets.DOCKER_REPO_CHAT }}:v2
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
@@ -104,11 +105,9 @@ jobs:
           key: ${{ secrets.KEY }}
           envs: GITHUB_SHA
           script: |
-                    echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
-            #            sudo docker ps -q | xargs -r sudo docker stop && sudo docker ps -aq | xargs -r sudo docker rm
-                    sudo docker-compose -f ./docker-compose.yml down --rmi all
-                    sudo docker pull ${{ secrets.DOCKER_REPO_CORE }}:v2
-                    sudo docker pull ${{ secrets.DOCKER_REPO_AUTH }}:v2
-                    sudo docker pull ${{ secrets.DOCKER_REPO_CHAT }}:v2
-                    sudo docker pull ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
-                    sudo docker-compose -f ./docker-compose.yml up -d
+            echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
+            sudo docker pull ${{ secrets.DOCKER_REPO_CORE }}:v2
+            sudo docker pull ${{ secrets.DOCKER_REPO_AUTH }}:v2
+            sudo docker pull ${{ secrets.DOCKER_REPO_CHAT }}:v2
+            sudo docker pull ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
+            sudo docker-compose -f ./docker-compose.yml up -d
