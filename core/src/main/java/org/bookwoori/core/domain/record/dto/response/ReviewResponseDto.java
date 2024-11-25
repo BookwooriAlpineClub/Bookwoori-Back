@@ -7,22 +7,22 @@ import org.bookwoori.core.domain.review.entity.Review;
 
 @Builder
 public record ReviewResponseDto(
-    Long recordId,
-    Long memberId,
-    int star,
-    String reviewContent,
-    BookInfoDto bookInfo
+        Long recordId,
+        Long memberId,
+        int star,
+        String reviewContent,
+        BookInfoDto bookInfo
 
 ) {
 
     public static ReviewResponseDto from(Record record, Review review) {
         return ReviewResponseDto.builder()
-            .recordId(record.getRecordId())
-            .memberId(record.getMember().getMemberId())
-            .star(record.getStar())
-            .reviewContent(review.getContent())
-            .bookInfo(BookInfoDto.from(record.getBook()))
-            .build();
+                .recordId(record.getRecordId())
+                .memberId(record.getMember().getMemberId())
+                .star(record.getStar())
+                .reviewContent(review.getContent())
+                .bookInfo(BookInfoDto.from(record.getBook()))
+                .build();
     }
 
 }
