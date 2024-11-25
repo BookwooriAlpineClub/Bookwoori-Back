@@ -16,7 +16,7 @@ jobs:
           distribution: 'zulu'
           java-version: 17
 
-      - name: Make application-prod.yml
+      - name: Make application-prod.yml 
         run: |
           mkdir -p ./core/src/main/resources
           touch ./core/src/main/resources/application.yml
