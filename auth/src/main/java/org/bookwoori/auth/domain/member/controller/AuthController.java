@@ -40,18 +40,21 @@ public class AuthController {
 
     @Operation(summary = "토큰 재발급", description = "액세스 토큰 및 리프레쉬 토큰을 재발급합니다.")
     @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(@RequestBody TokenRequestDto requestDto,
-        HttpServletResponse response) {
-        Map<String, String> tokens = authFacade.refreshAccessToken(requestDto);
-        String newAccessToken = tokens.get("accessToken");
-        String newRefreshToken = tokens.get("refreshToken");
-
-        // 새로운 refreshToken 쿠키에 저장
-        cookieUtil.addCookie(response, "refreshToken", newRefreshToken,
-            CookieUtil.REFRESH_TOKEN_MAX_AGE);
-        return ResponseEntity.ok()
-            .header("Authorization", "Bearer " + newAccessToken)
-            .body("New access and refresh tokens issued");
+    public ResponseEntity<?> refreshAccessToken(
+        @CookieValue(name = "refreshToken") String refreshToken, HttpServletResponse response) {
+        try {
+            // accessToken과 refreshToken을 모두 재발급
+            Map<String, String> tokens = authFacade.refreshAccessToken(refreshToken);
+            String newAccessToken = tokens.get("accessToken");
+            String newRefreshToken = tokens.get("refreshToken");
+            cookieUtil.addCookie(response, "refreshToken", newRefreshToken,
+                CookieUtil.REFRESH_TOKEN_MAX_AGE);
+            return ResponseEntity.ok()
+                .header("Authorization", "Bearer " + newAccessToken)
+                .body("New access and refresh tokens issued");
+        } catch (IllegalArgumentException e) {
+            throw new TokenException(ErrorCode.BAD_REQUEST);
+        }
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃 및 리프레쉬 토큰 삭제")

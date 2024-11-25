@@ -21,22 +21,20 @@ public class AuthFacade {
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
 
-    public Map<String, String> refreshAccessToken(TokenRequestDto requestDto) {
-        Authentication authentication = tokenProvider.getAuthentication(requestDto.refreshToken(),
+    public Map<String, String> refreshAccessToken(String refreshToken) {
+        Authentication authentication = tokenProvider.getAuthentication(refreshToken,
             true);
         Long kakaoId = tokenProvider.extractKakaoId(authentication);
         // Redis에서 kakaoId를 key로 하는 refreshToken 가져옴
         String storedRefreshToken = redisTemplate.opsForValue()
             .get(kakaoId.toString());
-        // 전달받은 리프레시 토큰과 Redis에 저장된 리프레시 토큰이 일치하는지 확인
-        if (storedRefreshToken == null || !storedRefreshToken.equals(requestDto.refreshToken())) {
+        if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
         }
-        // accessToken과 refreshToken을 모두 재발급
         Map<String, String> tokens = tokenProvider.renewAccessAndRefreshToken(
-            requestDto.refreshToken());
+            refreshToken);
         String newRefreshToken = tokens.get("refreshToken");
-        // 새로운 refreshToken을 Redis에 설정
+        // 새로운 refreshToken Redis에 설정
         tokenProvider.saveRefreshToken(kakaoId, newRefreshToken);
         return tokens;
     }
