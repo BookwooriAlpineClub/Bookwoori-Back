@@ -1,16 +1,16 @@
-package org.bookwoori.chat.global;
+package org.bookwoori.chat.global.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.bookwoori.chat.global.exception.CustomException;
 import org.bookwoori.chat.global.exception.ErrorCode;
 
-public enum EmojiType {
-    THUMBS_UP, HEART_HANDS, SMILING_FACE, CRYING_FACE, THINKING_FACE;
+public enum ActionType {
+    ADD, REMOVE;
 
     @JsonCreator
-    public static EmojiType from(String s) {
+    public static ActionType from(String s) {
         try {
-            return EmojiType.valueOf(s.toUpperCase());
+            return ActionType.valueOf(s.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
         }

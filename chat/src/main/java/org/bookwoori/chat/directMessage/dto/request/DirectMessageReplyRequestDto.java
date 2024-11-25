@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 import org.bookwoori.chat.directMessage.domain.DirectMessage;
 import org.bookwoori.chat.global.common.MessageType;
 
-public record DirectMessageSendRequestDto(
+public record DirectMessageReplyRequestDto(
+    String parentId,
     Long messageRoomId,
     Long memberId,
     MessageType type,
@@ -13,6 +14,7 @@ public record DirectMessageSendRequestDto(
 
     public DirectMessage toEntity() {
         return DirectMessage.builder()
+            .parentId(this.parentId)
             .messageRoomId(this.messageRoomId)
             .memberId(this.memberId)
             .type(this.type)

@@ -3,6 +3,7 @@ package org.bookwoori.chat.directMessage.controller;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.chat.directMessage.dto.request.DirectMessageReactRequestDto;
+import org.bookwoori.chat.directMessage.dto.request.DirectMessageReplyRequestDto;
 import org.bookwoori.chat.directMessage.dto.request.DirectMessageSendRequestDto;
 import org.bookwoori.chat.directMessage.dto.response.DirectMessageListResponseDto;
 import org.bookwoori.chat.directMessage.service.DirectMessageService;
@@ -30,6 +31,11 @@ public class DirectMessageController {
     @MessageMapping("/direct/react")
     public void reactToDirectMessage(@Payload DirectMessageReactRequestDto requestDto) {
         messageSender.reactToDirectMessage(requestDto);
+    }
+
+    @MessageMapping("/direct/reply")
+    public void replyToDirectMessage(@Payload DirectMessageReplyRequestDto requestDto) {
+        messageSender.replyToDirectMessage(requestDto);
     }
 
     @GetMapping("/messageRooms/{messageRoomId}")

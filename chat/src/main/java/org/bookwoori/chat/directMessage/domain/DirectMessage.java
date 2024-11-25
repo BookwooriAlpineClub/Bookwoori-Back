@@ -10,8 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.bookwoori.chat.global.EmojiType;
-import org.bookwoori.chat.global.MessageType;
+import org.bookwoori.chat.global.common.EmojiType;
+import org.bookwoori.chat.global.common.MessageType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -37,18 +37,7 @@ public class DirectMessage {
 
     private Map<EmojiType, Set<Long>> reactions = new HashMap<>();
 
-    @Override
-    public String toString() {
-        return "DirectMessage{" +
-            "id='" + id + '\'' +
-            ", messageRoomId=" + messageRoomId +
-            ", memberId=" + memberId +
-            ", type=" + type +
-            ", content='" + content + '\'' +
-            ", createdAt=" + createdAt +
-            ", reactions=" + reactions +
-            '}';
-    }
+    private String parentId;
 
     public void addReaction(EmojiType emoji, Long memberId) {
         reactions.putIfAbsent(emoji, new HashSet<>());

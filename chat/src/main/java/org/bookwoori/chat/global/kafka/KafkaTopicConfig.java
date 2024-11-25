@@ -17,6 +17,9 @@ public class KafkaTopicConfig {
     @Value("${spring.kafka.topic.direct-chat}")
     private String directChatTopic;
 
+    @Value("${spring.kafka.topic.direct-chat-event}")
+    private String directChatEventTopic;
+
     @Bean
     public KafkaAdmin kafkaAdmin() {
         Map<String, Object> configs = new HashMap<>();
@@ -30,6 +33,11 @@ public class KafkaTopicConfig {
     @Bean
     public NewTopic directChatTopic() {
         return new NewTopic(directChatTopic, 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic directChatEventTopic() {
+        return new NewTopic(directChatEventTopic, 1, (short) 1);
     }
 
 }
