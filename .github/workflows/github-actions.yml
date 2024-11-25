@@ -27,9 +27,6 @@ jobs:
           mkdir -p ./chat/src/main/resources
           touch ./chat/src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_CHAT }}" > ./chat/src/main/resources/application.yml
-          
-      - name: Make Gateway application-prod.yml
-        run: |
           mkdir -p ./gateway/src/main/resources
           touch ./gateway/src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_GATEWAY }}" > ./gateway/src/main/resources/application.yml
@@ -114,4 +111,4 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_REPO_AUTH }}:v2
             sudo docker pull ${{ secrets.DOCKER_REPO_CHAT }}:v2
             sudo docker pull ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
-            sudo docker-compose -f ./docker-compose.yml up -d
+            sudo docker-compose -f ./docker-compose.yml up -d 
