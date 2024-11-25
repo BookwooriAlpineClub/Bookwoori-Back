@@ -18,18 +18,17 @@ jobs:
 
       - name: Make application-prod.yml
         run: |
-          cd ./core/src/main/resources
-          touch ./application.yml
-          echo "${{ secrets.APPLICATION_CORE }}" > ./application.yml
+          mkdir -p ./core/src/main/resources
+          echo "${{ secrets.APPLICATION_CORE }}" > ./core/src/main/resources/application.yml
+
           mkdir -p ./auth/src/main/resources
-          touch ./application.yml
-          echo "${{ secrets.APPLICATION_AUTH }}" > ./application.yml
-          mkdir -p ./auth/src/main/resources
-          touch ./application.yml
-          echo "${{ secrets.APPLICATION_CHAT }}" > ./application.yml
-          mkdir -p ./auth/src/main/resources
-          touch ./application.yml
-          echo "${{ secrets.APPLICATION_GATEWAY }}" > ./application.yml
+          echo "${{ secrets.APPLICATION_AUTH }}" > ./auth/src/main/resources/application.yml
+
+          mkdir -p ./chat/src/main/resources
+          echo "${{ secrets.APPLICATION_CHAT }}" > ./chat/src/main/resources/application.yml
+
+          mkdir -p ./gateway/src/main/resources
+          echo "${{ secrets.APPLICATION_GATEWAY }}" > ./gateway/src/main/resources/application.yml
 
       - name: Build Core Server with Gradle
         run: |
