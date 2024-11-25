@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.category.entity.Category;
 import org.bookwoori.core.domain.category.service.CategoryService;
 import org.bookwoori.core.domain.channel.dto.request.ChannelCreateRequestDto;
-import org.bookwoori.core.domain.channel.dto.request.ChannelUpdateRequestDto;
+import org.bookwoori.core.domain.channel.dto.request.ChannelModifyRequestDto;
 import org.bookwoori.core.domain.channel.entity.Channel;
 import org.bookwoori.core.domain.channel.service.ChannelService;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +29,22 @@ public class ChannelFacade {
     }
 
     @Transactional
-    public void updateChannelName(Long channelId, ChannelUpdateRequestDto requestDto) {
+    public void modifyChannel(Long channelId, ChannelModifyRequestDto requestDto) {
         Channel channel = channelService.getChannelById(channelId);
+        Category fromCategory = channel.getCategory();
+        Category toCategory = categoryService.getCategoryById(requestDto.categoryId());
+
+        if (!fromCategory.getServer().equals(toCategory.getServer())) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+
+        if (!fromCategory.equals(toCategory)) {
+            channelService.detach(channel);
+            Channel beforeChannel = channelService.getLastNodeByCategory(toCategory);
+            channel.setBeforeNode(beforeChannel);
+            channel.modifyCategory(toCategory);
+        }
+
         channel.modifyName(requestDto.name());
     }
 
