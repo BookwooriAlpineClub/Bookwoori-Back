@@ -10,23 +10,50 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version: 17
 
       - name: Make application-prod.yml
         run: |
           cd ./core/src/main/resources
           touch ./application.yml
-          echo "${{ secrets.APPLICATION }}" > ./application.yml
+          echo "${{ secrets.APPLICATION_CORE }}" > ./application.yml
+          cd ./auth/src/main/resources
+          touch ./application.yml
+          echo "${{ secrets.APPLICATION_AUTH }}" > ./application.yml
+          cd ./chat/src/main/resources
+          touch ./application.yml
+          echo "${{ secrets.APPLICATION_CHAT }}" > ./application.yml
+          cd ./gateway/src/main/resources
+          touch ./application.yml
+          echo "${{ secrets.APPLICATION_GATEWAY }}" > ./application.yml
 
-      - name: Build with Gradle
+      - name: Build Core Server with Gradle
         run: |
           cd ./core
           chmod +x ./gradlew
           ./gradlew build -x test
+
+      - name: Build Auth Server with Gradle
+        run: |
+          cd ./auth
+          chmod +x ../core/gradlew
+          ../core/gradlew build -x test
+
+      - name: Build Chat Server with Gradle
+        run: |
+          cd ./chat
+          chmod +x ../core/gradlew
+          ../core/gradlew build -x test
+
+      - name: Build Gateway Server with Gradle
+        run: |
+          cd ./gateway
+          chmod +x ../core/gradlew
+          ../core/gradlew build -x test
 
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -34,6 +61,14 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Gateway Server build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./gateway
+          file: ./gateway/Dockerfile
+          platforms: linux/arm64/v8
+          push: true
+          tags: ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
       - name: Core Server build & push
         uses: docker/build-push-action@v6
         with:
@@ -41,7 +76,25 @@ jobs:
           file: ./core/Dockerfile
           platforms: linux/arm64/v8
           push: true
-          tags: ${{ secrets.DOCKER_REPO_CORE }}:latest
+          tags: ${{ secrets.DOCKER_REPO_CORE }}:v2
+
+      - name: Auth Server build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./auth
+          file: ./auth/Dockerfile
+          platforms: linux/arm64/v8
+          push: true
+          tags: ${{ secrets.DOCKER_REPO_AUTH }}:v2
+
+      - name: Chat Server build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./chat
+          file: ./chat/Dockerfile
+          platforms: linux/arm64/v8
+          push: true
+          tags: ${{ secrets.DOCKER_REPO_CORE }}:v2
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
@@ -51,8 +104,11 @@ jobs:
           key: ${{ secrets.KEY }}
           envs: GITHUB_SHA
           script: |
-            echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
-            sudo docker ps -q | xargs -r sudo docker stop && sudo docker ps -aq | xargs -r sudo docker rm
-            sudo docker-compose -f ./docker-compose.yml down --rmi all
-            sudo docker pull ${{ secrets.DOCKER_REPO_CORE }}:latest
-            sudo docker-compose -f ./docker-compose.yml up -d
+                    echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
+            #            sudo docker ps -q | xargs -r sudo docker stop && sudo docker ps -aq | xargs -r sudo docker rm
+                    sudo docker-compose -f ./docker-compose.yml down --rmi all
+                    sudo docker pull ${{ secrets.DOCKER_REPO_CORE }}:v2
+                    sudo docker pull ${{ secrets.DOCKER_REPO_AUTH }}:v2
+                    sudo docker pull ${{ secrets.DOCKER_REPO_CHAT }}:v2
+                    sudo docker pull ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
+                    sudo docker-compose -f ./docker-compose.yml up -d
