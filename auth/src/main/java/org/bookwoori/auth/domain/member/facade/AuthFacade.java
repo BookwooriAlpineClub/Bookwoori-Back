@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthFacade {
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
-    private final CoreClient coreClient;
 
     public Map<String, String> refreshAccessToken(TokenRequestDto requestDto) {
         Authentication authentication = tokenProvider.getAuthentication(requestDto.refreshToken(),
