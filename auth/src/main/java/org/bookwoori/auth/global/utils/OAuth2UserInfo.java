@@ -1,17 +1,25 @@
-package org.bookwoori.core.global.oauth;
+package org.bookwoori.auth.global.utils;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import org.bookwoori.core.domain.member.entity.Member;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+@Getter
 @Builder
-public record OAuth2UserInfo(
-        String nickname,
-        String profile
-) {
+@AllArgsConstructor
+public class OAuth2UserInfo {
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    String nickname;
+    String profile;
 
     // 카카오 사용자 정보를 기반으로 OAuth2UserInfo 생성
     public static OAuth2UserInfo ofKakao(Map<String, Object> attributes) {
@@ -19,18 +27,9 @@ public record OAuth2UserInfo(
         Map<String, Object> profile = (Map<String, Object>) account.get("profile");
 
         return OAuth2UserInfo.builder()
-                .nickname(generateRandomNickname())
-                .profile((String) profile.get("profile_image_url"))
-                .build();
-    }
-
-    // 카카오 id를 포함하여 Member 엔티티로 변환
-    public Member toEntityWithKakaoId(Long kakaoId) {
-        return Member.builder()
-                .kakaoId(kakaoId)  // 고유한 카카오 id 설정
-                .nickname(nickname)
-                .profileImg(profile)
-                .build();
+            .nickname(generateRandomNickname())
+            .profile((String) profile.get("profile_image_url"))
+            .build();
     }
 
     // 랜덤 닉네임 생성 메소드
@@ -41,4 +40,3 @@ public record OAuth2UserInfo(
         return words[randomIndex] + uuidPart;
     }
 }
-

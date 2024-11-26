@@ -1,4 +1,4 @@
-package org.bookwoori.core.global.exception;
+package org.bookwoori.auth.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
