@@ -1,33 +1,27 @@
 package org.bookwoori.notification.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class EmojiMessageRequestDto {
 
-    @NotNull
-    private Long userId;
+public record EmojiMessageRequestDto(
+        @NotNull
+        Long userId,
 
-    @NotNull
-    private String username;
+        @NotNull
+        String username,
 
-    @NotNull
-    private String type;
+        @NotNull
+        String type,
 
-    @NotNull
-    private String content;
+        @NotNull
+        String content,
 
-    @NotNull
-    private Long reviewId;
+        @NotNull
+        Long reviewId,
 
-    @NotNull
-    private String target;
+        @NotNull
+        String target
+) {
+
 
 }

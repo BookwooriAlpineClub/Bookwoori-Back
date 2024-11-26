@@ -3,33 +3,31 @@ package org.bookwoori.notification.dto.response;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Builder;
 import org.bookwoori.notification.domain.Device;
 import org.bookwoori.notification.domain.type.Platform;
 
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class DeviceResponseDto {
+@Builder
+public record DeviceResponseDto(
+        Long memberId,
 
-    private Long userId;
+        @Enumerated(EnumType.STRING)
+        Platform platform,
 
-    @Enumerated(EnumType.STRING)
-    private Platform platform;
+        String token,
 
-    private String token;
+        boolean status
+) {
 
-    private boolean status;
+    public static DeviceResponseDto from(Device device) {
 
-    public static DeviceResponseDto fromEntity(Device device) {
-        DeviceResponseDto response = new DeviceResponseDto();
-        response.setUserId(device.getUserId());
-        response.setPlatform(device.getPlatform());
-        response.setToken(device.getToken());
-        response.setStatus(device.isStatus());
-        return response;
+        return DeviceResponseDto.builder()
+                .memberId(device.getMemberId())
+                .platform(device.getPlatform())
+                .token(device.getToken())
+                .status(device.isStatus())
+                .build();
+
     }
 }

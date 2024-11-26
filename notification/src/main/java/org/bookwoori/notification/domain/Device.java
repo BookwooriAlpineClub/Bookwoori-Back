@@ -20,7 +20,7 @@ public class Device extends BaseTimeEntity {
     @Column(name = "device_id")
     private Long id;
 
-    private Long userId;
+    private Long memberId;
 
     @Enumerated(EnumType.STRING)
     private Platform platform;

@@ -1,39 +1,33 @@
 package org.bookwoori.notification.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class ChannelMessageRequestDto {
+public record ChannelMessageRequestDto(
 
-    @NotNull
-    private Long userId;
+        @NotNull
+        Long memberId,
 
-    @NotNull
-    private String username;
+        @NotNull
+        String nickname,
 
-    @NotNull
-    private String type;
+        @NotNull
+        String type,
 
-    @NotNull
-    private String content;
+        @NotNull
+        String content,
 
-    @NotNull
-    private String channelName;
+        @NotNull
+        String channelName,
 
-    @NotNull
-    private Long communityId;
+        @NotNull
+        Long communityId,
 
-    @NotNull
-    private Long channelId;
+        @NotNull
+        Long channelId,
 
-    @NotNull
-    private String target;
+        @NotNull
+        String target
+) {
+
 }

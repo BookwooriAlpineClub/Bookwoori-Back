@@ -24,7 +24,7 @@ public class DeviceService {
     public DeviceResponseDto getDevice(Long userId) {
         Device device = deviceRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(EMPTY_DEVICE));
-        return DeviceResponseDto.fromEntity(device);
+        return DeviceResponseDto.from(device);
     }
 
     @Transactional
