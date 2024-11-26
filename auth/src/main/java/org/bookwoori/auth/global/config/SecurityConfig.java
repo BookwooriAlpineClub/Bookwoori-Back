@@ -60,6 +60,7 @@ public class SecurityConfig {
             "https://localhost:3000",
             "http://localhost:8080",
             "http://localhost:8000",
+            "http://gateway-app:8000",
             "https://api.bookwoori.p-e.kr"));
         configuration.setAllowedMethods(
             Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));

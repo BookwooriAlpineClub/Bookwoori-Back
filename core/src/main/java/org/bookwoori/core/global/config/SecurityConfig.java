@@ -48,6 +48,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:*",
             "https://localhost:3000",
+            "http://gateway-app:8000",
             "https://api.bookwoori.p-e.kr"
         ));
         configuration.setAllowedMethods(
