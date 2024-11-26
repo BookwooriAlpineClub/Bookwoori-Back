@@ -1,8 +1,8 @@
 package org.bookwoori.core.domain.review.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
+import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.bookwoori.core.domain.review.repository.ReviewRepository;
 import org.bookwoori.core.global.exception.CustomException;
@@ -10,21 +10,32 @@ import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
-
     private final ReviewRepository reviewRepository;
 
     @Transactional(readOnly = true)
     public Review getReviewById(Long reviewId) {
         return reviewRepository.findById(reviewId)
-            .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
     public List<Review> getReviewsByMembersAndBook(List<Long> members, Book book) {
         return reviewRepository.findByMemberIdsAndBook(members, book);
+    }
+
+    @Transactional(readOnly = true)
+    public Review getReviewByMemberAndBook(Member member, Book book) {
+        return reviewRepository.findByMemberAndBook(member, book);
+    }
+
+    public boolean existsReviewByMemberAndBook(Member member, Book book) {
+        return reviewRepository.existsByRecord_MemberAndRecord_Book(member, book);
     }
 
     @Transactional
@@ -33,7 +44,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public Review getReviewByRecordId(Long recordId) {
+    public Optional<Review> getReviewByRecordId(Long recordId) {
         return reviewRepository.findByRecord_RecordId(recordId);
     }
 
