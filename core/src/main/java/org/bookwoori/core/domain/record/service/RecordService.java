@@ -1,5 +1,7 @@
 package org.bookwoori.core.domain.record.service;
 
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
@@ -12,9 +14,6 @@ import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class RecordService {
     @Transactional(readOnly = true)
     public Record getMemberRecord(Member member, Book book) {
         return recordRepository.findByMemberAndBook(member, book)
-                .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
@@ -42,13 +41,13 @@ public class RecordService {
     @Transactional
     public Record getRecordById(Long recordId) {
         return recordRepository.findById(recordId)
-                .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
     }
 
     @Transactional
     public Record getRecordByMemberAndBook(Member member, Book book) {
         return recordRepository.findByMemberAndBook(member, book)
-                .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
     }
 
     @Transactional
