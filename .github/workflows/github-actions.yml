@@ -27,6 +27,9 @@ jobs:
           mkdir -p ./chat/src/main/resources
           touch ./chat/src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_CHAT }}" > ./chat/src/main/resources/application.yml
+
+      - name: Make Gateway application-prod.yml
+        run: |
           mkdir -p ./gateway/src/main/resources
           touch ./gateway/src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_GATEWAY }}" > ./gateway/src/main/resources/application.yml
