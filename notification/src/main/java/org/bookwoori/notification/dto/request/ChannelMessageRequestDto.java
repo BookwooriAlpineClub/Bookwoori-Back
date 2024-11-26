@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DirectMessageRequest {
+public class ChannelMessageRequestDto {
 
     @NotNull
     private Long userId;
@@ -26,10 +26,13 @@ public class DirectMessageRequest {
     private String content;
 
     @NotNull
-    private String roomName;
+    private String channelName;
 
     @NotNull
-    private Long roomId;
+    private Long communityId;
+
+    @NotNull
+    private Long channelId;
 
     @NotNull
     private String target;

@@ -6,11 +6,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bookwoori.notification.dto.request.ChannelMessageRequest;
-import org.bookwoori.notification.dto.request.ChatMessageRequest;
-import org.bookwoori.notification.dto.request.DirectMessageRequest;
-import org.bookwoori.notification.dto.request.EmojiMessageRequest;
-import org.bookwoori.notification.dto.response.CommonResponse;
+import org.bookwoori.notification.dto.request.ChannelMessageRequestDto;
+import org.bookwoori.notification.dto.request.ChatMessageRequestDto;
+import org.bookwoori.notification.dto.request.DirectMessageRequestDto;
+import org.bookwoori.notification.dto.request.EmojiMessageRequestDto;
+import org.bookwoori.notification.dto.response.CommonResponseDto;
 import org.bookwoori.notification.service.NotificationService;
 import org.bookwoori.notification.service.ResponseService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +31,7 @@ public class NotificationController {
 
     @Operation(summary = "DM 알림", description = "DM 알림을 보냅니다.")
     @PostMapping("/direct")
-    public CommonResponse sendDirectMessage(@Valid @RequestBody DirectMessageRequest request) {
+    public CommonResponseDto sendDirectMessage(@Valid @RequestBody DirectMessageRequestDto request) {
         try {
             notificationService.send(request);
         } catch (Exception e) {
@@ -42,7 +42,7 @@ public class NotificationController {
 
     @Operation(summary = "채널 생성 알림", description = "채널 생성 알림을 보냅니다.")
     @PostMapping("/channel")
-    public CommonResponse sendChannelMessage(@Valid @RequestBody ChannelMessageRequest request) {
+    public CommonResponseDto sendChannelMessage(@Valid @RequestBody ChannelMessageRequestDto request) {
         try {
             notificationService.send(request);
         } catch (Exception e) {
@@ -53,7 +53,7 @@ public class NotificationController {
 
     @Operation(summary = "감상평 이모지 알림", description = "감상평 이모지 알림을 보냅니다.")
     @PostMapping("/emoji")
-    public CommonResponse sendEmojiMessage(@Valid @RequestBody EmojiMessageRequest request) {
+    public CommonResponseDto sendEmojiMessage(@Valid @RequestBody EmojiMessageRequestDto request) {
         try {
             notificationService.send(request);
         } catch (Exception e) {
@@ -64,7 +64,7 @@ public class NotificationController {
 
     @Operation(summary = "채팅 채널 알림", description = "채팅 채널에 달린 채팅에 대한 알림을 보냅니다.")
     @PostMapping("/chat")
-    public CommonResponse sendChatMessage(@Valid @RequestBody ChatMessageRequest request) {
+    public CommonResponseDto sendChatMessage(@Valid @RequestBody ChatMessageRequestDto request) {
         try {
             notificationService.send(request);
         } catch (Exception e) {

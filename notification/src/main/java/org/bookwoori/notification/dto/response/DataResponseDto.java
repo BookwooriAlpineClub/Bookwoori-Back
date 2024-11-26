@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DataResponse<T> extends CommonResponse {
+public class DataResponseDto<T> extends CommonResponseDto {
 
     private T result;
 }

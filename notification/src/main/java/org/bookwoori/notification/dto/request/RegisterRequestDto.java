@@ -1,39 +1,28 @@
 package org.bookwoori.notification.dto.request;
 
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.bookwoori.notification.domain.type.Platform;
+
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessageRequest {
-
+public class RegisterRequestDto {
     @NotNull
     private Long userId;
 
     @NotNull
-    private String username;
+    @Enumerated(EnumType.STRING)
+    private Platform platform;
 
     @NotNull
-    private String type;
-
-    @NotNull
-    private String content;
-
-    @NotNull
-    private String channelName;
-
-    @NotNull
-    private Long communityId;
-
-    @NotNull
-    private Long channelId;
-
-    @NotNull
-    private String target;
+    private String token;
 }
-

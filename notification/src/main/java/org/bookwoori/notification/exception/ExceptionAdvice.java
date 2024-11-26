@@ -4,7 +4,7 @@ package org.bookwoori.notification.exception;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bookwoori.notification.dto.response.CommonResponse;
+import org.bookwoori.notification.dto.response.CommonResponseDto;
 import org.bookwoori.notification.service.ResponseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -26,7 +26,7 @@ public class ExceptionAdvice {
     // Custom exception
     @ExceptionHandler(CustomException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected CommonResponse customException(CustomException customException) {
+    protected CommonResponseDto customException(CustomException customException) {
         CustomExceptionStatus status = customException.getCustomExceptionStatus();
         log.error("code: {}, message: {}",
                 status.getCode(), status.getMessage());
@@ -43,7 +43,7 @@ public class ExceptionAdvice {
             BindException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public CommonResponse handleBadRequest(Exception e) {
+    public CommonResponseDto handleBadRequest(Exception e) {
         CustomExceptionStatus status = CustomExceptionStatus.BAD_REQUEST;
         log.error("code: {}, message: {}",
                 status.getCode(), e.getMessage());
@@ -53,7 +53,7 @@ public class ExceptionAdvice {
     // Other exception
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public CommonResponse handleException(Exception e) {
+    public CommonResponseDto handleException(Exception e) {
         CustomExceptionStatus status = CustomExceptionStatus.INTERNAL_SERVER_ERROR;
         log.error("code: {}, message: {}",
                 status.getCode(), e.getMessage());

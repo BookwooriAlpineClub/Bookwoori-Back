@@ -13,23 +13,23 @@ import org.bookwoori.notification.domain.type.Platform;
 @Getter
 @Setter
 @NoArgsConstructor
-public class DeviceResponse {
-
-    private Long userId;
-
+public class DeviceTokenResponseDto {
     @Enumerated(EnumType.STRING)
     private Platform platform;
-
     private String token;
 
-    private boolean status;
-
-    public static DeviceResponse fromEntity(Device device) {
-        DeviceResponse response = new DeviceResponse();
-        response.setUserId(device.getUserId());
+    public static DeviceTokenResponseDto fromEntity(Device device) {
+        DeviceTokenResponseDto response = new DeviceTokenResponseDto();
         response.setPlatform(device.getPlatform());
         response.setToken(device.getToken());
-        response.setStatus(device.isStatus());
         return response;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "platform=" + platform +
+                ", token='" + token + '\'' +
+                '}';
     }
 }

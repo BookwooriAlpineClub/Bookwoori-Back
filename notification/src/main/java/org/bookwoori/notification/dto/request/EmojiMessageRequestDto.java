@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmojiMessageRequest {
+public class EmojiMessageRequestDto {
 
     @NotNull
     private Long userId;

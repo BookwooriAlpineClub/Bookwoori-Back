@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CommonResponse {
+public class CommonResponseDto {
 
     protected Boolean isSuccess;
     protected int code;

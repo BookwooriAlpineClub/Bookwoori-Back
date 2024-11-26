@@ -1,28 +1,36 @@
 package org.bookwoori.notification.dto.request;
 
-
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bookwoori.notification.domain.type.Platform;
 
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequest {
+public class DirectMessageRequestDto {
+
     @NotNull
     private Long userId;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    private Platform platform;
+    private String username;
 
     @NotNull
-    private String token;
+    private String type;
+
+    @NotNull
+    private String content;
+
+    @NotNull
+    private String roomName;
+
+    @NotNull
+    private Long roomId;
+
+    @NotNull
+    private String target;
 }

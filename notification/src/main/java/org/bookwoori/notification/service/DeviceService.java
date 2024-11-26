@@ -3,8 +3,8 @@ package org.bookwoori.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.notification.domain.Device;
-import org.bookwoori.notification.dto.request.RegisterRequest;
-import org.bookwoori.notification.dto.response.DeviceResponse;
+import org.bookwoori.notification.dto.request.RegisterRequestDto;
+import org.bookwoori.notification.dto.response.DeviceResponseDto;
 import org.bookwoori.notification.exception.CustomException;
 import org.bookwoori.notification.repository.DeviceRepository;
 import org.springframework.stereotype.Service;
@@ -21,14 +21,14 @@ public class DeviceService {
 
     private final DeviceRepository deviceRepository;
 
-    public DeviceResponse getDevice(Long userId) {
+    public DeviceResponseDto getDevice(Long userId) {
         Device device = deviceRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(EMPTY_DEVICE));
-        return DeviceResponse.fromEntity(device);
+        return DeviceResponseDto.fromEntity(device);
     }
 
     @Transactional
-    public void register(RegisterRequest request) {
+    public void register(RegisterRequestDto request) {
         Optional<Device> device = deviceRepository.findByUserId(request.getUserId());
 
         if (device.isPresent()) {

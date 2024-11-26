@@ -6,12 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChannelMessageRequest {
+public class ChatMessageRequestDto {
 
     @NotNull
     private Long userId;
@@ -37,3 +36,4 @@ public class ChannelMessageRequest {
     @NotNull
     private String target;
 }
+

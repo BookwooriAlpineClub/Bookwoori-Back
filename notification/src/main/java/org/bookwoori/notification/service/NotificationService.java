@@ -9,11 +9,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.notification.domain.Device;
 import org.bookwoori.notification.domain.Notification;
-import org.bookwoori.notification.dto.request.ChannelMessageRequest;
-import org.bookwoori.notification.dto.request.ChatMessageRequest;
-import org.bookwoori.notification.dto.request.DirectMessageRequest;
-import org.bookwoori.notification.dto.request.EmojiMessageRequest;
-import org.bookwoori.notification.dto.response.DeviceTokenResponse;
+import org.bookwoori.notification.dto.request.ChannelMessageRequestDto;
+import org.bookwoori.notification.dto.request.ChatMessageRequestDto;
+import org.bookwoori.notification.dto.request.DirectMessageRequestDto;
+import org.bookwoori.notification.dto.request.EmojiMessageRequestDto;
+import org.bookwoori.notification.dto.response.DeviceTokenResponseDto;
 import org.bookwoori.notification.exception.CustomException;
 import org.bookwoori.notification.repository.DeviceRepository;
 import org.bookwoori.notification.util.FcmUtil;
@@ -41,8 +41,8 @@ public class NotificationService {
     private final ObjectMapper objectMapper;
     private final String REDIS_DEVICE_KEY_PREFIX = "USERID:";
 
-    public void send(DirectMessageRequest request) {
-        Map<Long, DeviceTokenResponse> deviceTokens = getDeviceTokens(request.getTarget());
+    public void send(DirectMessageRequestDto request) {
+        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.getTarget());
         Map<String, List<String>> targetTokensByPlatform = getTokensByPlatform(deviceTokens);
         for (Entry<String, List<String>> platform : targetTokensByPlatform.entrySet()) {
             sendMessage(platform.getValue(), request, platform.getKey());
@@ -50,8 +50,8 @@ public class NotificationService {
         saveLog(request, targetTokensByPlatform);
     }
 
-    public void send(ChannelMessageRequest request) {
-        Map<Long, DeviceTokenResponse> deviceTokens = getDeviceTokens(request.getTarget());
+    public void send(ChannelMessageRequestDto request) {
+        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.getTarget());
         Map<String, List<String>> targetTokensByPlatform = getTokensByPlatform(deviceTokens);
         for (Entry<String, List<String>> platform : targetTokensByPlatform.entrySet()) {
             sendMessage(platform.getValue(), request, platform.getKey());
@@ -59,8 +59,8 @@ public class NotificationService {
         saveLog(request, targetTokensByPlatform);
     }
 
-    public void send(EmojiMessageRequest request) {
-        Map<Long, DeviceTokenResponse> deviceTokens = getDeviceTokens(request.getTarget());
+    public void send(EmojiMessageRequestDto request) {
+        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.getTarget());
         Map<String, List<String>> targetTokensByPlatform = getTokensByPlatform(deviceTokens);
         for (Entry<String, List<String>> platform : targetTokensByPlatform.entrySet()) {
             sendMessage(platform.getValue(), request, platform.getKey());
@@ -68,8 +68,8 @@ public class NotificationService {
         saveLog(request, targetTokensByPlatform);
     }
 
-    public void send(ChatMessageRequest request) {
-        Map<Long, DeviceTokenResponse> deviceTokens = getDeviceTokens(request.getTarget());
+    public void send(ChatMessageRequestDto request) {
+        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.getTarget());
         Map<String, List<String>> targetTokensByPlatform = getTokensByPlatform(deviceTokens);
         for (Entry<String, List<String>> platform : targetTokensByPlatform.entrySet()) {
             sendMessage(platform.getValue(), request, platform.getKey());
@@ -79,8 +79,8 @@ public class NotificationService {
 
 
     // 토큰 조회 시 캐시 먼저 조회하고 없는 정보만 DB에서 조회하기
-    private Map<Long, DeviceTokenResponse> getDeviceTokens(String target) {
-        Map<Long, DeviceTokenResponse> deviceTokens = new HashMap<>();
+    private Map<Long, DeviceTokenResponseDto> getDeviceTokens(String target) {
+        Map<Long, DeviceTokenResponseDto> deviceTokens = new HashMap<>();
 
         List<Long> originIds = convertStringToList(target);
         List<Long> filterIds = new ArrayList<>();
@@ -93,7 +93,7 @@ public class NotificationService {
                 filterIds.add(id);
             } else {
                 try {
-                    deviceTokens.put(id, objectMapper.readValue(value, DeviceTokenResponse.class));
+                    deviceTokens.put(id, objectMapper.readValue(value, DeviceTokenResponseDto.class));
                 } catch (JsonProcessingException e) {
                     throw new CustomException(REDIS_DEVICE_TOKEN_PARSE_ERROR);
                 }
@@ -103,7 +103,7 @@ public class NotificationService {
         List<Device> devices = deviceRepository.findByUserIdList(filterIds);
         devices.forEach(device -> {
             String setKey = REDIS_DEVICE_KEY_PREFIX + device.getUserId().toString();
-            DeviceTokenResponse response = DeviceTokenResponse.fromEntity(device);
+            DeviceTokenResponseDto response = DeviceTokenResponseDto.fromEntity(device);
             valueOperations.set(setKey, response.toString());
             deviceTokens.put(device.getId(), response);
         });
@@ -112,9 +112,9 @@ public class NotificationService {
     }
 
     // 플랫폼 별로 디바이스 토큰 나누기
-    private Map<String, List<String>> getTokensByPlatform(Map<Long, DeviceTokenResponse> deviceTokens) {
+    private Map<String, List<String>> getTokensByPlatform(Map<Long, DeviceTokenResponseDto> deviceTokens) {
         Map<String, List<String>> targetTokensByPlatform = new HashMap<>();
-        for (Entry<Long, DeviceTokenResponse> entry : deviceTokens.entrySet()) {
+        for (Entry<Long, DeviceTokenResponseDto> entry : deviceTokens.entrySet()) {
             List<String> tokens = targetTokensByPlatform.get(entry.getValue().getPlatform());
             if (Objects.isNull(tokens))
                 tokens = new ArrayList<>();
@@ -140,7 +140,7 @@ public class NotificationService {
         }
     }
 
-    private void sendMessage(List<String> targetTokens, DirectMessageRequest request, String platform) {
+    private void sendMessage(List<String> targetTokens, DirectMessageRequestDto request, String platform) {
         try {
             MulticastMessage msg = fcm.makeMessage(
                     targetTokens,
@@ -156,7 +156,7 @@ public class NotificationService {
         }
     }
 
-    private void sendMessage(List<String> targetTokens, ChannelMessageRequest request, String platform) {
+    private void sendMessage(List<String> targetTokens, ChannelMessageRequestDto request, String platform) {
         try {
             MulticastMessage msg = fcm.makeMessage(
                     targetTokens,
@@ -172,7 +172,7 @@ public class NotificationService {
         }
     }
 
-    private void sendMessage(List<String> targetTokens, EmojiMessageRequest request, String platform) {
+    private void sendMessage(List<String> targetTokens, EmojiMessageRequestDto request, String platform) {
         try {
             MulticastMessage msg = fcm.makeMessage(
                     targetTokens,
@@ -188,7 +188,7 @@ public class NotificationService {
         }
     }
 
-    private void sendMessage(List<String> targetTokens, ChatMessageRequest request, String platform) {
+    private void sendMessage(List<String> targetTokens, ChatMessageRequestDto request, String platform) {
         try {
             MulticastMessage msg = fcm.makeMessage(
                     targetTokens,
@@ -204,7 +204,7 @@ public class NotificationService {
         }
     }
 
-    private void saveLog(DirectMessageRequest request, Map<String, List<String>> target) {
+    private void saveLog(DirectMessageRequestDto request, Map<String, List<String>> target) {
         Notification notification = new Notification(
                 request.getUserId().toString(),
                 request.getUsername(),
@@ -217,7 +217,7 @@ public class NotificationService {
         mongoTemplate.insert(notification);
     }
 
-    private void saveLog(ChannelMessageRequest request, Map<String, List<String>> target) {
+    private void saveLog(ChannelMessageRequestDto request, Map<String, List<String>> target) {
         Notification notification = new Notification(
                 request.getUserId().toString(),
                 request.getUsername(),
@@ -230,7 +230,7 @@ public class NotificationService {
         mongoTemplate.insert(notification);
     }
 
-    private void saveLog(EmojiMessageRequest request, Map<String, List<String>> target) {
+    private void saveLog(EmojiMessageRequestDto request, Map<String, List<String>> target) {
 
         Notification notification = new Notification(
                 request.getUserId().toString(),
@@ -245,7 +245,7 @@ public class NotificationService {
 
     }
 
-    private void saveLog(ChatMessageRequest request, Map<String, List<String>> target) {
+    private void saveLog(ChatMessageRequestDto request, Map<String, List<String>> target) {
         Notification notification = new Notification(
                 request.getUserId().toString(),
                 request.getUsername(),

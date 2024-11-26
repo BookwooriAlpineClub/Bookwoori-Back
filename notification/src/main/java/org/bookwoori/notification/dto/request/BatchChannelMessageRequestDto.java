@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BatchChannelMessageRequest {
+public class BatchChannelMessageRequestDto {
     private LocalDateTime time;
-    private ChannelMessageRequest request;
+    private ChannelMessageRequestDto request;
 }
