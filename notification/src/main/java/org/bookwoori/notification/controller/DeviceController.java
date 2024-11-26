@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @Tag(name = "Notification(Device)")
-@RequestMapping("/notification-server/device")
+@RequestMapping("/notification/devices")
 @RequiredArgsConstructor
 public class DeviceController {
 

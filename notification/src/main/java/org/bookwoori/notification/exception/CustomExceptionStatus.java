@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CustomExceptionStatus {
 
-    SUCCESS(true, 1000, "요청에 성공하였습니다."),
-    BAD_REQUEST(false, 1400, "잘못된 요청입니다."),
-    NON_AUTHORIZATION(false, 1401, "요청 권한이 없습니다."),
-    INTERNAL_SERVER_ERROR(false, 1500, "서버 내부 에러입니다."),
+    SUCCESS(true, 5000, "요청에 성공하였습니다."),
+    BAD_REQUEST(false, 5400, "잘못된 요청입니다."),
+    NON_AUTHORIZATION(false, 5401, "요청 권한이 없습니다."),
+    INTERNAL_SERVER_ERROR(false, 5500, "서버 내부 에러입니다."),
 
     // 6000 ~ 6999
     FIREBASE_ERROR(false, 6000, "메세지 전송 에러입니다."),

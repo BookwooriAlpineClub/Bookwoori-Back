@@ -30,9 +30,9 @@ public class Device extends BaseTimeEntity {
     private boolean status;
 
     // 생성 메서드
-    public static Device register(Long userId, Platform platform, String token) {
+    public static Device register(Long memberId, Platform platform, String token) {
         Device device = new Device();
-        device.setUserId(userId);
+        device.setMemberId(memberId);
         device.setPlatform(platform);
         device.setToken(token);
         device.setStatus(true);
