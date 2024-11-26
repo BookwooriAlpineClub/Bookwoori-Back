@@ -42,7 +42,7 @@ public class NotificationService {
     private final String REDIS_DEVICE_KEY_PREFIX = "USERID:";
 
     public void send(DirectMessageRequestDto request) {
-        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.getTarget());
+        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.target());
         Map<String, List<String>> targetTokensByPlatform = getTokensByPlatform(deviceTokens);
         for (Entry<String, List<String>> platform : targetTokensByPlatform.entrySet()) {
             sendMessage(platform.getValue(), request, platform.getKey());
@@ -51,7 +51,7 @@ public class NotificationService {
     }
 
     public void send(ChannelMessageRequestDto request) {
-        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.getTarget());
+        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.target());
         Map<String, List<String>> targetTokensByPlatform = getTokensByPlatform(deviceTokens);
         for (Entry<String, List<String>> platform : targetTokensByPlatform.entrySet()) {
             sendMessage(platform.getValue(), request, platform.getKey());
@@ -60,7 +60,7 @@ public class NotificationService {
     }
 
     public void send(EmojiMessageRequestDto request) {
-        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.getTarget());
+        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.target());
         Map<String, List<String>> targetTokensByPlatform = getTokensByPlatform(deviceTokens);
         for (Entry<String, List<String>> platform : targetTokensByPlatform.entrySet()) {
             sendMessage(platform.getValue(), request, platform.getKey());
@@ -69,7 +69,7 @@ public class NotificationService {
     }
 
     public void send(ChatMessageRequestDto request) {
-        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.getTarget());
+        Map<Long, DeviceTokenResponseDto> deviceTokens = getDeviceTokens(request.target());
         Map<String, List<String>> targetTokensByPlatform = getTokensByPlatform(deviceTokens);
         for (Entry<String, List<String>> platform : targetTokensByPlatform.entrySet()) {
             sendMessage(platform.getValue(), request, platform.getKey());
@@ -102,7 +102,7 @@ public class NotificationService {
 
         List<Device> devices = deviceRepository.findByUserIdList(filterIds);
         devices.forEach(device -> {
-            String setKey = REDIS_DEVICE_KEY_PREFIX + device.getUserId().toString();
+            String setKey = REDIS_DEVICE_KEY_PREFIX + device.memberId().toString();
             DeviceTokenResponseDto response = DeviceTokenResponseDto.from(device);
             valueOperations.set(setKey, response.toString());
             deviceTokens.put(device.getId(), response);
@@ -115,11 +115,11 @@ public class NotificationService {
     private Map<String, List<String>> getTokensByPlatform(Map<Long, DeviceTokenResponseDto> deviceTokens) {
         Map<String, List<String>> targetTokensByPlatform = new HashMap<>();
         for (Entry<Long, DeviceTokenResponseDto> entry : deviceTokens.entrySet()) {
-            List<String> tokens = targetTokensByPlatform.get(entry.getValue().getPlatform());
+            List<String> tokens = targetTokensByPlatform.get(entry.getValue().platform());
             if (Objects.isNull(tokens))
                 tokens = new ArrayList<>();
-            tokens.add(entry.getValue().getToken());
-            targetTokensByPlatform.put(entry.getValue().getPlatform().toString(), tokens);
+            tokens.add(entry.getValue().token());
+            targetTokensByPlatform.put(entry.getValue().platform().toString(), tokens);
         }
         return targetTokensByPlatform;
     }
@@ -144,11 +144,11 @@ public class NotificationService {
         try {
             MulticastMessage msg = fcm.makeMessage(
                     targetTokens,
-                    fcm.makeTitle(request.getUsername(), request.getRoomName()),
-                    fcm.makeBody(request.getType(), request.getContent()),
-                    fcm.makeImage(request.getType(), request.getContent()),
+                    fcm.makeTitle(request.nickname(), request.roomName()),
+                    fcm.makeBody(request.type(), request.content()),
+                    fcm.makeImage(request.type(), request.content()),
                     platform,
-                    fcm.makeCustomData(null, request.getRoomId())
+                    fcm.makeCustomData(null, request.roomId())
             );
             fcm.sendMessage(msg);
         } catch (FirebaseMessagingException e) {
@@ -160,11 +160,11 @@ public class NotificationService {
         try {
             MulticastMessage msg = fcm.makeMessage(
                     targetTokens,
-                    fcm.makeTitle(request.getUsername(), request.getChannelName()),
-                    fcm.makeBody(request.getType(), request.getContent()),
-                    fcm.makeImage(request.getType(), request.getContent()),
+                    fcm.makeTitle(request.nickname(), request.channelName()),
+                    fcm.makeBody(request.type(), request.content()),
+                    fcm.makeImage(request.type(), request.content()),
                     platform,
-                    fcm.makeCustomData(request.getCommunityId(), request.getChannelId())
+                    fcm.makeCustomData(request.communityId(), request.channelId())
             );
             fcm.sendMessage(msg);
         } catch (FirebaseMessagingException e) {
@@ -176,9 +176,9 @@ public class NotificationService {
         try {
             MulticastMessage msg = fcm.makeMessage(
                     targetTokens,
-                    fcm.makeTitle(request.getUsername(), null),
-                    fcm.makeBody(request.getType(), request.getContent()),
-                    fcm.makeImage(request.getType(), request.getContent()),
+                    fcm.makeTitle(request.nickname(), null),
+                    fcm.makeBody(request.type(), request.content()),
+                    fcm.makeImage(request.type(), request.content()),
                     platform,
                     fcm.makeCustomData(null, null)
             );
@@ -192,11 +192,11 @@ public class NotificationService {
         try {
             MulticastMessage msg = fcm.makeMessage(
                     targetTokens,
-                    fcm.makeTitle(request.getUsername(), request.getChannelName()),
-                    fcm.makeBody(request.getType(), request.getContent()),
-                    fcm.makeImage(request.getType(), request.getContent()),
+                    fcm.makeTitle(request.nickname(), request.channelName()),
+                    fcm.makeBody(request.type(), request.content()),
+                    fcm.makeImage(request.type(), request.content()),
                     platform,
-                    fcm.makeCustomData(request.getCommunityId(), request.getChannelId())
+                    fcm.makeCustomData(request.communityId(), request.channelId())
             );
             fcm.sendMessage(msg);
         } catch (FirebaseMessagingException e) {
@@ -206,26 +206,26 @@ public class NotificationService {
 
     private void saveLog(DirectMessageRequestDto request, Map<String, List<String>> target) {
         Notification notification = new Notification(
-                request.getUserId().toString(),
-                request.getUsername(),
-                request.getType(),
-                request.getContent(),
-                request.getRoomId().toString(),
-                request.getRoomName(),
-                request.getTarget()
+                request.memberId().toString(),
+                request.nickname(),
+                request.type(),
+                request.content(),
+                request.roomId().toString(),
+                request.roomName(),
+                request.target()
         );
         mongoTemplate.insert(notification);
     }
 
     private void saveLog(ChannelMessageRequestDto request, Map<String, List<String>> target) {
         Notification notification = new Notification(
-                request.getUserId().toString(),
-                request.getUsername(),
-                request.getType(),
-                request.getContent(),
-                request.getChannelId().toString(),
-                request.getChannelName(),
-                request.getTarget()
+                request.memberId().toString(),
+                request.nickname(),
+                request.type(),
+                request.content(),
+                request.channelId().toString(),
+                request.channelName(),
+                request.target()
         );
         mongoTemplate.insert(notification);
     }
@@ -233,13 +233,13 @@ public class NotificationService {
     private void saveLog(EmojiMessageRequestDto request, Map<String, List<String>> target) {
 
         Notification notification = new Notification(
-                request.getUserId().toString(),
-                request.getUsername(),
-                request.getType(),
-                request.getContent(),
-                request.getReviewId().toString(),
+                request.memberId().toString(),
+                request.nickname(),
+                request.type(),
+                request.content(),
+                request.reviewId().toString(),
                 null,
-                request.getTarget()
+                request.target()
         );
         mongoTemplate.insert(notification);
 
@@ -247,13 +247,13 @@ public class NotificationService {
 
     private void saveLog(ChatMessageRequestDto request, Map<String, List<String>> target) {
         Notification notification = new Notification(
-                request.getUserId().toString(),
-                request.getUsername(),
-                request.getType(),
-                request.getContent(),
-                request.getChannelId().toString(),
-                request.getChannelName(),
-                request.getTarget()
+                request.memberId().toString(),
+                request.nickname(),
+                request.type(),
+                request.content(),
+                request.channelId().toString(),
+                request.channelName(),
+                request.target()
         );
         mongoTemplate.insert(notification);
     }

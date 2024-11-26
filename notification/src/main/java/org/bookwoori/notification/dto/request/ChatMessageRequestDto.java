@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotNull;
 
 public record ChatMessageRequestDto(
         @NotNull
-        Long userId,
+        Long memberId,
 
         @NotNull
-        String username,
+        String nickname,
 
         @NotNull
         String type,
