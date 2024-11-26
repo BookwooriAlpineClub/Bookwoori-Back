@@ -2,6 +2,8 @@ package org.bookwoori.chat.directMessage.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.chat.directMessage.dto.request.DirectMessageReactRequestDto;
+import org.bookwoori.chat.directMessage.dto.request.DirectMessageReplyRequestDto;
 import org.bookwoori.chat.directMessage.dto.request.DirectMessageSendRequestDto;
 import org.bookwoori.chat.directMessage.dto.response.DirectMessageListResponseDto;
 import org.bookwoori.chat.directMessage.service.DirectMessageService;
@@ -9,6 +11,7 @@ import org.bookwoori.chat.global.kafka.MessageSender;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,8 +26,24 @@ public class DirectMessageController {
     private final DirectMessageService directMessageService;
 
     @MessageMapping("/direct/send")
-    public void sendDirectMessage(@Payload DirectMessageSendRequestDto requestDto) {
-        messageSender.sendDirectMessage(requestDto);
+    public void sendDirectMessage(@Payload DirectMessageSendRequestDto requestDto,
+        StompHeaderAccessor accessor) {
+        messageSender.sendDirectMessage(requestDto,
+            (Long) accessor.getSessionAttributes().get("memberId"));
+    }
+
+    @MessageMapping("/direct/react")
+    public void reactToDirectMessage(@Payload DirectMessageReactRequestDto requestDto,
+        StompHeaderAccessor accessor) {
+        messageSender.reactToDirectMessage(requestDto,
+            (Long) accessor.getSessionAttributes().get("memberId"));
+    }
+
+    @MessageMapping("/direct/reply")
+    public void replyToDirectMessage(@Payload DirectMessageReplyRequestDto requestDto,
+        StompHeaderAccessor accessor) {
+        messageSender.replyToDirectMessage(requestDto,
+            (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @GetMapping
