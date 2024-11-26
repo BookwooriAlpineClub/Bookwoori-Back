@@ -6,7 +6,7 @@ import lombok.Builder;
 import org.bookwoori.core.domain.book.entity.Book;
 
 @Builder
-public record BookDetailResponseDto(
+public record BookDetailsResponseDto(
     String title,
     String author,
     String publisher,
@@ -14,10 +14,10 @@ public record BookDetailResponseDto(
     Long itemPage,
     String description,
     String isbn13,
-    String cover) {
+    String coverImg) {
 
-    public static BookDetailResponseDto from(JsonNode item) {
-        return BookDetailResponseDto.builder()
+    public static BookDetailsResponseDto from(JsonNode item) {
+        return BookDetailsResponseDto.builder()
             .title(item.path("title").asText())
             .author(item.path("author").asText())
             .publisher(item.path("publisher").asText())
@@ -25,7 +25,7 @@ public record BookDetailResponseDto(
             .itemPage(item.path("subInfo").path("itemPage").asLong())
             .description(item.path("description").asText())
             .isbn13(item.path("isbn13").asText())
-            .cover(item.path("cover").asText())
+            .coverImg(item.path("cover").asText())
             .build();
     }
 
@@ -38,7 +38,7 @@ public record BookDetailResponseDto(
             .itemPage(this.itemPage != null ? Math.toIntExact(this.itemPage) : null)
             .isbn13(this.isbn13)
             .description(this.description)
-            .coverImg(this.cover)
+            .coverImg(this.coverImg)
             .build();
     }
 }
