@@ -4,8 +4,7 @@ import lombok.Builder;
 import org.bookwoori.core.domain.member.entity.Member;
 
 @Builder
-public record MemberResponseDto(
-    boolean isMine,
+public record MemberProfileResponseDto(
     String nickname,
     String profileImg,
     String backgroundImg,
@@ -14,9 +13,8 @@ public record MemberResponseDto(
     int height,
     int totalPage) {
 
-    public static MemberResponseDto from(Member member, boolean isMine) {
-        return MemberResponseDto.builder()
-            .isMine(isMine)
+    public static MemberProfileResponseDto from(Member member) {
+        return MemberProfileResponseDto.builder()
             .nickname(member.getNickname())
             .profileImg(member.getProfileImg())
             .backgroundImg(member.getBackgroundImg())

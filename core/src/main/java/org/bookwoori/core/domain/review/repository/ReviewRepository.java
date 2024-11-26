@@ -14,10 +14,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByMemberIdsAndBook(@Param("memberIds") List<Long> memberIds,
         @Param("book") Book book);
 
+    boolean existsByMemberAndBook(Member member, Book book);
+
     @Query("SELECT r FROM Review r WHERE r.record.member = :member AND r.record.book = :book")
     Review findByMemberAndBook(@Param("member") Member member, @Param("book") Book book);
-
-    boolean existsByRecord_MemberAndRecord_Book(Member member, Book book);
 
     Review findByRecord_RecordId(Long recordId);
 

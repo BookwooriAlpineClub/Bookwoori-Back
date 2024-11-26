@@ -71,16 +71,18 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(
                 config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .logout(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll())
-            .addFilterBefore(new JwtAuthenticationFilter(),
-                UsernamePasswordAuthenticationFilter.class)
+                .requestMatchers("/auth/success", "auth/refresh").permitAll()
+                //todo Auth 서버 분리 시 수정해야 하는 부분
+                .requestMatchers("/messageRooms/{messageRoomId}/members").permitAll()
+                .anyRequest().authenticated())
+            // 인증 예외 핸들링
             .exceptionHandling((exceptions) -> exceptions
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
                 .accessDeniedHandler(customAccessDeniedHandler))

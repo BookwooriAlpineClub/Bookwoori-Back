@@ -2,9 +2,6 @@ package org.bookwoori.core.domain.book.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.dto.response.BookDetailResponseDto;
 import org.bookwoori.core.domain.book.dto.response.BookResponseDto;
@@ -18,15 +15,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class BookService {
 
-    private final BookRepository bookRepository;
     private static final String ALADIN_API_URL_SEARCH = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx";
     private static final String ALADIN_API_URL_LOOKUP = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx";
-
+    private final BookRepository bookRepository;
     @Autowired
     private final RestTemplate restTemplate;
     @Autowired
@@ -37,14 +37,14 @@ public class BookService {
     @Transactional(readOnly = true)
     public List<BookResponseDto> getBooksByKeyword(String keyword) {
         String url = ALADIN_API_URL_SEARCH +
-            "?ttbkey=" + TTB_KEY +
-            "&Query=" + keyword +
-            "&QueryType=Keyword" +
-            "&MaxResults=100" +
-            "&start=1" +
-            "&SearchTarget=Book" +
-            "&output=js" +
-            "&Version=20131101";
+                "?ttbkey=" + TTB_KEY +
+                "&Query=" + keyword +
+                "&QueryType=Keyword" +
+                "&MaxResults=100" +
+                "&start=1" +
+                "&SearchTarget=Book" +
+                "&output=js" +
+                "&Version=20131101";
 
         String jsonResponse = restTemplate.getForObject(url, String.class);
 
@@ -69,10 +69,10 @@ public class BookService {
     @Transactional(readOnly = true)
     public BookDetailResponseDto getBookByIsbn(String isbn13) {
         String url = ALADIN_API_URL_LOOKUP + "?ttbkey=" + TTB_KEY +
-            "&itemIdType=ISBN13" +
-            "&ItemId=" + isbn13 +
-            "&output=js" +
-            "&Version=20131101";
+                "&itemIdType=ISBN13" +
+                "&ItemId=" + isbn13 +
+                "&output=js" +
+                "&Version=20131101";
 
         String jsonResponse = restTemplate.getForObject(url, String.class);
 
@@ -103,7 +103,7 @@ public class BookService {
     @Transactional(readOnly = true)
     public Book getBookById(Long bookId) {
         return bookRepository.findById(bookId)
-            .orElseThrow(() -> new CustomException(ErrorCode.BOOK_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.BOOK_NOT_FOUND));
     }
 
 }
