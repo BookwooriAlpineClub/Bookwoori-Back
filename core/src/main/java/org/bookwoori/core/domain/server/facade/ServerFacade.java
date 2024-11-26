@@ -228,9 +228,7 @@ public class ServerFacade {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
 
-        if (server.getServerImg() != null) {
-            s3Util.deleteImage(server.getServerImg());
-        }
+        s3Util.deleteImage(server.getServerImg());
 
         server.updateServerImg(s3Util.uploadImage(newImage, "server"));
     }
