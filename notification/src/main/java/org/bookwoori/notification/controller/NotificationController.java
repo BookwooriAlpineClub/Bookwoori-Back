@@ -32,11 +32,9 @@ public class NotificationController {
     @Operation(summary = "DM 알림", description = "DM 알림을 보냅니다.")
     @PostMapping("/direct")
     public CommonResponse sendDirectMessage(@Valid @RequestBody DirectMessageRequest request) {
-        log.info("POST /notification-server/direct / {}", request.getTarget());
         try {
             notificationService.send(request);
         } catch (Exception e) {
-            log.error("NOTIFICATION ERROR - DM");
             e.printStackTrace();
         }
         return responseService.getSuccessResponse();
@@ -45,11 +43,9 @@ public class NotificationController {
     @Operation(summary = "채널 생성 알림", description = "채널 생성 알림을 보냅니다.")
     @PostMapping("/channel")
     public CommonResponse sendChannelMessage(@Valid @RequestBody ChannelMessageRequest request) {
-        log.info("POST /notification-server/channel / {}", request.getTarget());
         try {
             notificationService.send(request);
         } catch (Exception e) {
-            log.error("NOTIFICATION ERROR - CHANNEL");
             e.printStackTrace();
         }
         return responseService.getSuccessResponse();
@@ -58,11 +54,9 @@ public class NotificationController {
     @Operation(summary = "감상평 이모지 알림", description = "감상평 이모지 알림을 보냅니다.")
     @PostMapping("/emoji")
     public CommonResponse sendEmojiMessage(@Valid @RequestBody EmojiMessageRequest request) {
-        log.info("POST /notification-server/emoji / {}", request.getTarget());
         try {
             notificationService.send(request);
         } catch (Exception e) {
-            log.error("NOTIFICATION ERROR - EMOJI");
             e.printStackTrace();
         }
         return responseService.getSuccessResponse();
@@ -71,11 +65,9 @@ public class NotificationController {
     @Operation(summary = "채팅 채널 알림", description = "채팅 채널에 달린 채팅에 대한 알림을 보냅니다.")
     @PostMapping("/chat")
     public CommonResponse sendChatMessage(@Valid @RequestBody ChatMessageRequest request) {
-        log.info("POST /notification-server/chat / {}", request.getTarget());
         try {
             notificationService.send(request);
         } catch (Exception e) {
-            log.error("NOTIFICATION ERROR - CHAT");
             e.printStackTrace();
         }
         return responseService.getSuccessResponse();

@@ -15,7 +15,6 @@ public class MongoConfig {
 
     @Bean
     public MongoDatabaseFactory mongoDatabaseFactory() {
-        System.out.println(connection);
         return new SimpleMongoClientDatabaseFactory(connection);
     }
 
