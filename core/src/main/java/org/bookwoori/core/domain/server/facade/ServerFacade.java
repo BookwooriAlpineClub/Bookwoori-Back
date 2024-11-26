@@ -28,7 +28,6 @@ import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
-import org.bookwoori.core.domain.serverMember.repository.ServerMemberRepository;
 import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
@@ -52,7 +51,6 @@ public class ServerFacade {
     private final CategoryService categoryService;
     private final ChannelService channelService;
     private final ServerMemberService serverMemberService;
-    private final ServerMemberRepository serverMemberRepository;
 
     @Transactional
     public void createServer(ServerCreateRequestDto requestDto) {
@@ -78,6 +76,10 @@ public class ServerFacade {
         Member owner = serverMemberService.getOwner(server);
         int memberCount = serverMemberService.getMemberCount(server);
         Member currentMember = memberService.getCurrentMember();
+
+        if (!serverMemberService.isJoined(currentMember, server)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
 
         return ServerDetailsResponseDto.from(server, owner.getNickname(), memberCount,
             currentMember.equals(owner));
@@ -175,8 +177,7 @@ public class ServerFacade {
         Server server = serverService.getServerById(serverId);
         Member currentMember = memberService.getCurrentMember();
 
-        boolean isJoined = serverMemberRepository.findByMemberAndServer(currentMember, server)
-            .isPresent();
+        boolean isJoined = serverMemberService.isJoined(currentMember, server);
 
         if (isJoined) {
             throw new CustomException(ErrorCode.ALREADY_JOINED_SERVER);
