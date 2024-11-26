@@ -8,7 +8,15 @@ import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.facade.RecordFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Tag(name = "Record")
@@ -36,7 +44,7 @@ public class RecordController {
     @Operation(summary = "책 기록 수정", description = "수정 페이지_책기록 에서 기존 책기록을 수정합니다.")
     @PutMapping("/{recordId}")
     public ResponseEntity<?> updateRecord(@PathVariable Long recordId,
-                                          @RequestBody RecordRequestDto requestDto) {
+        @RequestBody RecordRequestDto requestDto) {
         recordFacade.updateRecord(recordId, requestDto);
         return ResponseEntity.ok().build();
     }
@@ -44,7 +52,7 @@ public class RecordController {
     @Operation(summary = "책 감상평 수정", description = "수정 페이지_책기록 에서 기존 감상평을 수정합니다.")
     @PutMapping("/reviews/{recordId}")
     public ResponseEntity<?> updateReview(@PathVariable Long recordId,
-                                          @RequestBody RecordRequestDto requestDto) {
+        @RequestBody RecordRequestDto requestDto) {
         recordFacade.updateReview(recordId, requestDto);
         return ResponseEntity.ok().build();
     }
@@ -57,13 +65,13 @@ public class RecordController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "책 기록 목록 조회", description = "내 서재의 책기록 목록을 조회합니다.")
+    @Operation(summary = "진행도별 책 목록 조회", description = "내 서재의 책 목록을 진행도 별로 조회합니다.")
     @GetMapping
     public ResponseEntity<?> getRecordsByStatus(@RequestParam ReadingStatus status) {
         return ResponseEntity.ok(recordFacade.getRecordsByStatus(status));
     }
 
-    @Operation(summary = "책 평가 목록 조회", description = "내 서재의 책평가 목록을 조회합니다.")
+    @Operation(summary = "내 감상평 목록 조회", description = "내 서재의 감상평을 조회합니다.")
     @GetMapping("/reviews")
     public ResponseEntity<?> getReviews() {
         return ResponseEntity.ok(recordFacade.getReviews());
