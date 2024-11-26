@@ -100,9 +100,9 @@ public class NotificationService {
             }
         });
 
-        List<Device> devices = deviceRepository.findByUserIdList(filterIds);
+        List<Device> devices = deviceRepository.findByMemberIdList(filterIds);
         devices.forEach(device -> {
-            String setKey = REDIS_DEVICE_KEY_PREFIX + device.memberId().toString();
+            String setKey = REDIS_DEVICE_KEY_PREFIX + device.getMemberId().toString();
             DeviceTokenResponseDto response = DeviceTokenResponseDto.from(device);
             valueOperations.set(setKey, response.toString());
             deviceTokens.put(device.getId(), response);

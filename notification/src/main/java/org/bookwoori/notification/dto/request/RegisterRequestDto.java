@@ -9,7 +9,7 @@ import org.bookwoori.notification.domain.type.Platform;
 
 public record RegisterRequestDto(
         @NotNull
-        Long userId,
+        Long memberId,
 
         @NotNull
         @Enumerated(EnumType.STRING)

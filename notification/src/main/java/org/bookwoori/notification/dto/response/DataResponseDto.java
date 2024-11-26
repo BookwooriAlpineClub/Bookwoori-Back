@@ -1,7 +1,12 @@
 package org.bookwoori.notification.dto.response;
 
+import lombok.Builder;
+
+@Builder
 public record DataResponseDto<T>(
-        CommonResponseDto commonResponseDto,
+        Boolean isSuccess,
+        int code,
+        String message,
         T result
 ) {
 }

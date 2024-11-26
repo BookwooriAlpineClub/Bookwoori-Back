@@ -12,8 +12,8 @@ import java.util.Optional;
 
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long> {
-    Optional<Device> findByUserId(Long userId);
+    Optional<Device> findBymemberId(Long memberId);
 
-    @Query(nativeQuery = true, value = "SELECT * FROM Device as d WHERE d.userId IN (:userIds)")
-    List<Device> findByUserIdList(@Param("userIds") List<Long> userIds);
+    @Query(nativeQuery = true, value = "SELECT * FROM Device as d WHERE d.memberId IN (:memberIds)")
+    List<Device> findByMemberIdList(@Param("memberIds") List<Long> memberIds);
 }

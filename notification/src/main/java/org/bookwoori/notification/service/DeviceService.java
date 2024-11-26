@@ -22,28 +22,28 @@ public class DeviceService {
     private final DeviceRepository deviceRepository;
 
     public DeviceResponseDto getDevice(Long userId) {
-        Device device = deviceRepository.findByUserId(userId)
+        Device device = deviceRepository.findBymemberId(userId)
                 .orElseThrow(() -> new CustomException(EMPTY_DEVICE));
         return DeviceResponseDto.from(device);
     }
 
     @Transactional
     public void register(RegisterRequestDto request) {
-        Optional<Device> device = deviceRepository.findByUserId(request.getUserId());
+        Optional<Device> device = deviceRepository.findBymemberId(request.memberId());
 
         if (device.isPresent()) {
-            device.get().renew(request.getPlatform(), request.getToken());
+            device.get().renew(request.platform(), request.token());
             return;
         }
 
-        Device newDevice = Device.register(request.getUserId(), request.getPlatform(), request.getToken());
+        Device newDevice = Device.register(request.memberId(), request.platform(), request.token());
         deviceRepository.save(newDevice);
     }
 
 
     @Transactional
     public void delete(Long userId) {
-        Device device = deviceRepository.findByUserId(userId)
+        Device device = deviceRepository.findBymemberId(userId)
                 .orElseThrow(() -> new CustomException(EMPTY_DEVICE));
         device.delete();
     }

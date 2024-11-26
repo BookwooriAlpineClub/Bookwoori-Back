@@ -27,7 +27,7 @@ public class DeviceController {
 
     @Operation(summary = "등록 정보 조회", description = "등록 정보를 조회합니다.")
     @GetMapping("/{id}")
-    public DataResponseDto<DeviceResponseDto> getDevice(@PathVariable("id") Long userId) {
+    public DataResponseDto<Object> getDevice(@PathVariable("id") Long userId) {
         DeviceResponseDto response = deviceService.getDevice(userId);
         return responseService.getDataResponse(response);
     }

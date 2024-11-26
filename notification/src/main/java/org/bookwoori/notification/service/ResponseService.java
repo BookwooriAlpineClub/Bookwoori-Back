@@ -10,27 +10,33 @@ import org.springframework.stereotype.Service;
 public class ResponseService {
 
     public CommonResponseDto getSuccessResponse() {
-        CommonResponseDto response = new CommonResponseDto();
-        response.setIsSuccess(true);
-        response.setCode(1000);
-        response.setMessage("요청에 성공하였습니다.");
-        return response;
+
+        return CommonResponseDto.builder()
+                .isSuccess(true)
+                .code(5000)
+                .message("요청에 성공하였습니다.")
+                .build();
+
     }
 
-    public <T> DataResponseDto<T> getDataResponse(T data) {
-        DataResponseDto<T> response = new DataResponseDto<>();
-        response.setResult(data);
-        response.setIsSuccess(true);
-        response.setCode(1000);
-        response.setMessage("요청에 성공하였습니다.");
-        return response;
+    public <T> DataResponseDto<Object> getDataResponse(T data) {
+
+        return DataResponseDto.builder()
+                .result(data)
+                .isSuccess(true)
+                .code(5000)
+                .message("요청에 성공하였습니다.")
+                .build();
+
     }
 
     public CommonResponseDto getExceptionResponse(CustomExceptionStatus status) {
-        CommonResponseDto response = new CommonResponseDto();
-        response.setIsSuccess(status.isSuccess());
-        response.setCode(status.getCode());
-        response.setMessage(status.getMessage());
-        return response;
+
+        return CommonResponseDto.builder()
+                .isSuccess(status.isSuccess())
+                .code(status.getCode())
+                .message(status.getMessage())
+                .build();
+
     }
 }
