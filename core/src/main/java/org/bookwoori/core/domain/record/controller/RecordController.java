@@ -65,13 +65,13 @@ public class RecordController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "진행도별 책 목록 조회", description = "내 서재의 책 목록을 진행도 별로 조회합니다.")
+    @Operation(summary = "책 기록 목록 조회", description = "내 서재의 책기록 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<?> getRecordsByStatus(@RequestParam ReadingStatus status) {
         return ResponseEntity.ok(recordFacade.getRecordsByStatus(status));
     }
 
-    @Operation(summary = "내 감상평 목록 조회", description = "내 서재의 감상평을 조회합니다.")
+    @Operation(summary = "책 평가 목록 조회", description = "내 서재의 책평가 목록을 조회합니다.")
     @GetMapping("/reviews")
     public ResponseEntity<?> getReviews() {
         return ResponseEntity.ok(recordFacade.getReviews());

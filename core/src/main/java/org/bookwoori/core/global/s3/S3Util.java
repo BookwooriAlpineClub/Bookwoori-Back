@@ -77,4 +77,34 @@ public class S3Util {
         }
     }
 
+    public boolean isSameImage(MultipartFile newImage, String oldImageUrl) {
+        if (newImage == null || oldImageUrl == null || oldImageUrl.isEmpty()) {
+            return false;
+        }
+        try (InputStream inputStream = newImage.getInputStream()) {
+            String delimiter = ".com/";
+            int index = oldImageUrl.lastIndexOf(delimiter);
+            if (index == -1) {
+                return false;
+            }
+            String fileName = oldImageUrl.substring(index + delimiter.length());
+            InputStream existingImageStream = amazonS3.getObject(bucket, fileName)
+                .getObjectContent();
+            return compareStreams(inputStream, existingImageStream);
+        } catch (IOException e) {
+            throw new CustomException(ErrorCode.FILE_COMPARISON_FAIL);
+        }
+    }
+
+    private boolean compareStreams(InputStream stream1, InputStream stream2) throws IOException {
+        int byte1, byte2;
+        while ((byte1 = stream1.read()) != -1 && (byte2 = stream2.read()) != -1) {
+            if (byte1 != byte2) {
+                return false; // 한 바이트라도 다르면 동일하지 않음
+            }
+        }
+        return stream1.read() == -1 && stream2.read() == -1; // 두 스트림이 모두 끝났으면 동일
+    }
+
+
 }

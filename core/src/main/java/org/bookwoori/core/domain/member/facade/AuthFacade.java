@@ -1,16 +1,13 @@
 package org.bookwoori.core.domain.member.facade;
 
-import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bookwoori.core.domain.member.dto.request.TokenRequestDto;
+import org.bookwoori.core.domain.member.dto.request.GetOrSaveMemberRequestDto;
+import org.bookwoori.core.domain.member.dto.response.GetMemberResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
-import org.bookwoori.core.global.exception.ErrorCode;
-import org.bookwoori.core.global.exception.TokenException;
-import org.bookwoori.core.global.jwt.TokenProvider;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.core.Authentication;
+import org.bookwoori.core.global.s3.S3Util;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,36 +18,30 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthFacade {
 
     private final MemberService memberService;
-    private final TokenProvider tokenProvider;
-    private final RedisTemplate<String, String> redisTemplate;
-
+    private final S3Util s3Util;
 
     public void deleteMember() {
         Member currentMember = memberService.getCurrentMember();
+        Optional.ofNullable(currentMember.getProfileImg())
+            .ifPresent(s3Util::deleteImage);
+        Optional.ofNullable(currentMember.getBackgroundImg())
+            .ifPresent(s3Util::deleteImage);
         currentMember.deleteMember();
     }
-
-    public Map<String, String> refreshAccessToken(TokenRequestDto requestDto) {
-        Authentication authentication = tokenProvider.getAuthentication(requestDto.refreshToken(),
-            true);
-        Long kakaoId = tokenProvider.extractKakaoId(authentication);
-        // Redis에서 kakaoId를 key로 하는 refreshToken 가져옴
-        String storedRefreshToken = redisTemplate.opsForValue()
-            .get(kakaoId.toString());
-
-        log.info("Extracted kakaoId: {}", kakaoId);
-        log.info("Stored key in Redis: {}", redisTemplate.keys("*"));
-
-        // 전달받은 리프레시 토큰과 Redis에 저장된 리프레시 토큰이 일치하는지 확인
-        if (storedRefreshToken == null || !storedRefreshToken.equals(requestDto.refreshToken())) {
-            throw new TokenException(ErrorCode.INVALID_TOKEN);
+    
+    public GetMemberResponseDto getOrSaveMemberByKakaoId(GetOrSaveMemberRequestDto requestDto) {
+        boolean isMember = memberService.existsByKakaoId(requestDto.kakaoId());
+        if (isMember) {
+            Member member = memberService.getMemberByKakaoId(requestDto.kakaoId());
+            return GetMemberResponseDto.from(member);
+        } else {
+            Member member = Member.builder()
+                .kakaoId(requestDto.kakaoId())
+                .nickname(requestDto.nickname())
+                .profileImg(requestDto.profileImg())
+                .build();
+            memberService.saveMember(member);
+            return GetMemberResponseDto.from(member);
         }
-        // accessToken과 refreshToken을 모두 재발급
-        Map<String, String> tokens = tokenProvider.renewAccessAndRefreshToken(
-            requestDto.refreshToken());
-        String newRefreshToken = tokens.get("refreshToken");
-        // 새로운 refreshToken을 Redis에 설정
-        tokenProvider.saveRefreshToken(kakaoId, newRefreshToken);
-        return tokens;
     }
 }
