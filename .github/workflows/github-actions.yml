@@ -1,4 +1,4 @@
-name: bookwoori CI/CD with docker
+name: bookwoori CI/CD 
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
           touch ./gateway/src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_GATEWAY }}" > ./gateway/src/main/resources/application.yml
 
-      - name: Build Core Server with Gradle
+      - name: Build Core Server weith Gradle
         run: |
           cd ./core
           chmod +x ./gradlew
