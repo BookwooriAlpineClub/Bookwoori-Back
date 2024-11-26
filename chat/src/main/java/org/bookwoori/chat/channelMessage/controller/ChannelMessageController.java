@@ -8,6 +8,7 @@ import org.bookwoori.chat.global.kafka.MessageSender;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,8 +23,10 @@ public class ChannelMessageController {
     private final ChannelMessageService channelMessageService;
 
     @MessageMapping("/channel/send")
-    public void sendChannelMessage(@Payload ChannelMessageSendRequestDto requestDto) {
-        messageSender.sendChannelMessage(requestDto);
+    public void sendChannelMessage(@Payload ChannelMessageSendRequestDto requestDto,
+        StompHeaderAccessor accessor) {
+        messageSender.sendChannelMessage(requestDto,
+            (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @GetMapping

@@ -8,16 +8,15 @@ import org.bookwoori.chat.global.common.MessageType;
 public record DirectMessageReplyRequestDto(
     String parentId,
     Long messageRoomId,
-    Long memberId,
     MessageType type,
     String content
 ) {
 
-    public DirectMessage toEntity(String parentContent) {
+    public DirectMessage toEntity(Long memberId, String parentContent) {
         return DirectMessage.builder()
             .parentId(this.parentId)
             .messageRoomId(this.messageRoomId)
-            .memberId(this.memberId)
+            .memberId(memberId)
             .type(this.type)
             .content(this.content)
             .createdAt(LocalDateTime.now())

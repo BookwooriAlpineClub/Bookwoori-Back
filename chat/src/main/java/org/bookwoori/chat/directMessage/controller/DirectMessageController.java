@@ -11,6 +11,7 @@ import org.bookwoori.chat.global.kafka.MessageSender;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,18 +26,24 @@ public class DirectMessageController {
     private final DirectMessageService directMessageService;
 
     @MessageMapping("/direct/send")
-    public void sendDirectMessage(@Payload DirectMessageSendRequestDto requestDto) {
-        messageSender.sendDirectMessage(requestDto);
+    public void sendDirectMessage(@Payload DirectMessageSendRequestDto requestDto,
+        StompHeaderAccessor accessor) {
+        messageSender.sendDirectMessage(requestDto,
+            (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @MessageMapping("/direct/react")
-    public void reactToDirectMessage(@Payload DirectMessageReactRequestDto requestDto) {
-        messageSender.reactToDirectMessage(requestDto);
+    public void reactToDirectMessage(@Payload DirectMessageReactRequestDto requestDto,
+        StompHeaderAccessor accessor) {
+        messageSender.reactToDirectMessage(requestDto,
+            (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @MessageMapping("/direct/reply")
-    public void replyToDirectMessage(@Payload DirectMessageReplyRequestDto requestDto) {
-        messageSender.replyToDirectMessage(requestDto);
+    public void replyToDirectMessage(@Payload DirectMessageReplyRequestDto requestDto,
+        StompHeaderAccessor accessor) {
+        messageSender.replyToDirectMessage(requestDto,
+            (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @GetMapping

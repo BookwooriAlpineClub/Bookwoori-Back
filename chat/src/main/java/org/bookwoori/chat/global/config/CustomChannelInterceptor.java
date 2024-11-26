@@ -1,16 +1,15 @@
 package org.bookwoori.chat.global.config;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bookwoori.chat.global.jwt.TokenProvider;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.web.server.ResponseStatusException;
 
 @Configuration
 @RequiredArgsConstructor
@@ -28,9 +27,9 @@ public class CustomChannelInterceptor implements ChannelInterceptor {
         var accessor = StompHeaderAccessor.wrap(message);
         if (accessor.getCommand() == StompCommand.CONNECT) {
             String token = accessor.getFirstNativeHeader("Authorization");
-            if (!tokenProvider.validateToken(token)) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-            }
+            String memberId = tokenProvider.getMemberId(token);
+            Map<String, Object> attributes = accessor.getSessionAttributes();
+            attributes.put("memberId", Long.parseLong(memberId));
         }
         return message;
     }
