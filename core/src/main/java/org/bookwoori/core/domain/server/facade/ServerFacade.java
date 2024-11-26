@@ -250,6 +250,7 @@ public class ServerFacade {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
 
+        s3Util.deleteImage(server.getServerImg());
         serverService.deleteServer(server);
     }
 }
