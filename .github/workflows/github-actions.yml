@@ -16,6 +16,17 @@ jobs:
           distribution: 'zulu'
           java-version: 17
 
+      # Eureka 관련 설정 삭제
+      - name: Remove Eureka Dependencies
+        run: |
+          find . -name 'build.gradle' | while read -r file; do
+            sed -i '/spring-cloud-starter-netflix-eureka-client/d' "$file"
+            sed -i '/spring-cloud-starter-netflix-eureka-server/d' "$file"
+          done
+          find . -name 'application*.yml' | while read -r file; do
+            sed -i '/eureka:/,+3d' "$file"
+          done
+
       - name: Make application-prod.yml
         run: |
           mkdir -p ./core/src/main/resources
@@ -34,7 +45,7 @@ jobs:
           touch ./gateway/src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_GATEWAY }}" > ./gateway/src/main/resources/application.yml
 
-      - name: Build Core Server weith Gradle
+      - name: Build Core Server with Gradle
         run: |
           cd ./core
           chmod +x ./gradlew
@@ -114,4 +125,4 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_REPO_AUTH }}:v2
             sudo docker pull ${{ secrets.DOCKER_REPO_CHAT }}:v2
             sudo docker pull ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
-            sudo docker-compose -f ./docker-compose.yml up -d 
+            sudo docker-compose -f ./docker-compose.yml up -d
