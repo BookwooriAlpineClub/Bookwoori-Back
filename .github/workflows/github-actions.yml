@@ -89,7 +89,7 @@ jobs:
           file: ./eureka/Dockerfile
           platforms: linux/arm64/v8
           push: true
-          tags: ${{ secrets.DOCKER_REPO_EUREKA }}:v2
+          tags: ${{ secrets.DOCKER_REPO_EUREKA }}:v2  
 
       - name: Core Server build & push
         uses: docker/build-push-action@v6
