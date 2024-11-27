@@ -16,8 +16,12 @@ public class KafkaTopicConfig {
     private String bootstrapAddress;
     @Value("${spring.kafka.topic.direct-chat}")
     private String directChatTopic;
+    @Value("${spring.kafka.topic.direct-chat-event}")
+    private String directChatEventTopic;
     @Value("${spring.kafka.topic.channel-chat}")
     private String channelChatTopic;
+    @Value("${spring.kafka.topic.channel-chat-event}")
+    private String channelChatEventTopic;
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -32,6 +36,11 @@ public class KafkaTopicConfig {
     @Bean
     public NewTopic directChatTopic() {
         return new NewTopic(directChatTopic, 1, (short) 1);
+    }
+
+    @Bean
+    public NewTopic directChatEventTopic() {
+        return new NewTopic(directChatEventTopic, 1, (short) 1);
     }
 
     @Bean

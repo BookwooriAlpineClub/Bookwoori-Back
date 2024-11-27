@@ -1,9 +1,11 @@
-package org.bookwoori.chat.global;
+package org.bookwoori.chat.global.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import org.bookwoori.chat.global.exception.CustomException;
+import org.bookwoori.chat.global.exception.ErrorCode;
 
 public enum MessageType {
-    TALK, FILE;
+    TEXT, IMAGE, FILE;
 
 
     @JsonCreator
@@ -11,7 +13,7 @@ public enum MessageType {
         try {
             return MessageType.valueOf(s.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("INVALID ENUM TYPE");
+            throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
         }
     }
 }

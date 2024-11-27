@@ -1,6 +1,7 @@
 package org.bookwoori.core.domain.review.repository;
 
 import java.util.List;
+import java.util.Optional;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.review.entity.Review;
@@ -19,7 +20,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     boolean existsByRecord_MemberAndRecord_Book(Member member, Book book);
 
-    Review findByRecord_RecordId(Long recordId);
+    Optional<Review> findByRecord_RecordId(Long recordId);
 
     void deleteByRecord_RecordId(Long recordId);
 

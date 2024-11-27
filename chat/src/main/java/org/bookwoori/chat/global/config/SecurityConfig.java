@@ -41,8 +41,11 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",
             "http://localhost:8080",
+            "http://localhost:8081",
             "http://localhost:8001",
             "http://localhost:8000",
+            //todo STOMP 테스트 도구 origin
+            "chrome-extension://fnlgpklmfclcogcmiioamkhdnflfmnmp",
             "http://gateway-app:8000",
             "http://54.180.124.13",
             "https://api.bookwoori.p-e.kr"));
@@ -52,7 +55,6 @@ public class SecurityConfig {
         configuration.addExposedHeader("Authorization");
         configuration.addExposedHeader("Set-Cookie");
         configuration.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
@@ -74,6 +76,7 @@ public class SecurityConfig {
                 config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .logout(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/websocket-endpoint/**").permitAll()
                 .anyRequest().permitAll())
             .addFilterBefore(new JwtAuthenticationFilter(),
                 UsernamePasswordAuthenticationFilter.class);
