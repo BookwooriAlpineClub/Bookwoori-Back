@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 사용자 인증 정보 설정
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 memberId,
-                null,  // 비밀번호는 없음
+                null,  
                 List.of(new SimpleGrantedAuthority("ROLE_USER"))
             );
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
