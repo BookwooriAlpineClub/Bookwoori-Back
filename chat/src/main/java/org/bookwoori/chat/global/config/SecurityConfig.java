@@ -46,6 +46,8 @@ public class SecurityConfig {
             "http://localhost:8000",
             //todo STOMP 테스트 도구 origin
             "chrome-extension://fnlgpklmfclcogcmiioamkhdnflfmnmp",
+            "http://gateway-app:8000",
+            "http://54.180.124.13",
             "https://api.bookwoori.p-e.kr"));
         configuration.setAllowedMethods(
             Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
