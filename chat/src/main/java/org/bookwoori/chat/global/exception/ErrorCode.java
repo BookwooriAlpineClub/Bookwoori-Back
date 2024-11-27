@@ -21,13 +21,14 @@ public enum ErrorCode {
      */
 
     UNAUTHORIZED(401, 2000, "인증 정보가 누락되거나 잘못되었습니다."),
-    
+
     /*
      * 채팅 서버 오류
      * (5000 ~ 5999)
      */
 
-    DIRECT_MESSAGE_NOT_FOUND(404, 5000, "해당 다이렉트 메시지를 찾을 수 없습니다.");
+    DIRECT_MESSAGE_NOT_FOUND(404, 5000, "해당 다이렉트 메시지를 찾을 수 없습니다."),
+    CHANNEL_MESSAGE_NOT_FOUND(404, 5000, "해당 채널 메시지를 찾을 수 없습니다.");
 
 
     private final int status;

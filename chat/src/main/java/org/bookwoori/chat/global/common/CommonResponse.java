@@ -16,4 +16,9 @@ public record CommonResponse(
         Object payload) {
         return new CommonResponse(eventType, messageRoomId, null, payload);
     }
+
+    public static CommonResponse fromChannelMessage(EventType eventType, Long channelId,
+        Object payload) {
+        return new CommonResponse(eventType, null, channelId, payload);
+    }
 }

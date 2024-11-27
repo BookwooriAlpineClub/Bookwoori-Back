@@ -1,6 +1,5 @@
 package org.bookwoori.chat.directMessage.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +35,6 @@ public class DirectMessage {
 
     private String content;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     private Map<EmojiType, Set<Long>> reactions = new HashMap<>();

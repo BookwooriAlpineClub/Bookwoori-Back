@@ -3,6 +3,8 @@ package org.bookwoori.chat.global.kafka;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bookwoori.chat.channelMessage.domain.ChannelMessage;
+import org.bookwoori.chat.channelMessage.dto.request.ChannelMessageReactRequestDto;
+import org.bookwoori.chat.channelMessage.dto.request.ChannelMessageReplyRequestDto;
 import org.bookwoori.chat.channelMessage.dto.request.ChannelMessageSendRequestDto;
 import org.bookwoori.chat.channelMessage.repository.ChannelMessageRepository;
 import org.bookwoori.chat.directMessage.domain.DirectMessage;
@@ -59,5 +61,29 @@ public class MessageSender { //토픽에 이벤트를 발행
         ChannelMessage channelMessage = requestDto.toEntity(memberId);
         channelMessageRepository.save(channelMessage);
         kafkaTemplate.send(KafkaConstants.CHANNEL_CHAT_TOPIC, channelMessage);
+    }
+
+    public void reactToChannelMessage(ChannelMessageReactRequestDto requestDto, Long memberId) {
+        ChannelMessage channelMessage = channelMessageRepository.findById(requestDto.id())
+            .orElseThrow(() -> new CustomException(ErrorCode.CHANNEL_MESSAGE_NOT_FOUND));
+        if (requestDto.action().equals(ActionType.ADD)) {
+            channelMessage.addReaction(requestDto.emoji(), memberId);
+        } else if (requestDto.action().equals(ActionType.REMOVE)) {
+            channelMessage.removeReaction(requestDto.emoji(), memberId);
+        }
+        channelMessage.setEventType(EventType.REACT);
+        channelMessage.setTargetEmoji(requestDto.emoji());
+        channelMessageRepository.save(channelMessage);
+        kafkaTemplate.send(KafkaConstants.CHANNEL_CHAT_EVENT_TOPIC, channelMessage);
+    }
+
+    public void replyToChannelMessage(ChannelMessageReplyRequestDto requestDto, Long memberId) {
+        ChannelMessage parentChannelMessage = channelMessageRepository.findById(
+                requestDto.parentId())
+            .orElseThrow(() -> new CustomException(ErrorCode.DIRECT_MESSAGE_NOT_FOUND));
+        ChannelMessage channelMessage = requestDto.toEntity(memberId,
+            parentChannelMessage.getContent());
+        channelMessageRepository.save(channelMessage);
+        kafkaTemplate.send(KafkaConstants.CHANNEL_CHAT_EVENT_TOPIC, channelMessage);
     }
 }
