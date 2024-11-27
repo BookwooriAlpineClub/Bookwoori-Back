@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bookwoori.chat.channelMessage.domain.ChannelMessage;
 import org.bookwoori.chat.channelMessage.dto.request.ChannelMessageReactRequestDto;
+import org.bookwoori.chat.channelMessage.dto.request.ChannelMessageReplyRequestDto;
 import org.bookwoori.chat.channelMessage.dto.request.ChannelMessageSendRequestDto;
 import org.bookwoori.chat.channelMessage.repository.ChannelMessageRepository;
 import org.bookwoori.chat.directMessage.domain.DirectMessage;
@@ -72,6 +73,16 @@ public class MessageSender { //토픽에 이벤트를 발행
         }
         channelMessage.setEventType(EventType.REACT);
         channelMessage.setTargetEmoji(requestDto.emoji());
+        channelMessageRepository.save(channelMessage);
+        kafkaTemplate.send(KafkaConstants.CHANNEL_CHAT_EVENT_TOPIC, channelMessage);
+    }
+
+    public void replyToChannelMessage(ChannelMessageReplyRequestDto requestDto, Long memberId) {
+        ChannelMessage parentChannelMessage = channelMessageRepository.findById(
+                requestDto.parentId())
+            .orElseThrow(() -> new CustomException(ErrorCode.DIRECT_MESSAGE_NOT_FOUND));
+        ChannelMessage channelMessage = requestDto.toEntity(memberId,
+            parentChannelMessage.getContent());
         channelMessageRepository.save(channelMessage);
         kafkaTemplate.send(KafkaConstants.CHANNEL_CHAT_EVENT_TOPIC, channelMessage);
     }

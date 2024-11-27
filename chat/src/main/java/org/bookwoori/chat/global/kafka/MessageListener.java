@@ -3,6 +3,7 @@ package org.bookwoori.chat.global.kafka;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.chat.channelMessage.domain.ChannelMessage;
 import org.bookwoori.chat.channelMessage.dto.response.ChannelMessageReactResponseDto;
+import org.bookwoori.chat.channelMessage.dto.response.ChannelMessageReplyResponseDto;
 import org.bookwoori.chat.directMessage.domain.DirectMessage;
 import org.bookwoori.chat.directMessage.dto.response.DirectMessageReactResponseDto;
 import org.bookwoori.chat.directMessage.dto.response.DirectMessageReplyResponseDto;
@@ -57,6 +58,9 @@ public class MessageListener { //토픽에 발행된 이벤트를 가져와 처�
             case REACT -> response = CommonResponse.fromChannelMessage(EventType.REACT,
                 channelMessage.getChannelId(),
                 ChannelMessageReactResponseDto.from(channelMessage));
+            case REPLY -> response = CommonResponse.fromChannelMessage(EventType.REPLY,
+                channelMessage.getChannelId(),
+                ChannelMessageReplyResponseDto.from(channelMessage));
         }
         messagingTemplate.convertAndSend("/topic/channel/" + channelMessage.getChannelId(),
             response);
