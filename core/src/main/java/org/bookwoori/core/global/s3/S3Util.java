@@ -52,6 +52,11 @@ public class S3Util {
     }
 
     public void deleteImage(String url) {
+
+        if (url == null || !url.startsWith("https://" + bucket)) {
+            return;
+        }
+
         String delimiter = ".com/";
         int index = url.lastIndexOf(delimiter);
         if (index == -1) {
