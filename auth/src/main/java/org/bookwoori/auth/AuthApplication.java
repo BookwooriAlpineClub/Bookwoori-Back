@@ -4,10 +4,12 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients
+@EnableDiscoveryClient
 @OpenAPIDefinition(servers = {
 	@Server(url = "http://localhost:8000", description = "Local Gateway Server"),
 	@Server(url = "http://localhost:8001", description = "Local Development Server"),
