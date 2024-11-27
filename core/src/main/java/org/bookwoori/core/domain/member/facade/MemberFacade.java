@@ -37,9 +37,8 @@ public class MemberFacade {
         if (oldImageUrl != null && s3Util.isSameImage(newImage, oldImageUrl)) {
             return oldImageUrl;
         }
-        if (oldImageUrl != null) {
-            s3Util.deleteImage(oldImageUrl);
-        }
+
+        s3Util.deleteImage(oldImageUrl);
         return s3Util.uploadImage(newImage, path);
     }
 

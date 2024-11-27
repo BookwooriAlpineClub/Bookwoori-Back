@@ -16,6 +16,8 @@ import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.record.service.RecordService;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.bookwoori.core.domain.review.service.ReviewService;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,8 +57,8 @@ public class RecordFacade {
     }
 
     public void updateReview(Long recordId, RecordRequestDto requestDto) {
-        Review review = reviewService.getReviewByRecordId(recordId);
-
+        Review review = reviewService.getReviewByRecordId(recordId)
+            .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
         review.updateReview(requestDto.reviewContent());
 
     }
@@ -87,15 +89,15 @@ public class RecordFacade {
             memberService.getCurrentMember());
 
         recordList.stream().forEach(record -> {
-
-            Review review = reviewService.getReviewByRecordId(record.getRecordId());
-            ReviewResponseDto reviewResponseDto = ReviewResponseDto.from(record, review);
-            reviewResponseDtoList.add(reviewResponseDto);
+            if (reviewService.getReviewByRecordId(record.getRecordId()).isPresent()) {
+                Review review = reviewService.getReviewByRecordId(record.getRecordId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+                ReviewResponseDto reviewResponseDto = ReviewResponseDto.from(record, review);
+                reviewResponseDtoList.add(reviewResponseDto);
+            }
         });
-
+        
         return reviewResponseDtoList;
-
     }
-
 
 }

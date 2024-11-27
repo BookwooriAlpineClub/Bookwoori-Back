@@ -13,6 +13,9 @@ public interface ServerMemberRepository extends JpaRepository<ServerMember, Long
 
     int countByServer(Server server);
 
+    @Query("SELECT COUNT(sm) > 0 FROM ServerMember sm WHERE sm.member = :member AND sm.server = :server")
+    boolean existsByMemberAndServer(Member member, Server server);
+
     @Query("SELECT COUNT(sm) > 0 FROM ServerMember sm WHERE sm.member = :member AND sm.server = :server AND sm.role = 'OWNER'")
     boolean existsByMemberAndServerAndRole(Member member, Server server);
 

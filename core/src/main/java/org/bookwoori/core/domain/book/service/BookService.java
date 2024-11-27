@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.bookwoori.core.domain.book.dto.response.BookDetailResponseDto;
+import org.bookwoori.core.domain.book.dto.response.BookDetailsResponseDto;
 import org.bookwoori.core.domain.book.dto.response.BookResponseDto;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.book.repository.BookRepository;
@@ -26,7 +26,6 @@ public class BookService {
     private final BookRepository bookRepository;
     private static final String ALADIN_API_URL_SEARCH = "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx";
     private static final String ALADIN_API_URL_LOOKUP = "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx";
-
     @Autowired
     private final RestTemplate restTemplate;
     @Autowired
@@ -67,7 +66,7 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public BookDetailResponseDto getBookByIsbn(String isbn13) {
+    public BookDetailsResponseDto getBookByIsbn(String isbn13) {
         String url = ALADIN_API_URL_LOOKUP + "?ttbkey=" + TTB_KEY +
             "&itemIdType=ISBN13" +
             "&ItemId=" + isbn13 +
@@ -81,7 +80,7 @@ public class BookService {
             JsonNode item = root.path("item").get(0);
 
             if (item != null) {
-                return BookDetailResponseDto.from(item);
+                return BookDetailsResponseDto.from(item);
             }
         } catch (Exception e) {
             throw new CustomException(ErrorCode.ALADIN_API_EXCEPTION);

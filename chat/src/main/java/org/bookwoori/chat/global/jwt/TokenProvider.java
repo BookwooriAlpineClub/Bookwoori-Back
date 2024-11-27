@@ -1,12 +1,13 @@
 package org.bookwoori.chat.global.jwt;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import javax.crypto.SecretKey;
 import lombok.extern.log4j.Log4j2;
+import org.bookwoori.chat.global.exception.CustomException;
+import org.bookwoori.chat.global.exception.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,7 +17,6 @@ public class TokenProvider {
 
     @Value("${jwt.secret.access}")
     private String secret;
-
     private SecretKey secretKey;
 
     @PostConstruct
@@ -24,16 +24,16 @@ public class TokenProvider {
         secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public boolean validateToken(String token) {
+    public String getMemberId(String token) {
         try {
-            Claims claims = Jwts.parser()
+            return Jwts.parser()
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
-                .getBody();
-            return true;
+                .getBody()
+                .getSubject();
         } catch (Exception e) {
-            return false;
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
     }
 }

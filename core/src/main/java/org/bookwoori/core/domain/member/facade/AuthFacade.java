@@ -1,6 +1,5 @@
 package org.bookwoori.core.domain.member.facade;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.dto.request.GetOrSaveMemberRequestDto;
@@ -22,13 +21,11 @@ public class AuthFacade {
 
     public void deleteMember() {
         Member currentMember = memberService.getCurrentMember();
-        Optional.ofNullable(currentMember.getProfileImg())
-            .ifPresent(s3Util::deleteImage);
-        Optional.ofNullable(currentMember.getBackgroundImg())
-            .ifPresent(s3Util::deleteImage);
+        s3Util.deleteImage(currentMember.getProfileImg());
+        s3Util.deleteImage(currentMember.getBackgroundImg());
         currentMember.deleteMember();
     }
-    
+
     public GetMemberResponseDto getOrSaveMemberByKakaoId(GetOrSaveMemberRequestDto requestDto) {
         boolean isMember = memberService.existsByKakaoId(requestDto.kakaoId());
         if (isMember) {
