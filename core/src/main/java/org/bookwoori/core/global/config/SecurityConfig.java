@@ -54,7 +54,8 @@ public class SecurityConfig {
             "https://localhost:3000",
             "http://gateway-app:8000",
             host,
-            "https://api.bookwoori.p-e.kr"
+            "https://api.bookwoori.p-e.kr",
+            "https://d1b8jphm7kfx0c.cloudfront.net"
         ));
         configuration.setAllowedMethods(
             Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
