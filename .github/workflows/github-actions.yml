@@ -1,4 +1,4 @@
-name: bookwoori CI/CD with docker
+name: bookwoori CI/CD v2
 
 on:
   push:
