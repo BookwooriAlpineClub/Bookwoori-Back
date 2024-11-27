@@ -37,7 +37,6 @@ public class SecurityConfig {
             .build();
     }
 
-
     @Bean
     public ReactiveAuthenticationManager reactiveAuthenticationManager() {
         return authentication -> Mono.just(authentication);

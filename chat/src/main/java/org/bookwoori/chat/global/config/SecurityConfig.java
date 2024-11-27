@@ -19,12 +19,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Value("${cloud.aws.ec2.ip}")
+    private String host;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -44,10 +48,9 @@ public class SecurityConfig {
             "http://localhost:8081",
             "http://localhost:8001",
             "http://localhost:8000",
-            //todo STOMP 테스트 도구 origin
             "chrome-extension://fnlgpklmfclcogcmiioamkhdnflfmnmp",
             "http://gateway-app:8000",
-            "http://54.180.124.13",
+            host,
             "https://api.bookwoori.p-e.kr"));
         configuration.setAllowedMethods(
             Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));

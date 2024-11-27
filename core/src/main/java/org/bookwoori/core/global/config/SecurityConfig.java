@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.global.jwt.CustomAccessDeniedHandler;
 import org.bookwoori.core.global.jwt.CustomAuthenticationEntryPoint;
 import org.bookwoori.core.global.jwt.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,9 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
+    @Value("${cloud.aws.ec2.ip}")
+    private String host;
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
@@ -49,7 +53,7 @@ public class SecurityConfig {
             "http://localhost:*",
             "https://localhost:3000",
             "http://gateway-app:8000",
-            "http://54.180.124.13",
+            host,
             "https://api.bookwoori.p-e.kr"
         ));
         configuration.setAllowedMethods(
