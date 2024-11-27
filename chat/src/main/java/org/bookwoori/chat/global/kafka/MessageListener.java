@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.chat.channelMessage.domain.ChannelMessage;
 import org.bookwoori.chat.channelMessage.dto.response.ChannelMessageReactResponseDto;
 import org.bookwoori.chat.channelMessage.dto.response.ChannelMessageReplyResponseDto;
+import org.bookwoori.chat.channelMessage.dto.response.ChannelMessageSendResponseDto;
 import org.bookwoori.chat.directMessage.domain.DirectMessage;
 import org.bookwoori.chat.directMessage.dto.response.DirectMessageReactResponseDto;
 import org.bookwoori.chat.directMessage.dto.response.DirectMessageReplyResponseDto;
@@ -29,8 +30,11 @@ public class MessageListener { //토픽에 발행된 이벤트를 가져와 처�
     }
 
     @KafkaListener(topics = KafkaConstants.CHANNEL_CHAT_TOPIC)
-    public void channelChatListener(ChannelMessage message) {
-        messagingTemplate.convertAndSend("/topic/channel/" + message.getChannelId(), message);
+    public void channelChatListener(ChannelMessage channelMessage) {
+        CommonResponse response = CommonResponse.fromChannelMessage(EventType.NEW_MESSAGE,
+            channelMessage.getChannelId(), ChannelMessageSendResponseDto.from(channelMessage));
+        messagingTemplate.convertAndSend("/topic/channel/" + channelMessage.getChannelId(),
+            response);
     }
 
     @KafkaListener(topics = KafkaConstants.DIRECT_CHAT_EVENT_TOPIC)

@@ -1,5 +1,6 @@
 package org.bookwoori.chat.directMessage.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import org.bookwoori.chat.directMessage.domain.DirectMessage;
@@ -12,6 +13,7 @@ public record DirectMessageSendResponseDto(
     Long memberId,
     MessageType type,
     String content,
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdAt
 ) {
 
