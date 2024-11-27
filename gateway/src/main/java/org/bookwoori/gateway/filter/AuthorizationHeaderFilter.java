@@ -58,7 +58,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             String path = request.getURI().getPath();
 
             // Swagger 관련 경로 JWT 검증에서 제외
-            if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith("/webjars") || path.startsWith("/core/v3/api-docs") || path.startsWith("/auth/v3/api-docs") ) {
+            if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith("/webjars") || path.startsWith("/core/v3/api-docs") || path.startsWith("/chat/v3/api-docs") || path.startsWith("/notification/v3/api-docs") || path.startsWith("/auth/v3/api-docs") ) {
                 return chain.filter(exchange);
             }
 
