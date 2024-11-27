@@ -33,9 +33,6 @@ jobs:
           mkdir -p ./gateway/src/main/resources
           touch ./gateway/src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_GATEWAY }}" > ./gateway/src/main/resources/application.yml
-          mkdir -p ./eureka/src/main/resources
-          touch ./eureka/src/main/resources/application.yml
-          echo "${{ secrets.APPLICATION_EURKA}}" > ./eureka/src/main/resources/application.yml
 
       - name: Build Core Server weith Gradle
         run: |
@@ -61,12 +58,6 @@ jobs:
           chmod +x ./gradlew
           ./gradlew build -x test
 
-      - name: Build Eureka Server with Gradle
-        run: |
-          cd ./eureka
-          chmod +x ./gradlew
-          ./gradlew build -x test
-
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -81,15 +72,6 @@ jobs:
           platforms: linux/arm64/v8
           push: true
           tags: ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
-
-      - name: Eureka Server build & push
-        uses: docker/build-push-action@v6
-        with:
-          context: ./eureka
-          file: ./eureka/Dockerfile
-          platforms: linux/arm64/v8
-          push: true
-          tags: ${{ secrets.DOCKER_REPO_EUREKA }}:v2
 
       - name: Core Server build & push
         uses: docker/build-push-action@v6
@@ -132,5 +114,4 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_REPO_AUTH }}:v2
             sudo docker pull ${{ secrets.DOCKER_REPO_CHAT }}:v2
             sudo docker pull ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
-            sudo docker pull ${{ secrets.DOCKER_REPO_EUREKA }}:v2
             sudo docker-compose -f ./docker-compose.yml up -d 
