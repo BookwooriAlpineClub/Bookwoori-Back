@@ -74,4 +74,8 @@ public class DirectMessage {
     public void setTargetEmoji(EmojiType emoji) {
         this.targetEmoji = emoji;
     }
+
+    public void setParentContent(String parentContent) {
+        this.parentContent = parentContent;
+    }
 }

@@ -2,12 +2,13 @@ package org.bookwoori.chat.domain.directMessage.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.bookwoori.chat.domain.directMessage.entity.DirectMessage;
 import org.bookwoori.chat.domain.directMessage.dto.response.DirectMessageItemDto;
 import org.bookwoori.chat.domain.directMessage.dto.response.DirectMessageListResponseDto;
 import org.bookwoori.chat.domain.directMessage.dto.response.RecentDirectMessageResponseDto;
+import org.bookwoori.chat.domain.directMessage.entity.DirectMessage;
 import org.bookwoori.chat.domain.directMessage.repository.DirectMessageRepository;
 import org.bookwoori.chat.global.feignClient.CoreClient;
 import org.springframework.data.domain.Page;
@@ -29,8 +30,30 @@ public class DirectMessageService {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<DirectMessage> directMessageList =
             directMessageRepository.findByMessageRoomId(roomId, pageable);
+
+        //메시지의 parentId 조회
+        List<String> parentIds = directMessageList.stream()
+            .map(DirectMessage::getParentId)
+            .filter(Objects::nonNull)
+            .toList();
+
+        Map<String, String> parentContents = directMessageRepository.findAllById(parentIds).stream()
+            .collect(Collectors.toMap(
+                DirectMessage::getId,
+                message -> message.getContent() != null ? message.getContent() : "삭제된 메시지입니다."
+            ));
+
         List<DirectMessageItemDto> directMessageDtoList = directMessageList.stream()
-            .map(DirectMessageItemDto::from).toList();
+            .map(directMessage -> {
+                if (directMessage.getParentId() != null) {
+                    String parentContent = parentContents.getOrDefault(
+                        directMessage.getParentId(),
+                        "삭제된 메시지입니다."
+                    );
+                    directMessage.setParentContent(parentContent);
+                }
+                return DirectMessageItemDto.from(directMessage);
+            }).toList();
         return new DirectMessageListResponseDto(directMessageDtoList);
     }
 
