@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
     private final CookieUtil cookieUtil;
-    private static final String URI = "/auth/success";
+    private static final String SUCCESS_URI = "http://localhost:3000/auth/success";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     @Override
@@ -31,20 +31,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = tokenProvider.generateAccessToken(authentication);
         response.addHeader("Authorization", "Bearer " + accessToken);
 
-        // refreshToken 발급 및 쿠키에 저장
-        String refreshToken = tokenProvider.generateRefreshToken(memberId, kakaoId);
-        cookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
-            CookieUtil.REFRESH_TOKEN_MAX_AGE);
-
-        // refreshToken Redis에 저장
-        tokenProvider.saveRefreshToken(memberId, refreshToken);
-
         // 리다이렉트 URL 설정 및 accessToken 전달
-        String redirectUrl = UriComponentsBuilder.fromUriString(URI)
+        String redirectUrl = UriComponentsBuilder.fromUriString(SUCCESS_URI)
             .queryParam("accessToken", accessToken)
             .build().toUriString();
 
-        // refreshToken -> /auth/refresh 엔드포인트로 요청
         response.sendRedirect(redirectUrl);
     }
 }
