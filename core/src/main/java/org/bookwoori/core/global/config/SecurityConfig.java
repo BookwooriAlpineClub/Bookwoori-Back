@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.global.jwt.CustomAccessDeniedHandler;
 import org.bookwoori.core.global.jwt.CustomAuthenticationEntryPoint;
 import org.bookwoori.core.global.jwt.JwtAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -26,9 +25,6 @@ public class SecurityConfig {
 
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-
-    @Value("${cloud.aws.ec2.ip}")
-    private String host;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

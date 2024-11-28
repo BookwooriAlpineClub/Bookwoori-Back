@@ -1,7 +1,5 @@
 package org.bookwoori.auth.global.config;
 
-
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.auth.global.exception.TokenExceptionFilter;
 import org.bookwoori.auth.global.handler.CustomAccessDeniedHandler;
@@ -27,10 +25,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @EnableWebSecurity
@@ -45,37 +39,12 @@ public class SecurityConfig {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomLogoutHandler customLogoutHandler;
 
-    @Value("${cloud.aws.ec2.ip}")
-    private String host;
-
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
             .requestMatchers("/error", "/favicon.ico",
                 "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**", "/auth/v3/api-docs/**", "/auth/swagger-ui/**")
             .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:3000",
-            "https://localhost:3000",
-            "http://localhost:8080",
-            "http://localhost:8000",
-            "https://www.bookwoori.site/",
-            host,
-            "https://api.bookwoori.p-e.kr"));
-        configuration.setAllowedMethods(
-            Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
-        configuration.addAllowedHeader("*");
-        configuration.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization", "Location"));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 
     @Bean
@@ -93,7 +62,6 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .sessionManagement(
