@@ -1,14 +1,14 @@
 package org.bookwoori.chat.global.kafka;
 
 import lombok.RequiredArgsConstructor;
-import org.bookwoori.chat.channelMessage.domain.ChannelMessage;
-import org.bookwoori.chat.channelMessage.dto.response.ChannelMessageReactResponseDto;
-import org.bookwoori.chat.channelMessage.dto.response.ChannelMessageReplyResponseDto;
-import org.bookwoori.chat.channelMessage.dto.response.ChannelMessageSendResponseDto;
-import org.bookwoori.chat.directMessage.domain.DirectMessage;
-import org.bookwoori.chat.directMessage.dto.response.DirectMessageReactResponseDto;
-import org.bookwoori.chat.directMessage.dto.response.DirectMessageReplyResponseDto;
-import org.bookwoori.chat.directMessage.dto.response.DirectMessageSendResponseDto;
+import org.bookwoori.chat.domain.channelMessage.entity.ChannelMessage;
+import org.bookwoori.chat.domain.channelMessage.dto.response.ChannelMessageReactResponseDto;
+import org.bookwoori.chat.domain.channelMessage.dto.response.ChannelMessageReplyResponseDto;
+import org.bookwoori.chat.domain.channelMessage.dto.response.ChannelMessageSendResponseDto;
+import org.bookwoori.chat.domain.directMessage.entity.DirectMessage;
+import org.bookwoori.chat.domain.directMessage.dto.response.DirectMessageReactResponseDto;
+import org.bookwoori.chat.domain.directMessage.dto.response.DirectMessageReplyResponseDto;
+import org.bookwoori.chat.domain.directMessage.dto.response.DirectMessageSendResponseDto;
 import org.bookwoori.chat.global.common.CommonResponse;
 import org.bookwoori.chat.global.common.EventType;
 import org.springframework.kafka.annotation.KafkaListener;
