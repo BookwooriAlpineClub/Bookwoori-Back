@@ -49,6 +49,7 @@ public class SecurityConfig {
             "http://localhost:8000",
             "http://gateway-app:8000",
             host,
+            "chrome-extension://fnlgpklmfclcogcmiioamkhdnflfmnmp",
             "https://api.bookwoori.p-e.kr",
             "https://d1b8jphm7kfx0c.cloudfront.net",
             "https://www.bookwoori.site/"));
