@@ -146,7 +146,6 @@ public class NotificationService {
                     targetTokens,
                     fcm.makeTitle(request.nickname(), request.roomName()),
                     fcm.makeBody(request.type(), request.content()),
-                    fcm.makeImage(request.type(), request.content()),
                     platform,
                     fcm.makeCustomData(null, request.roomId())
             );
@@ -162,7 +161,6 @@ public class NotificationService {
                     targetTokens,
                     fcm.makeTitle(request.nickname(), request.channelName()),
                     fcm.makeBody(request.type(), request.content()),
-                    fcm.makeImage(request.type(), request.content()),
                     platform,
                     fcm.makeCustomData(request.communityId(), request.channelId())
             );
@@ -178,7 +176,6 @@ public class NotificationService {
                     targetTokens,
                     fcm.makeTitle(request.nickname(), null),
                     fcm.makeBody(request.type(), request.content()),
-                    fcm.makeImage(request.type(), request.content()),
                     platform,
                     fcm.makeCustomData(null, null)
             );
@@ -194,7 +191,6 @@ public class NotificationService {
                     targetTokens,
                     fcm.makeTitle(request.nickname(), request.channelName()),
                     fcm.makeBody(request.type(), request.content()),
-                    fcm.makeImage(request.type(), request.content()),
                     platform,
                     fcm.makeCustomData(request.communityId(), request.channelId())
             );
