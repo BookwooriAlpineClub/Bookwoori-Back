@@ -1,25 +1,44 @@
 package org.bookwoori.core.domain.member.facade;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.bookwoori.core.domain.member.dto.request.GetOrSaveMemberRequestDto;
+import org.bookwoori.core.domain.member.dto.response.GetMemberResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.global.s3.S3Util;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 @Transactional
 public class AuthFacade {
 
     private final MemberService memberService;
+    private final S3Util s3Util;
 
     public void deleteMember() {
         Member currentMember = memberService.getCurrentMember();
+        s3Util.deleteImage(currentMember.getProfileImg());
+        s3Util.deleteImage(currentMember.getBackgroundImg());
         currentMember.deleteMember();
     }
 
-    @Transactional(readOnly = true)
-    public void getMemberStatus(Long kakaoId) {
-        memberService.getMemberStatus(kakaoId);
+    public GetMemberResponseDto getOrSaveMemberByKakaoId(GetOrSaveMemberRequestDto requestDto) {
+        boolean isMember = memberService.existsByKakaoId(requestDto.kakaoId());
+        if (isMember) {
+            Member member = memberService.getMemberByKakaoId(requestDto.kakaoId());
+            return GetMemberResponseDto.from(member);
+        } else {
+            Member member = Member.builder()
+                .kakaoId(requestDto.kakaoId())
+                .nickname(requestDto.nickname())
+                .profileImg(requestDto.profileImg())
+                .build();
+            memberService.saveMember(member);
+            return GetMemberResponseDto.from(member);
+        }
     }
 }

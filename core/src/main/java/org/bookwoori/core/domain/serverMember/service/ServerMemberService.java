@@ -30,6 +30,11 @@ public class ServerMemberService {
     }
 
     @Transactional(readOnly = true)
+    public boolean isJoined(Member member, Server server) {
+        return serverMemberRepository.existsByMemberAndServer(member, server);
+    }
+
+    @Transactional(readOnly = true)
     public boolean isOwner(Member member, Server server) {
         return serverMemberRepository.existsByMemberAndServerAndRole(member, server);
     }

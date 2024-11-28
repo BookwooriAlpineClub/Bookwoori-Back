@@ -1,8 +1,10 @@
 package org.bookwoori.core.domain.review.service;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
+import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.bookwoori.core.domain.review.repository.ReviewRepository;
 import org.bookwoori.core.global.exception.CustomException;
@@ -27,13 +29,23 @@ public class ReviewService {
         return reviewRepository.findByMemberIdsAndBook(members, book);
     }
 
+    @Transactional(readOnly = true)
+    public Review getReviewByMemberAndBook(Member member, Book book) {
+        return reviewRepository.findByMemberAndBook(member, book);
+    }
+
+    public boolean existsReviewByMemberAndBook(Member member, Book book) {
+        return reviewRepository.existsByRecord_MemberAndRecord_Book(member, book);
+    }
+
+
     @Transactional
     public void saveReview(Review review) {
         reviewRepository.save(review);
     }
 
     @Transactional(readOnly = true)
-    public Review getReviewByRecordId(Long recordId) {
+    public Optional<Review> getReviewByRecordId(Long recordId) {
         return reviewRepository.findByRecord_RecordId(recordId);
     }
 
