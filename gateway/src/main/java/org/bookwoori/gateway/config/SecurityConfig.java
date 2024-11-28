@@ -1,18 +1,17 @@
 package org.bookwoori.gateway.config;
 
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.authentication.HttpStatusServerEntryPoint;
-import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
-import reactor.core.publisher.Mono;
+import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -22,29 +21,38 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
             .requestMatchers("/error", "/favicon.ico",
-                "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**", "/webjars/**")
-            .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+                "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs", "/v3/api-docs/**", "/webjars/**");
     }
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http
             .csrf(ServerHttpSecurity.CsrfSpec::disable)
-            .cors(ServerHttpSecurity.CorsSpec::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
             .authorizeExchange(exchange -> exchange
-                .anyExchange().permitAll() // 모든 요청을 허용하도록 설정
+                .anyExchange().permitAll() // 모든 요청을 허용
             )
             .build();
     }
 
+    // CORS 설정 // d
     @Bean
-    public ReactiveAuthenticationManager reactiveAuthenticationManager() {
-        return authentication -> Mono.just(authentication);
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
+        configuration.addAllowedHeader("*");
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Location", "Set-Cookie"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
     public ServerSecurityContextRepository serverSecurityContextRepository() {
-        return NoOpServerSecurityContextRepository.getInstance();
+        return new WebSessionServerSecurityContextRepository();
     }
 
 }

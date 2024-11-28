@@ -50,7 +50,8 @@ public class SecurityConfig {
             "http://gateway-app:8000",
             host,
             "https://api.bookwoori.p-e.kr",
-            "https://d1b8jphm7kfx0c.cloudfront.net"));
+            "https://d1b8jphm7kfx0c.cloudfront.net",
+            "https://www.bookwoori.site/"));
         configuration.setAllowedMethods(
             Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.addAllowedHeader("*");

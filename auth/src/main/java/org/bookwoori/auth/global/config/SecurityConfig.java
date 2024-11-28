@@ -64,6 +64,7 @@ public class SecurityConfig {
             "https://localhost:3000",
             "http://localhost:8080",
             "http://localhost:8000",
+            "https://www.bookwoori.site/",
             host,
             "https://api.bookwoori.p-e.kr"));
         configuration.setAllowedMethods(

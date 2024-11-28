@@ -21,11 +21,20 @@ public class AuthFacade {
     private final TokenProvider tokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
 
-    public Map<String, String> refreshAccessToken(String refreshToken) {
+
+    public Map<String, String> login(String refreshToken){
+        return renewAccessAndRefreshToken(refreshToken);
+    }
+
+
+    public Map<String, String> refreshAccessToken(String refreshToken){
+        return renewAccessAndRefreshToken(refreshToken);
+    }
+
+    private Map<String, String> renewAccessAndRefreshToken(String refreshToken){
         Authentication authentication = tokenProvider.getAuthentication(refreshToken,
             true);
         Long kakaoId = tokenProvider.extractKakaoId(authentication);
-        // Redis에서 kakaoId를 key로 하는 refreshToken 가져옴
         String storedRefreshToken = redisTemplate.opsForValue()
             .get(kakaoId.toString());
         if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {

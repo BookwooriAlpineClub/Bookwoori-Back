@@ -42,6 +42,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     private final ServerSecurityContextRepository securityContextRepository;
 
     public AuthorizationHeaderFilter(ServerSecurityContextRepository securityContextRepository) {
+        // ServerSecurityContextRepository 주입
         super(Config.class);
         this.securityContextRepository = securityContextRepository;
     }

@@ -34,7 +34,8 @@ public class AuthController {
 
     @Operation(summary = "로그인 성공", description = "카카오 로그인에 성공합니다.")
     @GetMapping("/success")
-    public ResponseEntity<?> loginSuccess(@Valid LoginResponseDto loginResponseDto) {
+    public ResponseEntity<?> loginSuccess(@Valid LoginResponseDto loginResponseDto, HttpServletResponse response){
+        //여기서 쿠키 저장
         return ResponseEntity.ok(loginResponseDto);
     }
 
