@@ -46,9 +46,9 @@ public class ClimbingFacade {
     public void updateClimbingStatus() {
         LocalDate today = LocalDate.now();
         List<Climbing> climbingList = climbingService.getAllClimbings();
+
         for (Climbing climbing : climbingList) {
-            if (climbing.getStartDate().isAfter(today) && climbing.getEndDate()
-                .isAfter(today)) {
+            if (!climbing.getStartDate().isAfter(today) && climbing.getEndDate().isAfter(today)) {
                 climbing.updateStatus(ClimbingStatus.RUNNING);
             } else if (climbing.getEndDate().isBefore(today)) {
                 List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
@@ -73,7 +73,10 @@ public class ClimbingFacade {
         Member currentMember = memberService.getCurrentMember();
         Server server = serverService.getServerById(requestDto.serverId());
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn());
-        Climbing climbing = requestDto.toEntity(server, book);
+        ClimbingStatus status = requestDto.startDate().isEqual(LocalDate.now())
+            ? ClimbingStatus.RUNNING
+            : ClimbingStatus.READY;
+        Climbing climbing = requestDto.toEntity(server, book, status);
         climbingService.saveClimbingChannel(climbing);
         climbingMemberService.saveMember(currentMember, climbing, ClimbingRole.OWNER);
     }
@@ -103,21 +106,33 @@ public class ClimbingFacade {
     @Transactional(readOnly = true)
     public ServerClimbingListDto getClimbingList(Long serverId) {
         Member currentMember = memberService.getCurrentMember();
-        // myClimbings
+        // myClimbs
         List<ServerClimbingListDto.ClimbingUnitDto> myClimbings = climbingService.getMyClimbings(
                 currentMember, serverId).stream()
             .limit(3)
             .map(climbing -> new ServerClimbingListDto.ClimbingUnitDto(climbing.getClimbingId(),
-                climbing.getBook().getCoverImg()))
+                climbing.getName(), climbing.getBook().getCoverImg()))
             .collect(Collectors.toList());
         // readyClimbs
         List<ServerClimbingListDto.ClimbingUnitDto> readyClimbs = climbingService.getReadyClimbings(
                 serverId).stream()
             .limit(3)
             .map(climbing -> new ServerClimbingListDto.ClimbingUnitDto(climbing.getClimbingId(),
-                climbing.getBook().getCoverImg()))
+                climbing.getName(), climbing.getBook().getCoverImg()))
             .collect(Collectors.toList());
-        return new ServerClimbingListDto(myClimbings, readyClimbs);
+        // runningClimbs
+        List<ServerClimbingListDto.ClimbingUnitDto> runningClimbs = climbingService.getRunningClimbs(
+                serverId).stream()
+            .map(climbing -> new ServerClimbingListDto.ClimbingUnitDto(climbing.getClimbingId(),
+                climbing.getName(), null))
+            .collect(Collectors.toList());
+        // endClimbs
+        List<ServerClimbingListDto.ClimbingUnitDto> finishedClimbs = climbingService.getEndClimbs(
+                serverId).stream()
+            .map(climbing -> new ServerClimbingListDto.ClimbingUnitDto(climbing.getClimbingId(),
+                climbing.getName(), null))
+            .collect(Collectors.toList());
+        return new ServerClimbingListDto(myClimbings, readyClimbs, runningClimbs, finishedClimbs);
     }
 
     @Transactional(readOnly = true)

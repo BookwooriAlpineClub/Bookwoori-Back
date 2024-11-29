@@ -35,7 +35,18 @@ public class ClimbingService {
 
     @Transactional(readOnly = true)
     public List<Climbing> getReadyClimbings(Long serverId) {
-        return climbingRepository.findReadyClimbings(serverId);
+        return climbingRepository.findByServer_ServerIdAndStatus(serverId, ClimbingStatus.READY);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Climbing> getRunningClimbs(Long serverId) {
+        return climbingRepository.findByServer_ServerIdAndStatus(serverId, ClimbingStatus.RUNNING);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Climbing> getEndClimbs(Long serverId) {
+        return climbingRepository.findByServer_ServerIdAndStatusIn(
+            serverId, List.of(ClimbingStatus.FINISHED, ClimbingStatus.FAILED));
     }
 
     @Transactional(readOnly = true)
