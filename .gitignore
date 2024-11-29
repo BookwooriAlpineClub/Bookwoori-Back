@@ -1,1 +1,3 @@
 /.idea/
+/notification/src/main/resources/firebase-adminsdk.json
+/notification/src/main/resources/application.yml
