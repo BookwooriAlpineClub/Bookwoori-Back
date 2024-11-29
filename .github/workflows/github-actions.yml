@@ -45,6 +45,14 @@ jobs:
           touch ./gateway/src/main/resources/application.yml
           echo "${{ secrets.APPLICATION_GATEWAY }}" > ./gateway/src/main/resources/application.yml
 
+      - name: Make Notification application-prod.yml
+        run: |
+          mkdir -p ./notification/src/main/resources
+          touch ./notification/src/main/resources/application.yml
+          touch ./notification/src/main/resources/firebase-adminsdk.json
+          echo "${{ secrets.APPLICATION_NOTIFICATION }}" > ./notification/src/main/resources/application.yml
+          echo "${{ secrets.FIREBASE_ADMINSDK }}" > /notification/src/main/resources/firebase-adminsdk.json
+
       - name: Build Core Server with Gradle
         run: |
           cd ./core
@@ -66,6 +74,12 @@ jobs:
       - name: Build Gateway Server with Gradle
         run: |
           cd ./gateway
+          chmod +x ./gradlew
+          ./gradlew build -x test
+
+      - name: Build Notification Server with Gradle
+        run: |
+          cd ./notification
           chmod +x ./gradlew
           ./gradlew build -x test
 
@@ -111,6 +125,15 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_REPO_CHAT }}:v2
 
+      - name: Notification Server build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./notification
+          file: ./notification/Dockerfile
+          platforms: linux/arm64/v8
+          push: true
+          tags: ${{ secrets.DOCKER_REPO_NOTIFICATION }}:v2
+
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
@@ -125,4 +148,6 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_REPO_AUTH }}:v2
             sudo docker pull ${{ secrets.DOCKER_REPO_CHAT }}:v2
             sudo docker pull ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
+            sudo docker pull ${{ secrets.DOCKER_REPO_NOTIFICATION }}:v2
             sudo docker-compose -f ./docker-compose.yml up -d
+            sudo docker image prune -f
