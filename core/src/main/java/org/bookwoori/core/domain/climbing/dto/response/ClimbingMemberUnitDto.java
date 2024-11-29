@@ -6,6 +6,7 @@ import org.bookwoori.core.domain.record.entity.ReadingStatus;
 
 @Builder
 public record ClimbingMemberUnitDto(
+    boolean isMine,
     Long memberId,
     String nickname,
     String profileImg,
@@ -16,9 +17,11 @@ public record ClimbingMemberUnitDto(
     String memo
 ) {
 
-    public static ClimbingMemberUnitDto from(ClimbingMember member, ReadingStatus status,
+    public static ClimbingMemberUnitDto from(boolean isMine, ClimbingMember member,
+        ReadingStatus status,
         int currentPage) {
         return ClimbingMemberUnitDto.builder()
+            .isMine(isMine)
             .memberId(member.getMember().getMemberId())
             .nickname(member.getMember().getNickname())
             .profileImg(member.getMember().getProfileImg())
