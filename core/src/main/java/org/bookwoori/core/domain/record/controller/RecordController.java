@@ -2,6 +2,7 @@ package org.bookwoori.core.domain.record.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.record.dto.request.RecordRequestDto;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
@@ -28,14 +29,14 @@ public class RecordController {
 
     @Operation(summary = "책 기록 추가", description = "수정 페이지_책기록 에서 새로운 책기록을 추가합니다.")
     @PostMapping
-    public ResponseEntity<?> createRecord(@RequestBody RecordRequestDto requestDto) {
+    public ResponseEntity<?> createRecord(@RequestBody @Valid RecordRequestDto requestDto) {
         recordFacade.createRecord(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Operation(summary = "책 감상평 추가", description = "수정 페이지_책기록 에서 새로운 감상평을 추가합니다.")
     @PostMapping("/reviews")
-    public ResponseEntity<?> createReview(@RequestBody RecordRequestDto requestDto) {
+    public ResponseEntity<?> createReview(@RequestBody @Valid RecordRequestDto requestDto) {
         recordFacade.createReview(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -43,7 +44,7 @@ public class RecordController {
     @Operation(summary = "책 기록 수정", description = "수정 페이지_책기록 에서 기존 책기록을 수정합니다.")
     @PutMapping("/{recordId}")
     public ResponseEntity<?> updateRecord(@PathVariable Long recordId,
-        @RequestBody RecordRequestDto requestDto) {
+        @RequestBody @Valid RecordRequestDto requestDto) {
         recordFacade.updateRecord(recordId, requestDto);
         return ResponseEntity.ok().build();
     }
@@ -51,7 +52,7 @@ public class RecordController {
     @Operation(summary = "책 감상평 수정", description = "수정 페이지_책기록 에서 기존 감상평을 수정합니다.")
     @PutMapping("/reviews/{recordId}")
     public ResponseEntity<?> updateReview(@PathVariable Long recordId,
-        @RequestBody RecordRequestDto requestDto) {
+        @RequestBody @Valid RecordRequestDto requestDto) {
         recordFacade.updateReview(recordId, requestDto);
         return ResponseEntity.ok().build();
     }

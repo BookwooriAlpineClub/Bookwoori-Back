@@ -2,6 +2,7 @@ package org.bookwoori.core.domain.record.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.member.entity.Member;
@@ -12,6 +13,7 @@ import org.bookwoori.core.domain.review.entity.Review;
 
 public record RecordRequestDto(
     @NotBlank
+    @Size(min = 13, max = 13)
     String isbn13,
     @NotNull
     ReadingStatus status,
