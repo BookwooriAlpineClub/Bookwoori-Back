@@ -61,5 +61,9 @@ public class ClimbingService {
             throw new CustomException(ErrorCode.CLIMBING_NOT_RUNNING);
         }
     }
+
+    public void deleteClimbing(Climbing climbing) {
+        climbingRepository.delete(climbing);
+    }
 }
 

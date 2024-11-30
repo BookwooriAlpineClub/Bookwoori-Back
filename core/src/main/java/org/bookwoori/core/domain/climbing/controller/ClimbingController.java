@@ -13,6 +13,7 @@ import org.bookwoori.core.domain.climbing.facade.ClimbingMemberFacade;
 import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,6 +74,13 @@ public class ClimbingController {
         @PathVariable("climbingId") final Long climbingId,
         @RequestBody ClimbingRoleDelegateRequestDto requestDto) {
         climbingMemberFacade.delegateClimbingRole(climbingId, requestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "클라이밍 채널 삭제", description = "클라이밍 채널을 삭제합니다.")
+    @DeleteMapping("/{climbingId}")
+    public ResponseEntity<?> deleteClimbingChannel(@PathVariable final Long climbingId) {
+        climbingFacade.deleteClimbing(climbingId);
         return ResponseEntity.ok().build();
     }
 

@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.dto.request.GetOrSaveMemberRequestDto;
 import org.bookwoori.core.domain.member.facade.AuthFacade;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,14 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthFacade authFacade;
-
-    @Operation(summary = "계정 삭제", description = "회원 상태를 INACTIVE로 변경하고 닉네임을 '(알 수 없음)'으로 변경합니다.")
-    @PatchMapping("/delete")
-    public ResponseEntity<?> deleteMember() {
-        authFacade.deleteMember();
-        return ResponseEntity.ok().build();
-    }
-
+    
     @Operation(summary = "멤버 조회 또는 저장", description = "멤버 정보를 kakaoId로 조회하거나 새로운 멤버로 저장합니다.")
     @PostMapping("/members")
     public ResponseEntity<?> getOrSaveMember(
