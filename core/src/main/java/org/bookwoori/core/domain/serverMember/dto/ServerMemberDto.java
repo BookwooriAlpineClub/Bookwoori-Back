@@ -11,11 +11,10 @@ public record ServerMemberDto(
     String profileImg,
     int level,
     String mountain,
-    ServerRole role,
-    boolean isMine
+    ServerRole role
 ) {
 
-    public static ServerMemberDto from(Member member, ServerRole role, boolean isMine) {
+    public static ServerMemberDto from(Member member, ServerRole role) {
         return ServerMemberDto.builder()
             .memberId(member.getMemberId())
             .nickname(member.getNickname())
@@ -23,7 +22,6 @@ public record ServerMemberDto(
             .level(member.getGrade().getLevel())
             .mountain(member.getGrade().getMountain())
             .role(role)
-            .isMine(isMine)
             .build();
     }
 }
