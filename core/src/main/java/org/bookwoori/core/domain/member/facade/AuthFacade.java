@@ -1,28 +1,40 @@
 package org.bookwoori.core.domain.member.facade;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.dto.request.GetOrSaveMemberRequestDto;
 import org.bookwoori.core.domain.member.dto.response.GetMemberResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.server.entity.Server;
+import org.bookwoori.core.domain.serverMember.entity.ServerRole;
+import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.s3.S3Util;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
 @Transactional
+@Component
 public class AuthFacade {
 
     private final MemberService memberService;
+    private final ServerMemberService serverMemberService;
     private final S3Util s3Util;
 
     public void deleteMember() {
         Member currentMember = memberService.getCurrentMember();
         s3Util.deleteImage(currentMember.getProfileImg());
         s3Util.deleteImage(currentMember.getBackgroundImg());
+        List<Server> ownedServers = serverMemberService.getAllByMemberAndRole(currentMember,
+            ServerRole.OWNER);
+        if (!ownedServers.isEmpty()) {
+            throw new CustomException(ErrorCode.DELEGATION_REQUIRED);
+        }
         currentMember.deleteMember();
     }
 
