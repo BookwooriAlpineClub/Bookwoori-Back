@@ -87,6 +87,6 @@ public class ServerMemberService {
 
     @Transactional
     public List<Server> getAllByMemberAndRole(Member currentMember, ServerRole serverRole) {
-        return serverMemberRepository.findByMemberAndRole(currentMember, ServerRole.OWNER);
+        return serverMemberRepository.findByMemberAndRole(currentMember, serverRole);
     }
 }
