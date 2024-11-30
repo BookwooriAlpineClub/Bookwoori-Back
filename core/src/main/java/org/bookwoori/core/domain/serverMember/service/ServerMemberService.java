@@ -51,9 +51,10 @@ public class ServerMemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<ServerMemberDto> getAllMembersByServer(Server server) {
+    public List<ServerMemberDto> getAllMembersByServer(Server server, Member currentMember) {
         return serverMemberRepository.findAllByServer(server).stream().map(
-                serverMember -> ServerMemberDto.from(serverMember.getMember(), serverMember.getRole()))
+                serverMember -> ServerMemberDto.from(serverMember.getMember(), serverMember.getRole(),
+                    serverMember.getMember().equals(currentMember)))
             .collect(Collectors.toList());
     }
 
