@@ -9,6 +9,7 @@ import org.bookwoori.core.domain.book.service.BookService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.record.dto.request.RecordRequestDto;
+import org.bookwoori.core.domain.record.dto.response.RecordDetailsResponseDto;
 import org.bookwoori.core.domain.record.dto.response.RecordResponseDto;
 import org.bookwoori.core.domain.record.dto.response.ReviewResponseDto;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
@@ -35,17 +36,20 @@ public class RecordFacade {
     public void createRecord(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
-
+        if (recordService.existsByMemberAndBook(currentMember, book)) {
+            throw new CustomException(ErrorCode.ALREADY_EXIST_RECORD);
+        }
         recordService.saveRecord(requestDto.toRecordEntity(currentMember, book));
-
     }
 
     public void createReview(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
         Record record = recordService.getRecordByMemberAndBook(currentMember, book);
+        if (reviewService.existsReviewByMemberAndBook(currentMember, book)) {
+            throw new CustomException(ErrorCode.ALREADY_EXIST_REVIEW);
+        }
         reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.reviewContent()));
-
     }
 
     public void updateRecord(Long recordId, RecordRequestDto requestDto) {
@@ -96,8 +100,12 @@ public class RecordFacade {
                 reviewResponseDtoList.add(reviewResponseDto);
             }
         });
-        
+
         return reviewResponseDtoList;
     }
 
+    @Transactional(readOnly = true)
+    public RecordDetailsResponseDto getReviewsDetails(Long recordId) {
+
+    }
 }
