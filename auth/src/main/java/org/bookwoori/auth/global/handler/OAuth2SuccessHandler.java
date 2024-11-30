@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
     private final CookieUtil cookieUtil;
-    private static final String SUCCESS_URI = "https://bookwoori.site";
+//    private static final String SUCCESS_URI = "https://bookwoori.site";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     @Override
@@ -29,7 +29,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         Long memberId = tokenProvider.extractMemberId(authentication);
         Long kakaoId = tokenProvider.extractKakaoId(authentication);
         String accessToken = tokenProvider.generateAccessToken(authentication);
-        response.addHeader("Authorization", "Bearer " + accessToken);
 
         // refreshToken 발급 및 쿠키에 저장
         String refreshToken = tokenProvider.generateRefreshToken(memberId, kakaoId);
@@ -38,15 +37,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         cookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
             CookieUtil.REFRESH_TOKEN_MAX_AGE);
 
-        // refreshToken Redis에 저장
+        // Refresh Token Redis에 저장
         tokenProvider.saveRefreshToken(kakaoId, refreshToken);
 
-        // 리다이렉트 URL 설정 및 accessToken 전달
-        String redirectUrl = UriComponentsBuilder.fromUriString(SUCCESS_URI)
-            .queryParam("accessToken", accessToken)
-            .build().toUriString();
-
-        response.sendRedirect(redirectUrl);
+        // JSON 형태로 응답 작성
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(HttpServletResponse.SC_OK); // 200 OK 상태 설정
+        response.getWriter().write("{\"message\": \"Authentication successful\", " +
+            "\"accessToken\": \"" + accessToken + "\", " +
+            "\"refreshToken\": \"" + refreshToken + "\"}");
     }
 }
 
