@@ -85,4 +85,8 @@ public class ServerMemberService {
         newOwner.updateRole(ServerRole.OWNER);
     }
 
+    @Transactional
+    public List<Server> getAllByMemberAndRole(Member currentMember, ServerRole serverRole) {
+        return serverMemberRepository.findByMemberAndRole(currentMember, ServerRole.OWNER);
+    }
 }
