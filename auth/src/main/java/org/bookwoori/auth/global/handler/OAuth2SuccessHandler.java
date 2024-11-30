@@ -33,7 +33,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // refreshToken 발급 및 쿠키에 저장
         String refreshToken = tokenProvider.generateRefreshToken(memberId, kakaoId);
         cookieUtil.addCookieAndSetDomain(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
-            CookieUtil.REFRESH_TOKEN_MAX_AGE, "bookwoori.site");
+            CookieUtil.REFRESH_TOKEN_MAX_AGE, ".bookwoori.site");
         cookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
             CookieUtil.REFRESH_TOKEN_MAX_AGE);
 

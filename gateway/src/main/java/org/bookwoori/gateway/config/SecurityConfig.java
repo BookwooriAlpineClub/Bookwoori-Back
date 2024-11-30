@@ -43,7 +43,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(Arrays.asList("*")); // 모든 도메인 허용
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.addAllowedHeader("*");
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Location", "Set-Cookie"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Location", "Set-Cookie", "Content-Type"));
         configuration.setAllowCredentials(true); // 인증 정보 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
