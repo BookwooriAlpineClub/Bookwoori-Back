@@ -88,7 +88,9 @@ public class ServerFacade {
     @Transactional(readOnly = true)
     public ServerMemberListResponseDto getServerMemberList(Long serverId) {
         Server server = serverService.getServerById(serverId);
-        return new ServerMemberListResponseDto(serverMemberService.getAllMembersByServer(server));
+        Member currentMember = memberService.getCurrentMember();
+        return new ServerMemberListResponseDto(
+            serverMemberService.getAllMembersByServer(server, currentMember));
     }
 
     @Transactional(readOnly = true)
