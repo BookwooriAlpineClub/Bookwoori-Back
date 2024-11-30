@@ -12,22 +12,29 @@ public class CookieUtil {
     public static final int REFRESH_TOKEN_MAX_AGE = 7 * 24 * 60 * 60;  // 7일
 
     public void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAge);
-        response.addCookie(cookie);
+        StringBuilder cookieHeader = new StringBuilder();
+        cookieHeader.append(name).append("=").append(value).append(";");
+        cookieHeader.append("Max-Age=").append(maxAge).append(";");
+        cookieHeader.append("Expires=").append(new java.util.Date(System.currentTimeMillis() + maxAge * 1000L)).append(";");
+        cookieHeader.append("Path=/;");
+        cookieHeader.append("HttpOnly;");
+        cookieHeader.append("Secure;");
+        cookieHeader.append("SameSite=None;");
+        response.addHeader("Set-Cookie", cookieHeader.toString());
     }
 
     public void addCookieAndSetDomain(HttpServletResponse response, String name, String value, int maxAge, String domain) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(maxAge);
-        cookie.setDomain(domain);
-        response.addCookie(cookie);
+        StringBuilder cookieHeader = new StringBuilder();
+        cookieHeader.append(name).append("=").append(value).append(";");
+        cookieHeader.append("Max-Age=").append(maxAge).append(";");
+        cookieHeader.append("Expires=").append(new java.util.Date(System.currentTimeMillis() + maxAge * 1000L)).append(";");
+        cookieHeader.append("Domain=").append(domain).append(";");
+        cookieHeader.append("Path=/;");
+        cookieHeader.append("HttpOnly;");
+        cookieHeader.append("Secure;");
+        cookieHeader.append("SameSite=None;");
+
+        response.addHeader("Set-Cookie", cookieHeader.toString());
     }
 
     public Cookie getCookie(HttpServletRequest request, String name) {
