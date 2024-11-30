@@ -180,4 +180,16 @@ public class ClimbingFacade {
             })
             .collect(Collectors.toList());
     }
+
+    public void deleteClimbing(Long climbingId) {
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        Member currentMember = memberService.getCurrentMember();
+        if (climbing.getStatus() != ClimbingStatus.READY) {
+            throw new CustomException(ErrorCode.CLIMBING_NOT_READY);
+        }
+        if (!climbingMemberService.isOwner(currentMember, climbing)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);  // OWNER만 편집 가능
+        }
+        climbingService.deleteClimbing(climbing);
+    }
 }
