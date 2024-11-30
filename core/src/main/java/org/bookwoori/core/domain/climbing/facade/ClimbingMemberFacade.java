@@ -71,6 +71,7 @@ public class ClimbingMemberFacade {
     @Transactional(readOnly = true)
     public ClimbingMemberResponseDto getClimbingMembers(Long climbingId) {
         Climbing climbing = climbingService.getClimbingById(climbingId);
+        Member currentMember = memberService.getCurrentMember();
         List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
             climbing);
         List<ClimbingMemberUnitDto> climbingMembers = climbingMemberList.stream()
@@ -78,8 +79,9 @@ public class ClimbingMemberFacade {
                 Optional<Record> record = recordService.getClimbingMemberRecordOpt(member,
                     climbing.getBook());
                 ReadingStatus status = record.map(Record::getStatus).orElse(ReadingStatus.UNREAD);
+                boolean isMine = member.getMember().equals(currentMember);
                 int currentPage = record.map(Record::getCurrentPage).orElse(0);
-                return ClimbingMemberUnitDto.from(member, status, currentPage);
+                return ClimbingMemberUnitDto.from(isMine, member, status, currentPage);
             })
             .collect(Collectors.toList());
 
