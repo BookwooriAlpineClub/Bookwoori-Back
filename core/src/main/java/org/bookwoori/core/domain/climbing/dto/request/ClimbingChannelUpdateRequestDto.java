@@ -9,7 +9,7 @@ import org.bookwoori.core.domain.climbing.dto.validation.ValidDateRange;
 @ValidDateRange
 public record ClimbingChannelUpdateRequestDto(
     @NotBlank
-    @Size(max = 40, message = "INVALID_INPUT_LENGTH-채널명은 40자 이내여야 합니다.")
+    @Size(max = 40)
     String name,
     String description,
     @NotNull LocalDate startDate,
