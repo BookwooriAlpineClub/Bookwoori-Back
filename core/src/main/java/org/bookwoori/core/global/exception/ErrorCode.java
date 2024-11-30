@@ -41,6 +41,7 @@ public enum ErrorCode {
     // Member (3000 ~ 3099)
     MEMBER_NOT_FOUND(404, 3000, "사용자를 찾을 수 없습니다."),
     MEMBER_INACTIVE(404, 3001, "이미 계정을 삭제한 멤버입니다."),
+    ALREADY_EXIST_NICKNAME(409, 3002, "이미 존재하는 닉네임입니다."),
 
     // Server (3100 ~ 3199)
     SERVER_NOT_FOUND(404, 3100, "서버를 찾을 수 없습니다."),

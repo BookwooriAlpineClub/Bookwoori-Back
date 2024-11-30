@@ -67,4 +67,9 @@ public class MemberService {
     public boolean existsByKakaoId(Long kakaoId) {
         return memberRepository.existsByKakaoId(kakaoId);
     }
+
+    @Transactional(readOnly = true)
+    public boolean existsByNickname(String newNickname) {
+        return memberRepository.existsByNickname(newNickname);
+    }
 }
