@@ -49,9 +49,15 @@ jobs:
         run: |
           mkdir -p ./notification/src/main/resources
           touch ./notification/src/main/resources/application.yml
-          touch ./notification/src/main/resources/firebase-adminsdk.json
           echo "${{ secrets.APPLICATION_NOTIFICATION }}" > ./notification/src/main/resources/application.yml
-          echo "${{ secrets.FIREBASE_ADMINSDK }}" > ./notification/src/main/resources/firebase-adminsdk.json
+
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.3
+        with:
+          name: "firebase-adminsdk.json"
+          json: ${{ secrets.FIREBASE_ADMINSDK }}
+          dir: "./notification/src/main/resources"
 
       - name: Build Core Server with Gradle
         run: |
