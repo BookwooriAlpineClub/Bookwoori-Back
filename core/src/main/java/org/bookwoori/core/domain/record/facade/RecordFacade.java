@@ -2,6 +2,7 @@ package org.bookwoori.core.domain.record.facade;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bookwoori.core.domain.book.entity.Book;
@@ -55,7 +56,6 @@ public class RecordFacade {
     public void updateRecord(Long recordId, RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Record record = recordService.getRecordById(recordId);
-
         record.updateRecord(requestDto.toRecordEntity(currentMember, record.getBook()));
 
     }
@@ -106,6 +106,8 @@ public class RecordFacade {
 
     @Transactional(readOnly = true)
     public RecordDetailsResponseDto getReviewsDetails(Long recordId) {
-
+        Record record = recordService.getRecordById(recordId);
+        Optional<Review> review = reviewService.getReviewByRecordId(recordId);
+        return RecordDetailsResponseDto.from(record, review);
     }
 }

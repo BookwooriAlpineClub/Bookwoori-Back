@@ -40,7 +40,6 @@ public class RecordController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-
     @Operation(summary = "책 기록 수정", description = "수정 페이지_책기록 에서 기존 책기록을 수정합니다.")
     @PutMapping("/{recordId}")
     public ResponseEntity<?> updateRecord(@PathVariable Long recordId,
@@ -77,4 +76,9 @@ public class RecordController {
         return ResponseEntity.ok(recordFacade.getReviews());
     }
 
+    @Operation(summary = "책 기록 상세 조회", description = "내 서재의 책 기록을 상세 조회합니다.")
+    @GetMapping("/{recordId}")
+    public ResponseEntity<?> getReviewDetails(@PathVariable("recordId") final Long recordId) {
+        return ResponseEntity.ok(recordFacade.getReviewsDetails(recordId));
+    }
 }
