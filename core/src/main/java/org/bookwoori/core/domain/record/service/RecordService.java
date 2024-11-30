@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RecordService {
 
     private final RecordRepository recordRepository;
@@ -33,37 +34,38 @@ public class RecordService {
     }
 
 
-    @Transactional
     public Record saveRecord(Record record) {
         return recordRepository.save(record);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Record getRecordById(Long recordId) {
         return recordRepository.findById(recordId)
             .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Record getRecordByMemberAndBook(Member member, Book book) {
         return recordRepository.findByMemberAndBook(member, book)
             .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
     }
 
-    @Transactional
     public void deleteRecord(Long recordId) {
         recordRepository.deleteById(recordId);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Record> getRecordsByStatus(ReadingStatus status) {
         return recordRepository.findAllByStatus(status);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Record> getRecordsByMember(Member member) {
         return recordRepository.findAllByMember(member);
     }
 
-
+    @Transactional(readOnly = true)
+    public boolean existsByMemberAndBook(Member currentMember, Book book) {
+        return recordRepository.existsByMemberAndBook(currentMember, book);
+    }
 }

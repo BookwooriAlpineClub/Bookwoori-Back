@@ -24,6 +24,7 @@ import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.service.RecordService;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
+import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -41,6 +42,7 @@ public class ClimbingFacade {
     private final BookService bookService;
     private final ClimbingMemberService climbingMemberService;
     private final RecordService recordService;
+    private final ServerMemberService serverMemberService;
 
     @Scheduled(cron = "0 0 0 * * *")
     public void updateClimbingStatus() {
@@ -48,35 +50,38 @@ public class ClimbingFacade {
         List<Climbing> climbingList = climbingService.getAllClimbings();
 
         for (Climbing climbing : climbingList) {
+            List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
+                climbing);
+            // 2명 이상 참여자일 때만 RUNNING으로 변경
+            if (climbingMemberList.size() < 2) {
+                climbing.updateStatus(ClimbingStatus.FAILED);
+                continue;
+            }
             if (!climbing.getStartDate().isAfter(today) && climbing.getEndDate().isAfter(today)) {
                 climbing.updateStatus(ClimbingStatus.RUNNING);
-            } else if (climbing.getEndDate().isBefore(today)) {
-                List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
-                    climbing);
+                continue;
+            }
+            // 종료 날짜가 지난 경우 상태 변경 (FINISHED/FAILED)
+            if (climbing.getEndDate().isBefore(today)) {
                 boolean allFinished = climbingMemberList.stream()
-                    .allMatch(
-                        member -> recordService.getClimbingMemberRecordOpt(member,
-                                climbing.getBook())
-                            .map(record -> record.getStatus() == ReadingStatus.FINISHED)
-                            .orElse(false));
-                if (allFinished) {
-                    climbing.updateStatus(ClimbingStatus.FINISHED);
-                } else {
-                    climbing.updateStatus(ClimbingStatus.FAILED);
-                }
+                    .allMatch(member -> recordService.getClimbingMemberRecordOpt(member,
+                            climbing.getBook())
+                        .map(record -> record.getStatus() == ReadingStatus.FINISHED)
+                        .orElse(false));
+                ClimbingStatus newStatus =
+                    allFinished ? ClimbingStatus.FINISHED : ClimbingStatus.FAILED;
+                climbing.updateStatus(newStatus);
             }
             climbingService.saveClimbingChannel(climbing);
         }
     }
 
+
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Server server = serverService.getServerById(requestDto.serverId());
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn());
-        ClimbingStatus status = requestDto.startDate().isEqual(LocalDate.now())
-            ? ClimbingStatus.RUNNING
-            : ClimbingStatus.READY;
-        Climbing climbing = requestDto.toEntity(server, book, status);
+        Climbing climbing = requestDto.toEntity(server, book, ClimbingStatus.READY);
         climbingService.saveClimbingChannel(climbing);
         climbingMemberService.saveMember(currentMember, climbing, ClimbingRole.OWNER);
     }
@@ -97,6 +102,9 @@ public class ClimbingFacade {
     public ClimbingDetailsResponseDto getClimbingDetails(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
+        if (!serverMemberService.isJoined(currentMember, climbing.getServer())) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
         int memberCount = climbingMemberService.getMemberCount(climbing);
         boolean isJoined = climbingMemberService.isJoined(currentMember, climbing);
         boolean isOwner = climbingMemberService.isOwner(currentMember, climbing);
@@ -106,6 +114,10 @@ public class ClimbingFacade {
     @Transactional(readOnly = true)
     public ServerClimbingListDto getClimbingList(Long serverId) {
         Member currentMember = memberService.getCurrentMember();
+        Server server = serverService.getServerById(serverId);
+        if (!serverMemberService.isJoined(currentMember, server)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
         // myClimbs
         List<ServerClimbingListDto.ClimbingUnitDto> myClimbings = climbingService.getMyClimbings(
                 currentMember, serverId).stream()
@@ -138,6 +150,10 @@ public class ClimbingFacade {
     @Transactional(readOnly = true)
     public MyClimbingListResponseDto getMyClimbingList(Long serverId) {
         Member currentMember = memberService.getCurrentMember();
+        Server server = serverService.getServerById(serverId);
+        if (!serverMemberService.isJoined(currentMember, server)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
         List<Climbing> myClimbings = climbingService.getMyClimbings(currentMember, serverId);
         List<ClimbingDetailsResponseDto> myClimbingList = convertToDto(myClimbings);
         return new MyClimbingListResponseDto(myClimbingList);
@@ -145,6 +161,11 @@ public class ClimbingFacade {
 
     @Transactional(readOnly = true)
     public ReadyClimbingListResponseDto getReadyClimbingList(Long serverId) {
+        Member currentMember = memberService.getCurrentMember();
+        Server server = serverService.getServerById(serverId);
+        if (!serverMemberService.isJoined(currentMember, server)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
         List<Climbing> readyClimbings = climbingService.getReadyClimbings(serverId);
         List<ClimbingDetailsResponseDto> readyClimbingList = convertToDto(readyClimbings);
         return new ReadyClimbingListResponseDto(readyClimbingList);
@@ -161,5 +182,17 @@ public class ClimbingFacade {
                 return ClimbingDetailsResponseDto.from(climbing, memberCount, isJoined, isOwner);
             })
             .collect(Collectors.toList());
+    }
+
+    public void deleteClimbing(Long climbingId) {
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        Member currentMember = memberService.getCurrentMember();
+        if (climbing.getStatus() != ClimbingStatus.READY) {
+            throw new CustomException(ErrorCode.CLIMBING_NOT_READY);
+        }
+        if (!climbingMemberService.isOwner(currentMember, climbing)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);  // OWNER만 편집 가능
+        }
+        climbingService.deleteClimbing(climbing);
     }
 }

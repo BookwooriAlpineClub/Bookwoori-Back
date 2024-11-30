@@ -14,7 +14,7 @@ import org.bookwoori.core.domain.server.entity.Server;
 public record ClimbingChannelCreateRequestDto(
     @NotNull Long serverId,
     @NotBlank
-    @Size(max = 40, message = "INVALID_INPUT_LENGTH-채널명은 40자 이내여야 합니다.")
+    @Size(max = 40)
     String name,
     @NotBlank String isbn,
     String description,
