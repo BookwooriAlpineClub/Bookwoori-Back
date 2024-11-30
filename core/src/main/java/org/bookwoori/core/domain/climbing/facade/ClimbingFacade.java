@@ -50,35 +50,38 @@ public class ClimbingFacade {
         List<Climbing> climbingList = climbingService.getAllClimbings();
 
         for (Climbing climbing : climbingList) {
+            List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
+                climbing);
+            // 2명 이상 참여자일 때만 RUNNING으로 변경
+            if (climbingMemberList.size() < 2) {
+                climbing.updateStatus(ClimbingStatus.FAILED);
+                continue;
+            }
             if (!climbing.getStartDate().isAfter(today) && climbing.getEndDate().isAfter(today)) {
                 climbing.updateStatus(ClimbingStatus.RUNNING);
-            } else if (climbing.getEndDate().isBefore(today)) {
-                List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
-                    climbing);
+                continue;
+            }
+            // 종료 날짜가 지난 경우 상태 변경 (FINISHED/FAILED)
+            if (climbing.getEndDate().isBefore(today)) {
                 boolean allFinished = climbingMemberList.stream()
-                    .allMatch(
-                        member -> recordService.getClimbingMemberRecordOpt(member,
-                                climbing.getBook())
-                            .map(record -> record.getStatus() == ReadingStatus.FINISHED)
-                            .orElse(false));
-                if (allFinished) {
-                    climbing.updateStatus(ClimbingStatus.FINISHED);
-                } else {
-                    climbing.updateStatus(ClimbingStatus.FAILED);
-                }
+                    .allMatch(member -> recordService.getClimbingMemberRecordOpt(member,
+                            climbing.getBook())
+                        .map(record -> record.getStatus() == ReadingStatus.FINISHED)
+                        .orElse(false));
+                ClimbingStatus newStatus =
+                    allFinished ? ClimbingStatus.FINISHED : ClimbingStatus.FAILED;
+                climbing.updateStatus(newStatus);
             }
             climbingService.saveClimbingChannel(climbing);
         }
     }
 
+
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Server server = serverService.getServerById(requestDto.serverId());
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn());
-        ClimbingStatus status = requestDto.startDate().isEqual(LocalDate.now())
-            ? ClimbingStatus.RUNNING
-            : ClimbingStatus.READY;
-        Climbing climbing = requestDto.toEntity(server, book, status);
+        Climbing climbing = requestDto.toEntity(server, book, ClimbingStatus.READY);
         climbingService.saveClimbingChannel(climbing);
         climbingMemberService.saveMember(currentMember, climbing, ClimbingRole.OWNER);
     }
