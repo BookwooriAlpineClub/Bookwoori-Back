@@ -30,7 +30,7 @@ public class Member extends BaseTimeEntity {
     @NotNull
     private Long kakaoId;
 
-    @Column(name = "nickname", unique = true)
+    @Column(name = "nickname")
     @NotNull
     private String nickname;
 
