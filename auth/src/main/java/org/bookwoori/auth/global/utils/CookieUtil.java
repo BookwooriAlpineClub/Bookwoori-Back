@@ -20,6 +20,16 @@ public class CookieUtil {
         response.addCookie(cookie);
     }
 
+    public void addCookieAndSetDomain(HttpServletResponse response, String name, String value, int maxAge, String domain) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(maxAge);
+        cookie.setDomain(domain);
+        response.addCookie(cookie);
+    }
+
     public Cookie getCookie(HttpServletRequest request, String name) {
         if (request.getCookies() != null) {
             return Arrays.stream(request.getCookies())
