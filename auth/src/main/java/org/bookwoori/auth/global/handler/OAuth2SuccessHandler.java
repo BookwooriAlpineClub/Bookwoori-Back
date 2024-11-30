@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
     private final CookieUtil cookieUtil;
-    private static final String SUCCESS_URI = "http://localhost:3000/auth/success";
+    private static final String SUCCESS_URI = "https://bookwoori.site/login";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     @Override
@@ -34,8 +34,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // refreshToken 발급 및 쿠키에 저장
         String refreshToken = tokenProvider.generateRefreshToken(memberId, kakaoId);
         cookieUtil.addCookieAndSetDomain(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
-            CookieUtil.REFRESH_TOKEN_MAX_AGE, "http://localhost:3000");
-        tokenProvider.generateRefreshToken(memberId, kakaoId);
+            CookieUtil.REFRESH_TOKEN_MAX_AGE, "bookwoori.site");
         cookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
             CookieUtil.REFRESH_TOKEN_MAX_AGE);
 
