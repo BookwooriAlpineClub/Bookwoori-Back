@@ -40,7 +40,14 @@ public class SecurityConfig {
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // CORS 허용 도메인을 패턴으로 변경
-        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // 모든 도메인 허용
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:8080",
+            "http://localhost:8081",
+            "http://localhost:8001",
+            "http://localhost:8000",
+            "https://api.bookwoori.p-e.kr",
+            "https://d1b8jphm7kfx0c.cloudfront.net",
+            "https://www.bookwoori.site/"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.addAllowedHeader("*");
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Location", "Set-Cookie", "Content-Type"));
