@@ -32,26 +32,20 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         // refreshToken 발급 및 쿠키에 저장
         String refreshToken = tokenProvider.generateRefreshToken(memberId, kakaoId);
-//        cookieUtil.addCookieAndSetDomain(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
-//            CookieUtil.REFRESH_TOKEN_MAX_AGE, ".bookwoori.site");
-//        cookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
-//            CookieUtil.REFRESH_TOKEN_MAX_AGE);
+        cookieUtil.addCookieAndSetDomain(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
+            CookieUtil.REFRESH_TOKEN_MAX_AGE, ".bookwoori.site");
+        cookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken,
+            CookieUtil.REFRESH_TOKEN_MAX_AGE);
 
         // Refresh Token Redis에 저장
         tokenProvider.saveRefreshToken(kakaoId, refreshToken);
 
-        response.setHeader("Authorization", "Bearer " + accessToken);
-        response.setHeader("Refresh-Token", refreshToken);
+        String redirectUrl = UriComponentsBuilder.fromUriString(SUCCESS_URI)
+            .queryParam("accessToken", accessToken)
+            .queryParam("refreshToken", refreshToken)
+            .build()
+            .toUriString();
 
         response.sendRedirect(SUCCESS_URI);
-
-//        // JSON 형태로 응답
-//        response.setContentType("application/json");
-//        response.setCharacterEncoding("UTF-8");
-//        response.setStatus(HttpServletResponse.SC_OK); // 200 OK 상태 설정
-//        response.getWriter().write("{\"message\": \"Authentication successful\", " +
-//            "\"accessToken\": \"" + accessToken + "\", " +
-//            "\"refreshToken\": \"" + refreshToken + "\"}");
-    }
 }
 
