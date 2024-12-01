@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
     private final CookieUtil cookieUtil;
-    private static final String SUCCESS_URI = "https://www.bookwoori.site/sign-in";
+    private static final String SUCCESS_URI = "https://www.bookwoori.site/auth/success";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     @Override
@@ -46,7 +46,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             .build()
             .toUriString();
 
-        response.sendRedirect(SUCCESS_URI);
+        response.sendRedirect(redirectUrl);
     }
 }
 
