@@ -73,6 +73,7 @@ public enum ErrorCode {
     // Record (3600 ~ 3699)
     RECORD_NOT_FOUND(404, 3600, "레코드를 찾을 수 없습니다."),
     RECORD_NOT_FINISHED(409, 3601, "다 읽은 책이 아닙니다."),
+    RECORD_ALREADY_EXISTS(409, 3602, "동일한 책에 대한 책기록이 이미 존재합니다."),
 
     // Review (3700 ~ 3799)
     REVIEW_NOT_FOUND(404, 3700, "리뷰를 찾을 수 없습니다."),

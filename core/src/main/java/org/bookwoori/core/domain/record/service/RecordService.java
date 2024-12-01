@@ -35,6 +35,9 @@ public class RecordService {
 
     @Transactional
     public Record saveRecord(Record record) {
+        if (recordRepository.findByMemberAndBook(record.getMember(), record.getBook()).isPresent()){
+            throw new CustomException(ErrorCode.RECORD_ALREADY_EXISTS);
+        }
         return recordRepository.save(record);
     }
 
