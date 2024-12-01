@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
     private final CookieUtil cookieUtil;
-    private static final String SUCCESS_URI = "http://localhost/auth/success";
+    private static final String SUCCESS_URI = "http://localhost:3000/auth/success";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
     @Override
