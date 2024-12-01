@@ -47,5 +47,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             .toUriString();
 
         response.sendRedirect(SUCCESS_URI);
+    }
 }
 
