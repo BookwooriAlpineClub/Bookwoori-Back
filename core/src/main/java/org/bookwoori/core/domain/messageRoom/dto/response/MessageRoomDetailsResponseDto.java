@@ -11,15 +11,17 @@ public record MessageRoomDetailsResponseDto(
     Long messageRoomId,
     String title,
     Map<Long, MemberProfileResponseDto> participants,
+    boolean isActive,
     LocalDateTime createdAt
 ) {
 
     public static MessageRoomDetailsResponseDto from(MessageRoom messageRoom, String title,
-        Map<Long, MemberProfileResponseDto> participants) {
+        Map<Long, MemberProfileResponseDto> participants, boolean isActive) {
         return MessageRoomDetailsResponseDto.builder()
             .messageRoomId(messageRoom.getMessageRoomId())
             .title(title)
             .participants(participants)
+            .isActive(isActive)
             .createdAt(messageRoom.getCreatedAt())
             .build();
     }
