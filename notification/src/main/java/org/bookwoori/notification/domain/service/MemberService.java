@@ -1,9 +1,9 @@
-package org.bookwoori.notification.service;
+package org.bookwoori.notification.domain.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.bookwoori.notification.exception.CustomException;
-import org.bookwoori.notification.exception.CustomExceptionStatus;
+import org.bookwoori.notification.global.exception.CustomException;
+import org.bookwoori.notification.global.exception.CustomExceptionStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

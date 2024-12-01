@@ -3,6 +3,7 @@ package org.bookwoori.notification.domain.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import org.bookwoori.notification.domain.dto.response.CommonResponseDto;
 import org.bookwoori.notification.domain.dto.response.DataResponseDto;
 import org.bookwoori.notification.domain.dto.response.DeviceResponseDto;
 import org.bookwoori.notification.domain.service.DeviceService;
+import org.bookwoori.notification.domain.service.MemberService;
 import org.bookwoori.notification.domain.service.ResponseService;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +26,12 @@ public class DeviceController {
 
     private final ResponseService responseService;
     private final DeviceService deviceService;
+    private final MemberService memberService;
 
     @Operation(summary = "등록 정보 조회", description = "등록 정보를 조회합니다.")
-    @GetMapping("/{id}")
-    public DataResponseDto<Object> getDevice(@PathVariable("id") Long userId) {
+    @GetMapping
+    public DataResponseDto<Object> getDevice(HttpServletRequest request) {
+        Long userId = memberService.getCurrentMemberId(request);
         DeviceResponseDto response = deviceService.getDevice(userId);
         return responseService.getDataResponse(response);
     }
@@ -41,7 +45,8 @@ public class DeviceController {
 
     @Operation(summary = "기기 삭제", description = "기기를 삭제합니다.")
     @DeleteMapping({"/{id}"})
-    public CommonResponseDto delete(@PathVariable("id") Long userId) {
+    public CommonResponseDto delete(HttpServletRequest request) {
+        Long userId = memberService.getCurrentMemberId(request);
         deviceService.delete(userId);
         return responseService.getSuccessResponse();
     }
