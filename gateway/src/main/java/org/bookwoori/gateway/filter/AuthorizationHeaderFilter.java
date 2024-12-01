@@ -81,6 +81,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
                 List.of(new SimpleGrantedAuthority("ROLE_USER"))
             );
 
+
             // SecurityContext 설정
             SecurityContext securityContext = new SecurityContextImpl(authentication);
             return securityContextRepository.save(exchange, securityContext)
