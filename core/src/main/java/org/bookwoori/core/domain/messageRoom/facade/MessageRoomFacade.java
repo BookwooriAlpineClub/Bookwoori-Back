@@ -6,6 +6,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.member.dto.response.MemberProfileResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.member.entity.Status;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.messageRoom.dto.request.MessageRoomCreateRequestDto;
 import org.bookwoori.core.domain.messageRoom.dto.response.MessageRoomDetailsResponseDto;
@@ -48,7 +49,8 @@ public class MessageRoomFacade {
         );
 
         MessageRoom messageRoom = messageRoomService.getOrCreateMessageRoom(sender, receiver);
-        return MessageRoomDetailsResponseDto.from(messageRoom, receiver.getNickname(), members);
+        return MessageRoomDetailsResponseDto.from(messageRoom, receiver.getNickname(), members,
+            receiver.getStatus().equals(Status.ACTIVE));
     }
 
     @Transactional(readOnly = true)
