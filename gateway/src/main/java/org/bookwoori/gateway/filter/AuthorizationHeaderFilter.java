@@ -1,9 +1,12 @@
 package org.bookwoori.gateway.filter;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
@@ -92,23 +95,27 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     }
 
     private boolean isJwtValid(String jwt) {
-        boolean returnValue = true;
-        String subject = null;
         try {
-            subject = Jwts.parserBuilder()
+            Claims claims = Jwts.parserBuilder()
                 .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(jwt)
-                .getBody()
-                .getSubject();
-        } catch (Exception ex) {
-            returnValue = false;
+                .getBody();
+            if (claims.getExpiration().before(new Date())) {
+                throw new CustomException(ErrorCode.EXPIRED_ACCESS_TOKEN);
+            }
+            return true;
+        } catch (ExpiredJwtException e) {
+            throw new CustomException(ErrorCode.EXPIRED_ACCESS_TOKEN);
+        } catch (io.jsonwebtoken.SignatureException e) {
+            throw new CustomException(ErrorCode.INVALID_JWT_SIGNATURE);
+        } catch (JwtException e) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
+        } catch (Exception e) {;
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
-        if (subject == null || subject.isEmpty()) {
-            returnValue = false;
-        }
-        return returnValue;
     }
+
 
     private String getMemberIdFromJwt(String jwt) {
         try {
