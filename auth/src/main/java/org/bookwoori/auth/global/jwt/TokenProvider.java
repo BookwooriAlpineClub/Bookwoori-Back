@@ -144,9 +144,9 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), token, authorities);
     }
 
-    public void saveRefreshToken(Long memberId, String refreshToken) {
+    public void saveRefreshToken(Long kakaoId, String refreshToken) {
         redisTemplate.opsForValue()
-            .set(memberId.toString(), refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
+            .set(kakaoId.toString(), refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
     }
 
     public void deleteRefreshToken(String refreshToken) {
