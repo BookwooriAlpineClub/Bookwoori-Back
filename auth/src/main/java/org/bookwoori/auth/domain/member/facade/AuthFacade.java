@@ -37,8 +37,7 @@ public class AuthFacade {
         if (refreshToken == null || refreshToken.isEmpty()) {
             throw new TokenException(ErrorCode.NO_COOKIE); // 쿠키가 없는 경우
         }
-        Authentication authentication = tokenProvider.getAuthentication(refreshToken,
-            true);
+        Authentication authentication;
         try {
             authentication = tokenProvider.getAuthentication(refreshToken, true);
         } catch (ExpiredJwtException e) {
