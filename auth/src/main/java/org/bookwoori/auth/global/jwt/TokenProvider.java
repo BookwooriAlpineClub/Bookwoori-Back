@@ -113,6 +113,10 @@ public class TokenProvider {
         }
     }
 
+    public Long extractKakaoIdFromToken(String token) {
+        Claims claims = parseClaims(token, refreshKey, true); // refreshToken을 기반으로 Claims 추출
+        return claims.get("kakaoId", Long.class); // kakaoId를 Claims에서 바로 추출
+    }
 
     public Long extractKakaoId(Authentication authentication) {
         Object principal = authentication.getPrincipal();
@@ -124,6 +128,7 @@ public class TokenProvider {
             throw new TokenException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
+
 
     public boolean validateToken(String token, boolean isRefreshToken) {
         try {
