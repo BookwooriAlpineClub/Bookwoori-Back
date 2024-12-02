@@ -1,5 +1,7 @@
 package org.bookwoori.auth.domain.member.facade;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,19 +34,38 @@ public class AuthFacade {
     }
 
     private Map<String, String> renewAccessAndRefreshToken(String refreshToken){
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            throw new TokenException(ErrorCode.NO_COOKIE); // 쿠키가 없는 경우
+        }
         Authentication authentication = tokenProvider.getAuthentication(refreshToken,
             true);
-        Long kakaoId = tokenProvider.extractKakaoId(authentication);
-        String storedRefreshToken = redisTemplate.opsForValue()
-            .get(kakaoId.toString());
-        if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
-            throw new TokenException(ErrorCode.INVALID_TOKEN);
+        try {
+            authentication = tokenProvider.getAuthentication(refreshToken, true);
+        } catch (ExpiredJwtException e) {
+            throw new TokenException(ErrorCode.EXPIRED_REFRESH_TOKEN); // 토큰 만료 에러
+        } catch (SignatureException e) {
+            throw new TokenException(ErrorCode.INVALID_JWT_SIGNATURE); // 서명이 잘못된 경우
+        } catch (Exception e) {
+            throw new TokenException(ErrorCode.INVALID_TOKEN); // 기타 유효하지 않은 토큰
         }
-        Map<String, String> tokens = tokenProvider.renewAccessAndRefreshToken(
-            refreshToken);
+        Long kakaoId = tokenProvider.extractKakaoId(authentication);
+
+        // Redis에서 refreshToken을 조회
+        String storedRefreshToken = redisTemplate.opsForValue().get(kakaoId.toString());
+        if (storedRefreshToken == null) {
+            throw new TokenException(ErrorCode.TOKEN_NOT_FOUND); // 저장된 토큰 없음
+        }
+        if (!storedRefreshToken.equals(refreshToken)) {
+            throw new TokenException(ErrorCode.INVALID_TOKEN); // 저장된 토큰과 일치하지 않음
+        }
+
+        // 새로운 accessToken과 refreshToken 생성
+        Map<String, String> tokens = tokenProvider.renewAccessAndRefreshToken(refreshToken);
         String newRefreshToken = tokens.get("refreshToken");
-        // 새로운 refreshToken Redis에 설정
+
+        // Redis에 새로운 refreshToken 저장
         tokenProvider.saveRefreshToken(kakaoId, newRefreshToken);
+
         return tokens;
     }
 }
