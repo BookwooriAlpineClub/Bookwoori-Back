@@ -48,7 +48,6 @@ public class AuthFacade {
             throw new TokenException(ErrorCode.INVALID_TOKEN); // 기타 유효하지 않은 토큰
         }
         Long kakaoId = tokenProvider.extractKakaoIdFromToken(refreshToken);
-        log.info("Extracted kakaoId: {}", kakaoId);
 
         // Redis에서 refreshToken을 조회
         String storedRefreshToken = redisTemplate.opsForValue().get(kakaoId.toString());
