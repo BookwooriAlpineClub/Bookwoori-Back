@@ -28,6 +28,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // accessToken 발급
         Long memberId = tokenProvider.extractMemberId(authentication);
         Long kakaoId = tokenProvider.extractKakaoId(authentication);
+        log.info("Extracted kakaoId: {}", kakaoId);
         String accessToken = tokenProvider.generateAccessToken(authentication);
 
         // refreshToken 발급 및 쿠키에 저장
