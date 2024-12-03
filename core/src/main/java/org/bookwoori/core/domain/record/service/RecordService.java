@@ -53,6 +53,9 @@ public class RecordService {
     }
 
     public void deleteRecord(Long recordId) {
+        if (!recordRepository.existsById(recordId)) {
+            throw new CustomException(ErrorCode.RECORD_NOT_FOUND);
+        }
         recordRepository.deleteById(recordId);
     }
 
