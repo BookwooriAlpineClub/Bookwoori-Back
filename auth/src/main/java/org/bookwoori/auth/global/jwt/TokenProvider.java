@@ -39,7 +39,7 @@ public class TokenProvider {
     private String refreshSecret;
     private SecretKey accessKey;
     private SecretKey refreshKey;
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24;
     public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
     private final RedisTemplate<String, String> redisTemplate;
 
