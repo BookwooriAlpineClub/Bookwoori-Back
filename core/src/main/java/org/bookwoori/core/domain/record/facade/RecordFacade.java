@@ -40,7 +40,13 @@ public class RecordFacade {
         if (recordService.existsByMemberAndBook(currentMember, book)) {
             throw new CustomException(ErrorCode.ALREADY_EXIST_RECORD);
         }
-        recordService.saveRecord(requestDto.toRecordEntity(currentMember, book));
+        Record record = recordService.saveRecord(requestDto.toRecordEntity(currentMember, book));
+        if (requestDto.reviewContent() != null && !requestDto.reviewContent().isBlank()) {
+            if (reviewService.existsReviewByMemberAndBook(currentMember, book)) {
+                throw new CustomException(ErrorCode.ALREADY_EXIST_REVIEW);
+            }
+            reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.reviewContent()));
+        }
     }
 
     public void createReview(RecordRequestDto requestDto) {
@@ -56,9 +62,17 @@ public class RecordFacade {
     public void updateRecord(Long recordId, RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Record record = recordService.getRecordById(recordId);
+        // Record 업데이트
+        Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
         record.updateRecord(requestDto.toRecordEntity(currentMember, record.getBook()));
-
+        // Review 업데이트 (reviewContent가 있을 경우만)
+        if (requestDto.reviewContent() != null && !requestDto.reviewContent().isBlank()) {
+            Review review = reviewService.getReviewByRecordId(recordId)
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND)); // 리뷰가 없으면 예외
+            review.updateReview(requestDto.reviewContent());
+        }
     }
+
 
     public void updateReview(Long recordId, RecordRequestDto requestDto) {
         Review review = reviewService.getReviewByRecordId(recordId)
@@ -68,21 +82,24 @@ public class RecordFacade {
     }
 
     public void deleteRecordAndReview(Long recordId) {
-        reviewService.deleteReviewByRecordId(recordId);
+        if (reviewService.getReviewByRecordId(recordId).isPresent()) {
+            reviewService.deleteReviewByRecordId(recordId);
+        }
         recordService.deleteRecord(recordId);
     }
 
+
     @Transactional(readOnly = true)
     public List<RecordResponseDto> getRecordsByStatus(ReadingStatus status) {
-
         List<RecordResponseDto> recordResponseDtoList = new ArrayList<>();
         List<Record> recordList = recordService.getRecordsByStatus(status);
-
         recordList.stream().forEach(record -> {
-            RecordResponseDto recordResponseDto = RecordResponseDto.from(record);
+            String reviewContent = reviewService.getReviewByRecordId(record.getRecordId())
+                .map(Review::getContent)
+                .orElse(null);
+            RecordResponseDto recordResponseDto = RecordResponseDto.from(record, reviewContent);
             recordResponseDtoList.add(recordResponseDto);
         });
-
         return recordResponseDtoList;
     }
 
@@ -91,7 +108,6 @@ public class RecordFacade {
         List<ReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
         List<Record> recordList = recordService.getRecordsByMember(
             memberService.getCurrentMember());
-
         recordList.stream().forEach(record -> {
             if (reviewService.getReviewByRecordId(record.getRecordId()).isPresent()) {
                 Review review = reviewService.getReviewByRecordId(record.getRecordId())
@@ -100,7 +116,6 @@ public class RecordFacade {
                 reviewResponseDtoList.add(reviewResponseDto);
             }
         });
-
         return reviewResponseDtoList;
     }
 
