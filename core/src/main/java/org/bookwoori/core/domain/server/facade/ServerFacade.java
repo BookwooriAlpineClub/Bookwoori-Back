@@ -21,6 +21,7 @@ import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
 import org.bookwoori.core.domain.server.dto.response.InviteCodeServerResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerCategoryListResponseDto;
+import org.bookwoori.core.domain.server.dto.response.ServerCreateResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerDetailsResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerItemDto;
 import org.bookwoori.core.domain.server.dto.response.ServerListResponseDto;
@@ -53,8 +54,7 @@ public class ServerFacade {
     private final ServerMemberService serverMemberService;
 
     @Transactional
-    public void createServer(ServerCreateRequestDto requestDto) {
-
+    public ServerCreateResponseDto createServer(ServerCreateRequestDto requestDto) {
         //서버 저장
         Server server = requestDto.toEntity(
             s3Util.uploadImage(requestDto.serverImg(), "server"));
@@ -68,6 +68,7 @@ public class ServerFacade {
         //DEFAULT 카테고리/채널 생성 및 저장
         Category category = categoryService.makeDefaultCategory(server);
         channelService.makeDefaultChannels(category);
+        return ServerCreateResponseDto.from(server);
     }
 
     @Transactional(readOnly = true)
