@@ -40,12 +40,13 @@ public class RecordFacade {
         if (recordService.existsByMemberAndBook(currentMember, book)) {
             throw new CustomException(ErrorCode.ALREADY_EXIST_RECORD);
         }
-        Record record = recordService.saveRecord(requestDto.toRecordEntity(currentMember, book));
+        Record record = requestDto.toRecordEntity(currentMember, book);
+        Record newRecord = recordService.saveRecord(record);
         if (requestDto.reviewContent() != null && !requestDto.reviewContent().isBlank()) {
             if (reviewService.existsReviewByMemberAndBook(currentMember, book)) {
                 throw new CustomException(ErrorCode.ALREADY_EXIST_REVIEW);
             }
-            reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.reviewContent()));
+            reviewService.saveReview(requestDto.toReviewEntity(newRecord, requestDto.reviewContent()));
         }
     }
 
