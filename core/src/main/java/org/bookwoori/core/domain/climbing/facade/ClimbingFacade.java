@@ -121,14 +121,12 @@ public class ClimbingFacade {
         // myClimbs
         List<ServerClimbingListDto.ClimbingUnitDto> myClimbings = climbingService.getMyClimbings(
                 currentMember, serverId).stream()
-            .limit(3)
             .map(climbing -> new ServerClimbingListDto.ClimbingUnitDto(climbing.getClimbingId(),
                 climbing.getName(), climbing.getBook().getCoverImg()))
             .collect(Collectors.toList());
         // readyClimbs
         List<ServerClimbingListDto.ClimbingUnitDto> readyClimbs = climbingService.getReadyClimbings(
                 serverId).stream()
-            .limit(3)
             .map(climbing -> new ServerClimbingListDto.ClimbingUnitDto(climbing.getClimbingId(),
                 climbing.getName(), climbing.getBook().getCoverImg()))
             .collect(Collectors.toList());
