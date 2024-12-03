@@ -51,10 +51,9 @@ public class ServerMemberService {
     }
 
     @Transactional(readOnly = true)
-    public List<ServerMemberDto> getAllMembersByServer(Server server, Member currentMember) {
+    public List<ServerMemberDto> getAllMembersByServer(Server server) {
         return serverMemberRepository.findAllByServer(server).stream().map(
-                serverMember -> ServerMemberDto.from(serverMember.getMember(), serverMember.getRole(),
-                    serverMember.getMember().equals(currentMember)))
+                serverMember -> ServerMemberDto.from(serverMember.getMember(), serverMember.getRole()))
             .collect(Collectors.toList());
     }
 
@@ -86,4 +85,8 @@ public class ServerMemberService {
         newOwner.updateRole(ServerRole.OWNER);
     }
 
+    @Transactional(readOnly = true)
+    public List<Server> getAllByMemberAndRole(Member currentMember, ServerRole serverRole) {
+        return serverMemberRepository.findByMemberAndRole(currentMember, serverRole);
+    }
 }

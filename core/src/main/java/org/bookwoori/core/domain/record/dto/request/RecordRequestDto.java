@@ -19,21 +19,20 @@ public record RecordRequestDto(
     ReadingStatus status,
     int star,
     LocalDate startDate,
+    LocalDate endDate,
     int currentPage,
     String reviewContent
-
 ) {
 
     public Record toRecordEntity(Member currentMember, Book book) {
         return Record.builder()
             .member(currentMember)
             .book(book)
-            .status(this.status)
-            .star(this.star)
-            .startDate(this.startDate)
-            .currentPage(this.currentPage)
-//            .review(this.review)
-//            .isbn13(this.isbn13)
+            .status(status)
+            .star(star)
+            .startDate(startDate)
+            .endDate(endDate)
+            .currentPage(currentPage)
             .build();
     }
 

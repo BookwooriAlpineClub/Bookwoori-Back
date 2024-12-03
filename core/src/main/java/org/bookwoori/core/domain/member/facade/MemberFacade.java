@@ -6,6 +6,8 @@ import org.bookwoori.core.domain.member.dto.request.UpdateMemberRequestDto;
 import org.bookwoori.core.domain.member.dto.response.MemberResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.s3.S3Util;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,12 @@ public class MemberFacade {
 
     public void updateMember(UpdateMemberRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
+        String newNickname = requestDto.nickname();
+        if (!currentMember.getNickname().equals(newNickname)) {
+            if (memberService.existsByNickname(newNickname)) {
+                throw new CustomException(ErrorCode.ALREADY_EXIST_NICKNAME);
+            }
+        }
         String profileImgUrl = updateImage(requestDto.profileImg(), currentMember.getProfileImg(),
             "member/profile-image");
         String backgroundImgUrl = updateImage(requestDto.backgroundImg(),

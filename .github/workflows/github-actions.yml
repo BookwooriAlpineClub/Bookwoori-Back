@@ -49,9 +49,15 @@ jobs:
         run: |
           mkdir -p ./notification/src/main/resources
           touch ./notification/src/main/resources/application.yml
-          touch ./notification/src/main/resources/firebase-adminsdk.json
           echo "${{ secrets.APPLICATION_NOTIFICATION }}" > ./notification/src/main/resources/application.yml
-          echo "${{ secrets.FIREBASE_ADMINSDK }}" > ./notification/src/main/resources/firebase-adminsdk.json
+
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.3
+        with:
+          name: "firebase-adminsdk.json"
+          json: ${{ secrets.FIREBASE_ADMINSDK }}
+          dir: "./notification/src/main/resources"
 
       - name: Build Core Server with Gradle
         run: |
@@ -143,7 +149,6 @@ jobs:
           envs: GITHUB_SHA
           script: |
             echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
-            sudo docker ps -q | xargs -r sudo docker stop && sudo docker ps -aq | xargs -r sudo docker rm
             sudo docker pull ${{ secrets.DOCKER_REPO_CORE }}:v2
             sudo docker pull ${{ secrets.DOCKER_REPO_AUTH }}:v2
             sudo docker pull ${{ secrets.DOCKER_REPO_CHAT }}:v2

@@ -31,6 +31,7 @@ public enum ErrorCode {
     NO_COOKIE(404, 2101, "쿠키가 존재하지 않습니다."),
     EXPIRED_ACCESS_TOKEN(401, 2300, "만료된 엑세스 토큰입니다."),
     EXPIRED_REFRESH_TOKEN(401, 2301, "만료된 리프레쉬 토큰입니다."),
+    TOKEN_NOT_FOUND(401, 2302, "토큰이 존재하지 않습니다."),
 
     /*
      * 리소스 관련 오류

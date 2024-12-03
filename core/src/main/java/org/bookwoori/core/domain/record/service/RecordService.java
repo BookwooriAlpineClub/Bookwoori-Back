@@ -1,5 +1,7 @@
 package org.bookwoori.core.domain.record.service;
 
+import static org.bouncycastle.asn1.x500.style.RFC4519Style.member;
+
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,9 @@ public class RecordService {
     }
 
     public void deleteRecord(Long recordId) {
+        if (!recordRepository.existsById(recordId)) {
+            throw new CustomException(ErrorCode.RECORD_NOT_FOUND);
+        }
         recordRepository.deleteById(recordId);
     }
 
@@ -67,5 +72,10 @@ public class RecordService {
     @Transactional(readOnly = true)
     public boolean existsByMemberAndBook(Member currentMember, Book book) {
         return recordRepository.existsByMemberAndBook(currentMember, book);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Record> getRecordOptByMemberAndBook(Member currentMember, Book book) {
+        return recordRepository.findByMemberAndBook(currentMember, book);
     }
 }

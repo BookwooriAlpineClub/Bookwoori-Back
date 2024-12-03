@@ -9,6 +9,7 @@ import org.bookwoori.core.domain.review.entity.Review;
 public record ClimbingMemberReviewUnitDto(
     Long memberId,
     String nickname,
+    String profileImg,
     int star,
     Long reviewId,
     String content,
@@ -19,6 +20,7 @@ public record ClimbingMemberReviewUnitDto(
         return ClimbingMemberReviewUnitDto.builder()
             .memberId(member.getMember().getMemberId())
             .nickname(member.getMember().getNickname())
+            .profileImg(member.getMember().getProfileImg())
             .star(review.getRecord().getStar())
             .reviewId(review.getReviewId())
             .content(review.getContent())

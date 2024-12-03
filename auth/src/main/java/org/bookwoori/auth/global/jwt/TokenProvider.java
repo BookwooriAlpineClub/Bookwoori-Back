@@ -39,7 +39,7 @@ public class TokenProvider {
     private String refreshSecret;
     private SecretKey accessKey;
     private SecretKey refreshKey;
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24;
     public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -113,6 +113,10 @@ public class TokenProvider {
         }
     }
 
+    public Long extractKakaoIdFromToken(String token) {
+        Claims claims = parseClaims(token, refreshKey, true); // refreshToken을 기반으로 Claims 추출
+        return claims.get("kakaoId", Long.class); // kakaoId를 Claims에서 바로 추출
+    }
 
     public Long extractKakaoId(Authentication authentication) {
         Object principal = authentication.getPrincipal();
@@ -124,6 +128,7 @@ public class TokenProvider {
             throw new TokenException(ErrorCode.MEMBER_NOT_FOUND);
         }
     }
+
 
     public boolean validateToken(String token, boolean isRefreshToken) {
         try {
@@ -144,9 +149,9 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(claims.getSubject(), token, authorities);
     }
 
-    public void saveRefreshToken(Long memberId, String refreshToken) {
+    public void saveRefreshToken(Long kakaoId, String refreshToken) {
         redisTemplate.opsForValue()
-            .set(memberId.toString(), refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
+            .set(kakaoId.toString(), refreshToken, Duration.ofMillis(REFRESH_TOKEN_EXPIRE_TIME));
     }
 
     public void deleteRefreshToken(String refreshToken) {

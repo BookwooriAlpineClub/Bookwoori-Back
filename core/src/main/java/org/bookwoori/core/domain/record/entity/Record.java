@@ -58,6 +58,9 @@ public class Record {
     @Column(name = "start_date")
     private LocalDate startDate;
 
+    @Column(name = "end_date")
+    private LocalDate endDate;
+
     @Column(name = "current_page")
     private int currentPage;
 
@@ -69,6 +72,7 @@ public class Record {
         this.status = record.status;
         this.star = record.star;
         this.startDate = record.startDate;
+        this.endDate = record.endDate;
         this.currentPage = record.currentPage;
     }
 

@@ -14,4 +14,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Long findIdByKakaoId(@Param("kakaoId") Long kakaoId);
 
     boolean existsByKakaoId(Long kakaoId);
+
+    boolean existsByNickname(String newNickname);
 }
