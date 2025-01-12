@@ -77,4 +77,3 @@ jobs:
             echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
             sudo docker pull ${{ secrets[format('DOCKER_REPO_{0}', matrix.service)] }}:v2
             sudo docker-compose -f ./docker-compose.yml up -d
-            sudo docker image prune -f
