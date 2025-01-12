@@ -4,9 +4,6 @@ on:
   push:
     branches: [ "deploy"]
 
-env:
-  DOCKER_HUB_NAMESPACE: ${{ secrets.DOCKER_HUB_NAMESPACE }}
-
 jobs:
   build-and-deploy:
     name: Build and Deploy Services
