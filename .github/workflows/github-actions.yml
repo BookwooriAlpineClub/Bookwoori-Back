@@ -38,6 +38,14 @@ jobs:
           touch ./${{ matrix.service }}/src/main/resources/application.yml
           echo "${{ secrets[format('APPLICATION_{0}', matrix.service)] }}" > ./${{ matrix.service }}/src/main/resources/application.yml
 
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.3
+        with:
+          name: "firebase-adminsdk.json"
+          json: ${{ secrets.FIREBASE_ADMINSDK }}
+          dir: "./notification/src/main/resources"
+
       - name: Build Service with Gradle
         run: |
           cd ./${{ matrix.service }}
