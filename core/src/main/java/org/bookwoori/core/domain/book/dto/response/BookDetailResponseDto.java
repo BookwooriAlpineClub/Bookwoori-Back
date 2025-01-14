@@ -10,7 +10,7 @@ public record BookDetailResponseDto(
     String title,
     String author,
     String publisher,
-    String pubDate,
+    String pubYear,
     Long itemPage,
     String description,
     String isbn13,
@@ -21,7 +21,7 @@ public record BookDetailResponseDto(
             .title(item.path("title").asText())
             .author(item.path("author").asText())
             .publisher(item.path("publisher").asText())
-            .pubDate(item.path("pubDate").asText())
+            .pubYear(item.path("pubDate").asText().split("-")[0])
             .itemPage(item.path("subInfo").path("itemPage").asLong())
             .description(item.path("description").asText())
             .isbn13(item.path("isbn13").asText())
@@ -34,11 +34,11 @@ public record BookDetailResponseDto(
             .title(this.title)
             .author(this.author)
             .publisher(this.publisher)
-            .pubDate(LocalDate.parse(this.pubDate))
+            .pubYear(this.pubYear)
             .itemPage(this.itemPage != null ? Math.toIntExact(this.itemPage) : null)
             .isbn13(this.isbn13)
             .description(this.description)
-            .coverImg(this.cover)
+            .cover(this.cover)
             .build();
     }
 }
