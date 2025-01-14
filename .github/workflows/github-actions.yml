@@ -75,5 +75,12 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
+
+            echo "Cleaning up stuck containers..."
+            sudo docker ps -a --filter "status=removing" --format "{{.ID}}" | xargs -r sudo docker rm -f
+
+            echo "Pulling new Docker image..."
             sudo docker pull ${{ secrets[format('DOCKER_REPO_{0}', matrix.service)] }}:v2
-            sudo docker-compose up --detach --remove-orphans -d
+
+            echo "Starting Docker Compose services..."
+            sudo docker-compose up --detach --remove-orphans
