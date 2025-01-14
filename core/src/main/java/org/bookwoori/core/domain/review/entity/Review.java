@@ -36,10 +36,10 @@ public class Review extends BaseTimeEntity {
     @NotNull
     private Record record;
 
-    @Column(name = "content", columnDefinition = "TEXT")
-    private String content;
+    @Column(name = "content_review", columnDefinition = "TEXT")
+    private String contentReview;
 
     public void updateReview(String content) {
-        this.content = content;
+        this.contentReview = content;
     }
 }

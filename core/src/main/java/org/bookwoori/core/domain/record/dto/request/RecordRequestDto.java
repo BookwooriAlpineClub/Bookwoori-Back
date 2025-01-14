@@ -15,10 +15,10 @@ public record RecordRequestDto(
     String isbn13,
     @NotNull
     ReadingStatus status,
-    int star,
+    int starReview,
     LocalDate startDate,
     int currentPage,
-    String reviewContent
+    String contentReview
 
 ) {
 
@@ -27,7 +27,7 @@ public record RecordRequestDto(
             .member(currentMember)
             .book(book)
             .status(this.status)
-            .star(this.star)
+            .starReview(this.starReview)
             .startDate(this.startDate)
             .currentPage(this.currentPage)
 //            .review(this.review)
@@ -35,10 +35,10 @@ public record RecordRequestDto(
             .build();
     }
 
-    public Review toReviewEntity(Record record, String content) {
+    public Review toReviewEntity(Record record, String contentReview) {
         return Review.builder()
             .record(record)
-            .content(content)
+            .contentReview(contentReview)
             .build();
     }
 

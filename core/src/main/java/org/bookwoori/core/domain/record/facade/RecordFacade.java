@@ -44,7 +44,7 @@ public class RecordFacade {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
         Record record = recordService.getRecordByMemberAndBook(currentMember, book);
-        reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.reviewContent()));
+        reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.contentReview()));
 
     }
 
@@ -59,7 +59,7 @@ public class RecordFacade {
     public void updateReview(Long recordId, RecordRequestDto requestDto) {
         Review review = reviewService.getReviewByRecordId(recordId)
             .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
-        review.updateReview(requestDto.reviewContent());
+        review.updateReview(requestDto.contentReview());
 
     }
 

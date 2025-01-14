@@ -52,8 +52,8 @@ public class Record {
     @Enumerated(EnumType.STRING)
     private ReadingStatus status;
 
-    @Column(name = "star")
-    private int star;
+    @Column(name = "star_review")
+    private int starReview;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -67,7 +67,7 @@ public class Record {
 
     public void updateRecord(Record record) {
         this.status = record.status;
-        this.star = record.star;
+        this.starReview = record.starReview;
         this.startDate = record.startDate;
         this.currentPage = record.currentPage;
     }
