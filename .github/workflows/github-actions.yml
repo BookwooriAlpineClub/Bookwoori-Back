@@ -77,8 +77,13 @@ jobs:
             echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
 
             IMAGE_NAME=${{ secrets[format('DOCKER_REPO_{0}', matrix.service)] }}:v2
-            sudo docker ps -q --filter "ancestor=$IMAGE_NAME" | xargs -r sudo docker rm -f
+            sudo docker ps -q --filter "ancestor=$IMAGE_NAME" | while read CONTAINER_ID; do
+              if [ "$(sudo docker inspect -f '{{.State.Status}}' $CONTAINER_ID)" != "removing" ]; then
+                sudo docker rm -f $CONTAINER_ID
+              fi
+            done
 
             sudo docker pull $IMAGE_NAME
             sudo docker-compose up --detach --remove-orphans
+
 
