@@ -31,13 +31,11 @@ jobs:
           find . -name 'application*.yml' | while read -r file; do
             sed -i '/eureka:/,+3d' "$file"
           done
-
       - name: Make application-prod.yml
         run: |
           mkdir -p ./${{ matrix.service }}/src/main/resources
           touch ./${{ matrix.service }}/src/main/resources/application.yml
           echo "${{ secrets[format('APPLICATION_{0}', matrix.service)] }}" > ./${{ matrix.service }}/src/main/resources/application.yml
-
       - name: create-json
         id: create-json
         uses: jsdaniell/create-json@v1.2.3
@@ -51,7 +49,6 @@ jobs:
           cd ./${{ matrix.service }}
           chmod +x ./gradlew
           ./gradlew clean build -x test --no-daemon
-
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -75,15 +72,6 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
-
-            IMAGE_NAME=${{ secrets[format('DOCKER_REPO_{0}', matrix.service)] }}:v2
-            sudo docker ps -q --filter "ancestor=$IMAGE_NAME" | while read CONTAINER_ID; do
-              if [ "$(sudo docker inspect -f '{{.State.Status}}' $CONTAINER_ID)" != "removing" ]; then
-                sudo docker rm -f $CONTAINER_ID
-              fi
-            done
-
-            sudo docker pull $IMAGE_NAME
-            sudo docker-compose up --detach --remove-orphans
-
-
+            sudo docker ps -a --filter "status=removing" --format "{{.ID}}" | xargs -r sudo docker rm -f
+            sudo docker pull ${{ secrets[format('DOCKER_REPO_{0}', matrix.service)] }}:v2
+            sudo docker-compose up --d
