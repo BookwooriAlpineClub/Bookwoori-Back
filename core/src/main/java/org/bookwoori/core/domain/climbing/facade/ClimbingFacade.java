@@ -25,6 +25,8 @@ import org.bookwoori.core.domain.record.service.RecordService;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
+import org.bookwoori.core.domain.xp.GrantXp;
+import org.bookwoori.core.domain.xp.XpType;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -44,37 +46,45 @@ public class ClimbingFacade {
     private final RecordService recordService;
     private final ServerMemberService serverMemberService;
 
+    @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     public void updateClimbingStatus() {
         LocalDate today = LocalDate.now();
         List<Climbing> climbingList = climbingService.getAllClimbings();
-
         for (Climbing climbing : climbingList) {
-            List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
-                climbing);
-            // 2명 이상 참여자일 때만 RUNNING으로 변경
+            List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(climbing);
+            // 참여자가 2명 미만일 때 FAILED로 변경
             if (climbingMemberList.size() < 2) {
                 climbing.updateStatus(ClimbingStatus.FAILED);
                 continue;
             }
+            // 상태를 RUNNING으로 변경
             if (!climbing.getStartDate().isAfter(today) && climbing.getEndDate().isAfter(today)) {
                 climbing.updateStatus(ClimbingStatus.RUNNING);
                 continue;
             }
-            // 종료 날짜가 지난 경우 상태 변경 (FINISHED/FAILED)
+            // 종료 날짜가 지난 경우 상태 변경
             if (climbing.getEndDate().isBefore(today)) {
-                boolean allFinished = climbingMemberList.stream()
-                    .allMatch(member -> recordService.getClimbingMemberRecordOpt(member,
-                            climbing.getBook())
-                        .map(record -> record.getStatus() == ReadingStatus.FINISHED)
-                        .orElse(false));
-                ClimbingStatus newStatus =
-                    allFinished ? ClimbingStatus.FINISHED : ClimbingStatus.FAILED;
-                climbing.updateStatus(newStatus);
+                updateEndClimbingStatus(climbing, climbingMemberList);
             }
             climbingService.saveClimbingChannel(climbing);
         }
     }
+
+    @Transactional
+    @GrantXp(type = XpType.FINISHED_CLIMBING)
+    public void updateEndClimbingStatus(Climbing climbing, List<ClimbingMember> climbingMemberList) {
+        boolean allFinished = climbingMemberList.stream()
+            .allMatch(member -> recordService.getClimbingMemberRecordOpt(member, climbing.getBook())
+                .map(record -> record.getStatus() == ReadingStatus.FINISHED)
+                .orElse(false));
+        if (allFinished) {
+            climbing.updateStatus(ClimbingStatus.FINISHED);
+        } else {
+            climbing.updateStatus(ClimbingStatus.FAILED);
+        }
+    }
+
 
 
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {

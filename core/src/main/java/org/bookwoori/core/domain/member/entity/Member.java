@@ -77,4 +77,12 @@ public class Member extends BaseTimeEntity {
         this.profileImg = profileImgUrl;
         this.backgroundImg = backgroundImg;
     }
+
+    public void updateHeight(double xp) {
+        this.grade.height += xp;
+        Grade newGrade = Grade.findGradeByHeight(this.grade.height);
+        if (!this.grade.equals(newGrade)) {
+            this.grade = newGrade;
+        }
+    }
 }

@@ -18,6 +18,8 @@ import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.record.service.RecordService;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.bookwoori.core.domain.review.service.ReviewService;
+import org.bookwoori.core.domain.xp.GrantXp;
+import org.bookwoori.core.domain.xp.XpType;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
@@ -34,6 +36,8 @@ public class RecordFacade {
     private final BookService bookService;
     private final ReviewService reviewService;
 
+    @GrantXp(type = XpType.READ_PAGE)
+    @GrantXp(type = XpType.ADD_STAR)
     public void createRecord(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
