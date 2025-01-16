@@ -6,8 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Platform {
-    WEB("WEB"),
-    IOS("IOS");
+    WEB("WEB");
 
     private final String description;
 }

@@ -44,7 +44,7 @@ public class DeviceController {
     }
 
     @Operation(summary = "기기 삭제", description = "기기를 삭제합니다.")
-    @DeleteMapping({"/{id}"})
+    @DeleteMapping
     public CommonResponseDto delete(HttpServletRequest request) {
         Long userId = memberService.getCurrentMemberId(request);
         deviceService.delete(userId);
