@@ -37,22 +37,16 @@ public class RecordFacade {
     public void createRecord(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
-        Optional<Record> existingRecordOpt = recordService.getRecordOptByMemberAndBook(currentMember, book);
-        if (existingRecordOpt.isPresent()) {
-            Record existingRecord = existingRecordOpt.get();
-            // 상태가 UNREAD이면 업데이트
-            if (existingRecord.getStatus() == ReadingStatus.UNREAD) {
-                updateRecord(existingRecord.getRecordId(), requestDto);
-                return;
-            }
+        if (recordService.existsByMemberAndBook(currentMember, book)) {
             throw new CustomException(ErrorCode.ALREADY_EXIST_RECORD);
         }
-        Record record = recordService.saveRecord(requestDto.toRecordEntity(currentMember, book));
+        Record record = requestDto.toRecordEntity(currentMember, book);
+        Record newRecord = recordService.saveRecord(record);
         if (requestDto.reviewContent() != null && !requestDto.reviewContent().isBlank()) {
             if (reviewService.existsReviewByMemberAndBook(currentMember, book)) {
                 throw new CustomException(ErrorCode.ALREADY_EXIST_REVIEW);
             }
-            reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.reviewContent()));
+            reviewService.saveReview(requestDto.toReviewEntity(newRecord, requestDto.reviewContent()));
         }
     }
 
