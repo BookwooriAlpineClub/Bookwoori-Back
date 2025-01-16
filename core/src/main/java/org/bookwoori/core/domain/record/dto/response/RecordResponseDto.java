@@ -22,7 +22,7 @@ public record RecordResponseDto(
             .recordId(record.getRecordId())
             .memberId(record.getMember().getMemberId())
             .readingStatus(record.getStatus())
-            .star(record.getStar())
+            .star(record.getStarReview())
             .currentPage(record.getCurrentPage())
             .maxPage(record.getMaxPage())
             .bookInfo(BookInfoDto.from(record.getBook()))

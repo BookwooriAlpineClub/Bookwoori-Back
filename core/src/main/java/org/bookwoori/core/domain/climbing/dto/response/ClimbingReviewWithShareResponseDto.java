@@ -21,8 +21,8 @@ public record ClimbingReviewWithShareResponseDto(
             .isShareable(true)
             .bookInfo(BookInfoDto.from(climbing.getBook()))
             .reviewId(review.getReviewId())
-            .star(review.getRecord().getStar())
-            .content(review.getContent())
+            .star(review.getRecord().getStarReview())
+            .content(review.getContentReview())
             .build();
     }
 

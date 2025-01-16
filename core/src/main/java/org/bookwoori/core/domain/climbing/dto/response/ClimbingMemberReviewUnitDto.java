@@ -19,9 +19,9 @@ public record ClimbingMemberReviewUnitDto(
         return ClimbingMemberReviewUnitDto.builder()
             .memberId(member.getMember().getMemberId())
             .nickname(member.getMember().getNickname())
-            .star(review.getRecord().getStar())
+            .star(review.getRecord().getStarReview())
             .reviewId(review.getReviewId())
-            .content(review.getContent())
+            .content(review.getContentReview())
             .reviewEmojiList(reviewEmojiList)
             .build();
     }

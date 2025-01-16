@@ -19,8 +19,8 @@ public record ReviewResponseDto(
         return ReviewResponseDto.builder()
             .recordId(record.getRecordId())
             .memberId(record.getMember().getMemberId())
-            .star(record.getStar())
-            .reviewContent(review.getContent())
+            .star(record.getStarReview())
+            .reviewContent(review.getContentReview())
             .bookInfo(BookInfoDto.from(record.getBook()))
             .build();
     }
