@@ -2,6 +2,7 @@ package org.bookwoori.chat.domain.directMessage.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageModifyRequestDto;
 import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageReactRequestDto;
 import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageReplyRequestDto;
 import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageSendRequestDto;
@@ -45,6 +46,14 @@ public class DirectMessageController {
         messageSender.replyToDirectMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
+
+    @MessageMapping("/direct/modify")
+    public void modifyDirectMessage(@Payload DirectMessageModifyRequestDto requestDto,
+        StompHeaderAccessor accessor) {
+        messageSender.modifyDirectMessage(requestDto,
+            (Long) accessor.getSessionAttributes().get("memberId"));
+    }
+
 
     @GetMapping
     public ResponseEntity<?> getDirectMessageHistory(
