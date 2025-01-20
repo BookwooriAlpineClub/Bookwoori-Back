@@ -10,7 +10,6 @@ import org.bookwoori.chat.domain.directMessage.dto.response.DirectMessageListRes
 import org.bookwoori.chat.domain.directMessage.dto.response.RecentDirectMessageResponseDto;
 import org.bookwoori.chat.domain.directMessage.entity.DirectMessage;
 import org.bookwoori.chat.domain.directMessage.repository.DirectMessageRepository;
-import org.bookwoori.chat.global.feignClient.CoreClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DirectMessageService {
 
-    private final CoreClient coreClient;
     private final DirectMessageRepository directMessageRepository;
 
     @Transactional(readOnly = true)
-    public DirectMessageListResponseDto getDirectMessageHistory(Long roomId, int page, int size) {
+    public DirectMessageListResponseDto getDirectMessageList(Long roomId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<DirectMessage> directMessageList =
             directMessageRepository.findByMessageRoomId(roomId, pageable);

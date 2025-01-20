@@ -27,46 +27,46 @@ public class ChannelMessageController {
     private final ChannelMessageService channelMessageService;
 
     @MessageMapping("/channel/send")
-    public void sendChannelMessage(@Payload ChannelMessageSendRequestDto requestDto,
+    public void send(@Payload ChannelMessageSendRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.sendChannelMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @MessageMapping("/channel/react")
-    public void reactToDirectMessage(@Payload ChannelMessageReactRequestDto requestDto,
+    public void react(@Payload ChannelMessageReactRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.reactToChannelMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @MessageMapping("/channel/reply")
-    public void replyToChannelMessage(@Payload ChannelMessageReplyRequestDto requestDto,
+    public void reply(@Payload ChannelMessageReplyRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.replyToChannelMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @MessageMapping("/channel/modify")
-    public void modifyChannelMessage(@Payload ChannelMessageModifyRequestDto requestDto,
+    public void modify(@Payload ChannelMessageModifyRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.modifyChannelMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @MessageMapping("/channel/delete")
-    public void deleteChannelMessage(@Payload ChannelMessageDeleteRequestDto requestDto,
+    public void delete(@Payload ChannelMessageDeleteRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.deleteChannelMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @GetMapping
-    public ResponseEntity<?> getChannelMessageHistory(
+    public ResponseEntity<?> getChatHistory(
         @RequestParam(value = "channelId") final Long channelId,
         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size) {
         ChannelMessageListResponseDto responseDto =
-            channelMessageService.getChannelMessageHistory(channelId, page, size);
+            channelMessageService.getChannelMessageList(channelId, page, size);
         return ResponseEntity.ok(responseDto);
     }
 }

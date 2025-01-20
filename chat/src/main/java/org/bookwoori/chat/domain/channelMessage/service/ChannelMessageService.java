@@ -21,7 +21,7 @@ public class ChannelMessageService {
 
     private final ChannelMessageRepository channelMessageRepository;
 
-    public ChannelMessageListResponseDto getChannelMessageHistory(Long channelId, int page,
+    public ChannelMessageListResponseDto getChannelMessageList(Long channelId, int page,
         int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         Page<ChannelMessage> channelMessageList =

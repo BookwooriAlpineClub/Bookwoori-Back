@@ -28,46 +28,46 @@ public class DirectMessageController {
     private final DirectMessageService directMessageService;
 
     @MessageMapping("/direct/send")
-    public void sendDirectMessage(@Payload DirectMessageSendRequestDto requestDto,
+    public void send(@Payload DirectMessageSendRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.sendDirectMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @MessageMapping("/direct/react")
-    public void reactToDirectMessage(@Payload DirectMessageReactRequestDto requestDto,
+    public void react(@Payload DirectMessageReactRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.reactToDirectMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @MessageMapping("/direct/reply")
-    public void replyToDirectMessage(@Payload DirectMessageReplyRequestDto requestDto,
+    public void reply(@Payload DirectMessageReplyRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.replyToDirectMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @MessageMapping("/direct/modify")
-    public void modifyDirectMessage(@Payload DirectMessageModifyRequestDto requestDto,
+    public void modify(@Payload DirectMessageModifyRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.modifyDirectMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @MessageMapping("/direct/delete")
-    public void deleteDirectMessage(@Payload DirectMessageDeleteRequestDto requestDto,
+    public void delete(@Payload DirectMessageDeleteRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.deleteDirectMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
     @GetMapping
-    public ResponseEntity<?> getDirectMessageHistory(
+    public ResponseEntity<?> getChatHistory(
         @RequestParam(value = "messageRoomId") final Long roomId,
         @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size) {
         DirectMessageListResponseDto responseDto =
-            directMessageService.getDirectMessageHistory(roomId, page, size);
+            directMessageService.getDirectMessageList(roomId, page, size);
         return ResponseEntity.ok(responseDto);
     }
 
