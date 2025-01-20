@@ -37,6 +37,8 @@ public class ChannelMessage {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime modifiedAt;
+
     private Map<EmojiType, Set<Long>> reactions = new HashMap<>();
 
     private String parentId;
@@ -65,6 +67,11 @@ public class ChannelMessage {
                 reactions.remove(emoji);
             }
         }
+    }
+
+    public void modifyContent(String content) {
+        this.content = content;
+        this.modifiedAt = LocalDateTime.now();
     }
 
     public void setEventType(EventType eventType) {

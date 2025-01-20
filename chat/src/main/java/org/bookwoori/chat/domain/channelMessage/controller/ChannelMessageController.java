@@ -1,6 +1,7 @@
 package org.bookwoori.chat.domain.channelMessage.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageModifyRequestDto;
 import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageReactRequestDto;
 import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageReplyRequestDto;
 import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageSendRequestDto;
@@ -42,6 +43,13 @@ public class ChannelMessageController {
     public void replyToChannelMessage(@Payload ChannelMessageReplyRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.replyToChannelMessage(requestDto,
+            (Long) accessor.getSessionAttributes().get("memberId"));
+    }
+
+    @MessageMapping("/channel/modify")
+    public void modifyChannelMessage(@Payload ChannelMessageModifyRequestDto requestDto,
+        StompHeaderAccessor accessor) {
+        messageSender.modifyChannelMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
