@@ -53,6 +53,9 @@ public class MessageListener { //토픽에 발행된 이벤트를 가져와 처�
             case MODIFY -> response = CommonResponse.fromDirectMessage(EventType.MODIFY,
                 directMessage.getMessageRoomId(),
                 DirectMessageModifyResponseDto.from(directMessage));
+            case DELETE -> response = CommonResponse.fromDirectMessage(EventType.DELETE,
+                directMessage.getMessageRoomId(),
+                directMessage.getId());
         }
         messagingTemplate.convertAndSend("/topic/direct/" + directMessage.getMessageRoomId(),
             response);

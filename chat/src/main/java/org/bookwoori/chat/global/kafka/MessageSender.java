@@ -7,6 +7,7 @@ import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageReplyR
 import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageSendRequestDto;
 import org.bookwoori.chat.domain.channelMessage.entity.ChannelMessage;
 import org.bookwoori.chat.domain.channelMessage.repository.ChannelMessageRepository;
+import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageDeleteRequestDto;
 import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageModifyRequestDto;
 import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageReactRequestDto;
 import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageReplyRequestDto;
@@ -76,6 +77,21 @@ public class MessageSender { //토픽에 이벤트를 발행
         directMessage.setEventType(EventType.MODIFY);
         directMessageRepository.save(directMessage);
         kafkaTemplate.send(KafkaConstants.DIRECT_CHAT_EVENT_TOPIC, directMessage);
+    }
+
+    public void deleteDirectMessage(DirectMessageDeleteRequestDto requestDto, Long memberId) {
+        DirectMessage directMessage = directMessageRepository.findById(requestDto.id())
+            .orElseThrow(() -> new CustomException(ErrorCode.DIRECT_MESSAGE_NOT_FOUND));
+
+        // 메시지 전송자만 삭제 가능
+        if (!directMessage.getMemberId().equals(memberId)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        directMessage.setEventType(EventType.DELETE);
+        directMessageRepository.delete(directMessage);
+        kafkaTemplate.send(KafkaConstants.DIRECT_CHAT_EVENT_TOPIC, directMessage);
+
     }
 
     public void sendChannelMessage(ChannelMessageSendRequestDto requestDto, Long memberId) {

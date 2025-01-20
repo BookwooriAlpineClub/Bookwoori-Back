@@ -2,6 +2,7 @@ package org.bookwoori.chat.domain.directMessage.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageDeleteRequestDto;
 import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageModifyRequestDto;
 import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageReactRequestDto;
 import org.bookwoori.chat.domain.directMessage.dto.request.DirectMessageReplyRequestDto;
@@ -54,6 +55,12 @@ public class DirectMessageController {
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 
+    @MessageMapping("/direct/delete")
+    public void deleteDirectMessage(@Payload DirectMessageDeleteRequestDto requestDto,
+        StompHeaderAccessor accessor) {
+        messageSender.deleteDirectMessage(requestDto,
+            (Long) accessor.getSessionAttributes().get("memberId"));
+    }
 
     @GetMapping
     public ResponseEntity<?> getDirectMessageHistory(
