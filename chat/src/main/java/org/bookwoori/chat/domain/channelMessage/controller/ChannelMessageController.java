@@ -1,6 +1,7 @@
 package org.bookwoori.chat.domain.channelMessage.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageDeleteRequestDto;
 import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageModifyRequestDto;
 import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageReactRequestDto;
 import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageReplyRequestDto;
@@ -50,6 +51,13 @@ public class ChannelMessageController {
     public void modifyChannelMessage(@Payload ChannelMessageModifyRequestDto requestDto,
         StompHeaderAccessor accessor) {
         messageSender.modifyChannelMessage(requestDto,
+            (Long) accessor.getSessionAttributes().get("memberId"));
+    }
+
+    @MessageMapping("/channel/delete")
+    public void deleteChannelMessage(@Payload ChannelMessageDeleteRequestDto requestDto,
+        StompHeaderAccessor accessor) {
+        messageSender.deleteChannelMessage(requestDto,
             (Long) accessor.getSessionAttributes().get("memberId"));
     }
 

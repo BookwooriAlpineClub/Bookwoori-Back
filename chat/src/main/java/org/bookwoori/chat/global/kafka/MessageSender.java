@@ -2,6 +2,7 @@ package org.bookwoori.chat.global.kafka;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageDeleteRequestDto;
 import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageModifyRequestDto;
 import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageReactRequestDto;
 import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageReplyRequestDto;
@@ -141,6 +142,20 @@ public class MessageSender { //토픽에 이벤트를 발행
         channelMessage.modifyContent(requestDto.content());
         channelMessage.setEventType(EventType.MODIFY);
         channelMessageRepository.save(channelMessage);
+        kafkaTemplate.send(KafkaConstants.CHANNEL_CHAT_EVENT_TOPIC, channelMessage);
+    }
+
+    public void deleteChannelMessage(ChannelMessageDeleteRequestDto requestDto, Long memberId) {
+        ChannelMessage channelMessage = channelMessageRepository.findById(requestDto.id())
+            .orElseThrow(() -> new CustomException(ErrorCode.DIRECT_MESSAGE_NOT_FOUND));
+
+        // 메시지 전송자만 삭제 가능
+        if (!channelMessage.getMemberId().equals(memberId)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
+
+        channelMessage.setEventType(EventType.DELETE);
+        channelMessageRepository.delete(channelMessage);
         kafkaTemplate.send(KafkaConstants.CHANNEL_CHAT_EVENT_TOPIC, channelMessage);
     }
 }

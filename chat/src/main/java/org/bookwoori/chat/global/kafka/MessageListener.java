@@ -76,6 +76,9 @@ public class MessageListener { //토픽에 발행된 이벤트를 가져와 처�
             case MODIFY -> response = CommonResponse.fromChannelMessage(EventType.MODIFY,
                 channelMessage.getChannelId(),
                 ChannelMessageModifyResponseDto.from(channelMessage));
+            case DELETE -> response = CommonResponse.fromChannelMessage(EventType.DELETE,
+                channelMessage.getChannelId(),
+                channelMessage.getId());
         }
         messagingTemplate.convertAndSend("/topic/channel/" + channelMessage.getChannelId(),
             response);
