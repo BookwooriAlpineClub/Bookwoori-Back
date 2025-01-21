@@ -67,7 +67,7 @@ public class GrantXpAspect {
 
   public void grantXpToMember(Member member, double xp) {
     if (member == null) {
-      throw new IllegalArgumentException("Member cannot be null");
+      throw new CustomException(ErrorCode.BAD_REQUEST);
     }
     member.updateHeight(xp);
   }

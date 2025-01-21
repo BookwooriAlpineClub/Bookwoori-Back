@@ -84,9 +84,7 @@ public class ClimbingFacade {
             climbing.updateStatus(ClimbingStatus.FAILED);
         }
     }
-
-
-
+    
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Server server = serverService.getServerById(requestDto.serverId());

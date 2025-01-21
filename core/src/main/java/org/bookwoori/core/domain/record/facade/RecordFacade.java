@@ -38,6 +38,7 @@ public class RecordFacade {
 
     @GrantXp(type = XpType.READ_PAGE)
     @GrantXp(type = XpType.ADD_STAR)
+    @GrantXp(type = XpType.WRITE_REVIEW)
     public void createRecord(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
@@ -54,6 +55,7 @@ public class RecordFacade {
         }
     }
 
+    @GrantXp(type = XpType.WRITE_REVIEW)
     public void createReview(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
@@ -64,6 +66,9 @@ public class RecordFacade {
         reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.reviewContent()));
     }
 
+    @GrantXp(type = XpType.READ_PAGE)
+    @GrantXp(type = XpType.ADD_STAR)
+    @GrantXp(type = XpType.WRITE_REVIEW)
     public void updateRecord(Long recordId, RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Record record = recordService.getRecordById(recordId);
@@ -78,7 +83,7 @@ public class RecordFacade {
         }
     }
 
-
+    @GrantXp(type = XpType.WRITE_REVIEW)
     public void updateReview(Long recordId, RecordRequestDto requestDto) {
         Review review = reviewService.getReviewByRecordId(recordId)
             .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
