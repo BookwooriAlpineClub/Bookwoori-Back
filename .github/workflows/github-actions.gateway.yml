@@ -68,5 +68,5 @@ jobs:
             sudo docker ps -a --filter "name=gateway" --format "{{.ID}}" | xargs -r sudo docker stop
             sudo docker ps -a --filter "name=gateway" --format "{{.ID}}" | xargs -r sudo docker rm -f
             sudo docker pull ${{ secrets.DOCKER_REPO_gateway }}:v2
-            sudo docker run -d -p 8000:8000 --name gateway-app --network bookwoori-network ${{ secrets.DOCKER_REPO_gateway }}:v2
+            sudo docker run -d -p 8000:8000 --name gateway-app --network ubuntu_bookwoori-network ${{ secrets.DOCKER_REPO_gateway }}:v2
             sudo docker image prune -f

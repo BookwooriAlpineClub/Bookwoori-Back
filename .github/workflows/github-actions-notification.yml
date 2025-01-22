@@ -68,6 +68,6 @@ jobs:
             sudo docker ps -a --filter "name=notification-app" --format "{{.ID}}" | xargs -r sudo docker stop
             sudo docker ps -a --filter "name=notification-app" --format "{{.ID}}" | xargs -r sudo docker rm -f
             sudo docker pull ${{ secrets.DOCKER_REPO_notification }}:v2
-            sudo docker run -d -p 8082:8082 --name notification-app --network bookwoori-network ${{ secrets.DOCKER_REPO_notification }}:v2
+            sudo docker run -d -p 8082:8082 --name notification-app --network ubuntu_bookwoori-network ${{ secrets.DOCKER_REPO_notification }}:v2
             sudo docker image prune -f
             
