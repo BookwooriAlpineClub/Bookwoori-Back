@@ -74,6 +74,5 @@ jobs:
             echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
             sudo docker ps -a --filter "name=app" --format "{{.ID}}" | xargs -r sudo docker stop
             sudo docker ps -a --filter "name=app" --format "{{.ID}}" | xargs -r sudo docker rm -f
-            sudo docker stop auth-app
             sudo docker pull ${{ secrets[format('DOCKER_REPO_{0}', matrix.service)] }}:v2
             sudo docker-compose up -d
