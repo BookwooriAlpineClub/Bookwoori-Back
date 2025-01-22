@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bookwoori.core.domain.member.dto.request.UpdateMemberBackgroungImgRequestDto;
+import org.bookwoori.core.domain.member.dto.request.UpdateMemberProfilImgRequestDto;
 import org.bookwoori.core.domain.member.dto.request.UpdateMemberRequestDto;
 import org.bookwoori.core.domain.member.facade.AuthFacade;
 import org.bookwoori.core.domain.member.facade.MemberFacade;
@@ -15,7 +17,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -27,11 +31,27 @@ public class MemberController {
     private final MemberFacade memberFacade;
     private final AuthFacade authFacade;
 
-    @Operation(summary = "프로필 수정", description = "닉네임, 프로필 이미지를 수정합니다.")
-    @PatchMapping(value = "/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "프로필 수정", description = "유저의 프로필을 수정합니다.")
+    @PatchMapping(value = "/me")
     public ResponseEntity<?> updateMember(
-        @ModelAttribute @Valid UpdateMemberRequestDto requestDto) {
+        @Valid UpdateMemberRequestDto requestDto) {
         memberFacade.updateMember(requestDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "프로필 이미지 편집", description = "유저의 프로필 이미지를 수정합니다.")
+    @PatchMapping(value = "/me/profileImg", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateMemberProfileImg(
+        @RequestPart(required = false) MultipartFile imageFile) {
+        memberFacade.updateMemberProfileImg(imageFile);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "프로필 배경 이미지 편집", description = "유저의 프로필 배경 이미지를 수정합니다.")
+    @PatchMapping(value = "/me/backgroundImg", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateMemberBackgroundImg(
+        @RequestPart(required = false) MultipartFile imageFile) {
+        memberFacade.updateMemberBackgrounImg(imageFile);
         return ResponseEntity.ok().build();
     }
 
