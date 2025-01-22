@@ -1,16 +1,15 @@
-name: bookwoori CI/CD v3
+name: bookwoori Gateway Service CI/CD
 
 on:
   push:
-    branches: [ "deploy"]
+    branches: ["deploy"]
+    paths:
+      - "gateway/**"
 
 jobs:
   build-and-deploy:
-    name: Build and Deploy Services
+    name: Build and Deploy gateway Service
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [core, auth, gateway, chat, notification]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,24 +30,19 @@ jobs:
           find . -name 'application*.yml' | while read -r file; do
             sed -i '/eureka:/,+3d' "$file"
           done
+
       - name: Make application-prod.yml
         run: |
-          mkdir -p ./${{ matrix.service }}/src/main/resources
-          touch ./${{ matrix.service }}/src/main/resources/application.yml
-          echo "${{ secrets[format('APPLICATION_{0}', matrix.service)] }}" > ./${{ matrix.service }}/src/main/resources/application.yml
-      - name: create-json
-        id: create-json
-        uses: jsdaniell/create-json@v1.2.3
-        with:
-          name: "firebase-adminsdk.json"
-          json: ${{ secrets.FIREBASE_ADMINSDK }}
-          dir: "./notification/src/main/resources"
+          mkdir -p ./gateway/src/main/resources
+          touch ./gateway/src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_gateway }}" > ./gateway/src/main/resources/application.yml
 
-      - name: Build Service with Gradle
+      - name: Build gateway Service with Gradle
         run: |
-          cd ./${{ matrix.service }}
+          cd ./gateway
           chmod +x ./gradlew
           ./gradlew clean build -x test --no-daemon
+
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -58,11 +52,11 @@ jobs:
       - name: Docker Build and Push
         uses: docker/build-push-action@v6
         with:
-          context: ./${{ matrix.service }}
-          file: ./${{ matrix.service }}/Dockerfile
+          context: ./gateway
+          file: ./gateway/Dockerfile
           platforms: linux/arm64/v8
           push: true
-          tags: ${{ secrets[format('DOCKER_REPO_{0}', matrix.service)] }}:v2
+          tags: ${{ secrets.DOCKER_REPO_gateway }}:v2
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
@@ -71,7 +65,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-            echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
-            sudo docker ps -a --filter "status=removing" --format "{{.ID}}" | xargs -r sudo docker rm -f
-            sudo docker pull ${{ secrets[format('DOCKER_REPO_{0}', matrix.service)] }}:v2
-            sudo docker-compose up -d
+            sudo docker ps -a --filter "name=gateway" --format "{{.ID}}" | xargs -r sudo docker stop
+            sudo docker ps -a --filter "name=gateway" --format "{{.ID}}" | xargs -r sudo docker rm -f
+            sudo docker pull ${{ secrets.DOCKER_REPO_gateway }}:v2
+            sudo docker run -d -p 8000:8000 --name gateway-app --network ubuntu_bookwoori-network ${{ secrets.DOCKER_REPO_gateway }}:v2
+            sudo docker image prune -f
