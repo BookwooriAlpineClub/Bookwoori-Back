@@ -21,6 +21,7 @@ public enum ErrorCode {
      */
 
     UNAUTHORIZED(401, 2000, "인증 정보가 누락되거나 잘못되었습니다."),
+    ACCESS_DENIED(403, 2001, "접근 권한이 없습니다."),
 
     /*
      * 채팅 서버 오류
@@ -28,7 +29,8 @@ public enum ErrorCode {
      */
 
     DIRECT_MESSAGE_NOT_FOUND(404, 5000, "해당 다이렉트 메시지를 찾을 수 없습니다."),
-    CHANNEL_MESSAGE_NOT_FOUND(404, 5000, "해당 채널 메시지를 찾을 수 없습니다.");
+    CHANNEL_MESSAGE_NOT_FOUND(404, 5001, "해당 채널 메시지를 찾을 수 없습니다."),
+    INVALID_MESSAGE_TYPE_EXCEPTION(400, 5500, "해당 타입의 메시지에 대해 요청을 처리할 수 없습니다.");
 
 
     private final int status;

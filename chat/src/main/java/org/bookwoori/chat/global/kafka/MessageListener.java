@@ -1,14 +1,16 @@
 package org.bookwoori.chat.global.kafka;
 
 import lombok.RequiredArgsConstructor;
-import org.bookwoori.chat.domain.channelMessage.entity.ChannelMessage;
+import org.bookwoori.chat.domain.channelMessage.dto.response.ChannelMessageModifyResponseDto;
 import org.bookwoori.chat.domain.channelMessage.dto.response.ChannelMessageReactResponseDto;
 import org.bookwoori.chat.domain.channelMessage.dto.response.ChannelMessageReplyResponseDto;
 import org.bookwoori.chat.domain.channelMessage.dto.response.ChannelMessageSendResponseDto;
-import org.bookwoori.chat.domain.directMessage.entity.DirectMessage;
+import org.bookwoori.chat.domain.channelMessage.entity.ChannelMessage;
+import org.bookwoori.chat.domain.directMessage.dto.response.DirectMessageModifyResponseDto;
 import org.bookwoori.chat.domain.directMessage.dto.response.DirectMessageReactResponseDto;
 import org.bookwoori.chat.domain.directMessage.dto.response.DirectMessageReplyResponseDto;
 import org.bookwoori.chat.domain.directMessage.dto.response.DirectMessageSendResponseDto;
+import org.bookwoori.chat.domain.directMessage.entity.DirectMessage;
 import org.bookwoori.chat.global.common.CommonResponse;
 import org.bookwoori.chat.global.common.EventType;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -49,6 +51,12 @@ public class MessageListener { //토픽에 발행된 이벤트를 가져와 처�
             case REPLY -> response = CommonResponse.fromDirectMessage(EventType.REPLY,
                 directMessage.getMessageRoomId(),
                 DirectMessageReplyResponseDto.from(directMessage));
+            case MODIFY -> response = CommonResponse.fromDirectMessage(EventType.MODIFY,
+                directMessage.getMessageRoomId(),
+                DirectMessageModifyResponseDto.from(directMessage));
+            case DELETE -> response = CommonResponse.fromDirectMessage(EventType.DELETE,
+                directMessage.getMessageRoomId(),
+                directMessage.getId());
         }
         messagingTemplate.convertAndSend("/topic/direct/" + directMessage.getMessageRoomId(),
             response);
@@ -65,6 +73,12 @@ public class MessageListener { //토픽에 발행된 이벤트를 가져와 처�
             case REPLY -> response = CommonResponse.fromChannelMessage(EventType.REPLY,
                 channelMessage.getChannelId(),
                 ChannelMessageReplyResponseDto.from(channelMessage));
+            case MODIFY -> response = CommonResponse.fromChannelMessage(EventType.MODIFY,
+                channelMessage.getChannelId(),
+                ChannelMessageModifyResponseDto.from(channelMessage));
+            case DELETE -> response = CommonResponse.fromChannelMessage(EventType.DELETE,
+                channelMessage.getChannelId(),
+                channelMessage.getId());
         }
         messagingTemplate.convertAndSend("/topic/channel/" + channelMessage.getChannelId(),
             response);
