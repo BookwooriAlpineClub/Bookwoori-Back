@@ -2,8 +2,6 @@ package org.bookwoori.core.domain.member.facade;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bookwoori.core.domain.member.dto.request.UpdateMemberBackgroungImgRequestDto;
-import org.bookwoori.core.domain.member.dto.request.UpdateMemberProfilImgRequestDto;
 import org.bookwoori.core.domain.member.dto.request.UpdateMemberRequestDto;
 import org.bookwoori.core.domain.member.dto.response.MemberResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
