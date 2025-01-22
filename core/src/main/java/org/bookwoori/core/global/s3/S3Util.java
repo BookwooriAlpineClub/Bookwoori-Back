@@ -81,16 +81,4 @@ public class S3Util {
             throw new CustomException(ErrorCode.UNSUPPORTED_FILE_FORMAT);
         }
     }
-
-    private boolean compareStreams(InputStream stream1, InputStream stream2) throws IOException {
-        int byte1, byte2;
-        while ((byte1 = stream1.read()) != -1 && (byte2 = stream2.read()) != -1) {
-            if (byte1 != byte2) {
-                return false; // 한 바이트라도 다르면 동일하지 않음
-            }
-        }
-        return stream1.read() == -1 && stream2.read() == -1; // 두 스트림이 모두 끝났으면 동일
-    }
-
-
 }
