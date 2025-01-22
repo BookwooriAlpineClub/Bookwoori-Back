@@ -83,9 +83,7 @@ public enum ErrorCode {
     ALREADY_EXIST_REVIEW(409, 3703, "이미 레코드에 대한 리뷰가 존재합니다."),
 
     // MessageRoom (3800 ~ 3899)
-    MESSAGE_ROOM_NOT_FOUND(404, 3800, "채팅방을 찾을 수 없습니다."),
-
-    ;
+    MESSAGE_ROOM_NOT_FOUND(404, 3800, "채팅방을 찾을 수 없습니다.");
 
     private final int status;
     private final int code;

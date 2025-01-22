@@ -1,14 +1,14 @@
-name: bookwoori Auth Service CI/CD
+name: bookwoori Gateway Service CI/CD
 
 on:
   push:
     branches: ["deploy"]
     paths:
-      - "auth/**"
+      - "gateway/**"
 
 jobs:
   build-and-deploy:
-    name: Build and Deploy Auth Service
+    name: Build and Deploy gateway Service
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -33,13 +33,13 @@ jobs:
 
       - name: Make application-prod.yml
         run: |
-          mkdir -p ./auth/src/main/resources
-          touch ./auth/src/main/resources/application.yml
-          echo "${{ secrets.APPLICATION_auth }}" > ./auth/src/main/resources/application.yml
+          mkdir -p ./gateway/src/main/resources
+          touch ./gateway/src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_gateway }}" > ./gateway/src/main/resources/application.yml
 
-      - name: Build Auth Service with Gradle
+      - name: Build gateway Service with Gradle
         run: |
-          cd ./auth
+          cd ./gateway
           chmod +x ./gradlew
           ./gradlew clean build -x test --no-daemon
 
@@ -52,11 +52,11 @@ jobs:
       - name: Docker Build and Push
         uses: docker/build-push-action@v6
         with:
-          context: ./auth
-          file: ./auth/Dockerfile
+          context: ./gateway
+          file: ./gateway/Dockerfile
           platforms: linux/arm64/v8
           push: true
-          tags: ${{ secrets.DOCKER_REPO_auth }}:v2
+          tags: ${{ secrets.DOCKER_REPO_gateway }}:v2
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
@@ -65,8 +65,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-            sudo docker ps -a --filter "name=auth" --format "{{.ID}}" | xargs -r sudo docker stop
-            sudo docker ps -a --filter "name=auth" --format "{{.ID}}" | xargs -r sudo docker rm -f
-            sudo docker pull ${{ secrets.DOCKER_REPO_auth }}:v2
-            sudo docker run -d -p 8001:8001 ${{ secrets.DOCKER_REPO_auth }}:v2
+            sudo docker ps -a --filter "name=gateway" --format "{{.ID}}" | xargs -r sudo docker stop
+            sudo docker ps -a --filter "name=gateway" --format "{{.ID}}" | xargs -r sudo docker rm -f
+            sudo docker pull ${{ secrets.DOCKER_REPO_gateway }}:v2
+            sudo docker run -d -p 8000:8000 ${{ secrets.DOCKER_REPO_gateway }}:v2
             sudo docker image prune -f

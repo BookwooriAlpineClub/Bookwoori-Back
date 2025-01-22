@@ -1,4 +1,4 @@
-name: bookwoori CI/CD v3
+name: bookwoori Core Service CI/CD
 
 on:
   push:
@@ -76,3 +76,6 @@ jobs:
             sudo docker ps -a --filter "name=core-app" --format "{{.ID}}" | xargs -r sudo docker stop
             sudo docker ps -a --filter "name=core-app" --format "{{.ID}}" | xargs -r sudo docker rm -f
             sudo docker pull ${{ secrets.DOCKER_REPO_core }}:v2
+            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO_core }}:v2
+            sudo docker image prune -f
+            
