@@ -33,7 +33,7 @@ public class MemberController {
     @PatchMapping(value = "/me")
     public ResponseEntity<?> updateMember(
         @RequestBody @Valid UpdateMemberRequestDto requestDto) {
-        memberFacade.updateMember(requestDto);
+        memberFacade.update(requestDto);
         return ResponseEntity.ok().build();
     }
 
@@ -41,7 +41,7 @@ public class MemberController {
     @PatchMapping(value = "/me/profileImg", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateMemberProfileImg(
         @RequestPart(required = false) MultipartFile imageFile) {
-        memberFacade.updateMemberProfileImg(imageFile);
+        memberFacade.updateProfileImg(imageFile);
         return ResponseEntity.ok().build();
     }
 
@@ -49,7 +49,7 @@ public class MemberController {
     @PatchMapping(value = "/me/backgroundImg", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateMemberBackgroundImg(
         @RequestPart(required = false) MultipartFile imageFile) {
-        memberFacade.updateMemberBackgrounImg(imageFile);
+        memberFacade.updateBackgroundImg(imageFile);
         return ResponseEntity.ok().build();
     }
 

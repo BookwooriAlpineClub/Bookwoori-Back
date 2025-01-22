@@ -72,23 +72,15 @@ public class Member extends BaseTimeEntity {
         this.status = Status.INACTIVE;
     }
 
-    public void updateMember(String nickname) {
+    public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
-//    public void updateHeight(double xp) {
-//        this.grade.height += xp;
-//        Grade newGrade = Grade.findGradeByHeight(this.grade.height);
-//        if (!this.grade.equals(newGrade)) {
-//            this.grade = newGrade;
-//        }
-//    }
-
-    public void updateMemberProfileImg(String url) {
+    public void updateProfileImg(String url) {
         this.profileImg = url;
     }
 
-    public void updateMemberBackgrounImg(String url) {
+    public void updateBackgrounImg(String url) {
         this.backgroundImg = url;
     }
 }

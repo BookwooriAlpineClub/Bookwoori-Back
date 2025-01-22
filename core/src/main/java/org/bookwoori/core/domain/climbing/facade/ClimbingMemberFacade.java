@@ -72,6 +72,7 @@ public class ClimbingMemberFacade {
 
     @Transactional(readOnly = true)
     public ClimbingMemberResponseDto getClimbingMembers(Long climbingId) {
+        // INACTIVE인 멤버 예외 처리 필요 
         Climbing climbing = climbingService.getClimbingById(climbingId);
         Member currentMember = memberService.getCurrentMember();
         if (!serverMemberService.isJoined(currentMember, climbing.getServer())) {
