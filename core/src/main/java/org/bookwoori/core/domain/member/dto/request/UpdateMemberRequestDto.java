@@ -7,5 +7,4 @@ import org.springframework.web.multipart.MultipartFile;
 public record UpdateMemberRequestDto(
     @Size(max = 10)
     @NotBlank String nickname) {
-
 }

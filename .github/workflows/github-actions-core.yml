@@ -1,0 +1,78 @@
+name: bookwoori CI/CD v3
+
+on:
+  push:
+    branches: ["deploy"]
+    paths:
+      - "core/**"
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Core Service
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 17
+
+      # Eureka 관련 설정 삭제
+      - name: Remove Eureka Dependencies
+        run: |
+          find . -name 'build.gradle' | while read -r file; do
+            sed -i '/spring-cloud-starter-netflix-eureka-client/d' "$file"
+            sed -i '/spring-cloud-starter-netflix-eureka-server/d' "$file"
+          done
+          find . -name 'application*.yml' | while read -r file; do
+            sed -i '/eureka:/,+3d' "$file"
+          done
+
+      - name: Make application-prod.yml
+        run: |
+          mkdir -p ./core/src/main/resources
+          touch ./core/src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_core }}" > ./core/src/main/resources/application.yml
+
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.3
+        with:
+          name: "firebase-adminsdk.json"
+          json: ${{ secrets.FIREBASE_ADMINSDK }}
+          dir: "./core/src/main/resources"
+
+      - name: Build core Service with Gradle
+        run: |
+          cd ./core
+          chmod +x ./gradlew
+          ./gradlew clean build -x test --no-daemon
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Docker Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./core
+          file: ./core/Dockerfile
+          platforms: linux/arm64/v8
+          push: true
+          tags: ${{ secrets.DOCKER_REPO_core }}:v2
+
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            sudo docker ps -a --filter "name=core-app" --format "{{.ID}}" | xargs -r sudo docker stop
+            sudo docker ps -a --filter "name=core-app" --format "{{.ID}}" | xargs -r sudo docker rm -f
+            sudo docker pull ${{ secrets.DOCKER_REPO_core }}:v2
