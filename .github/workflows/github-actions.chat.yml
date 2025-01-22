@@ -68,5 +68,5 @@ jobs:
             sudo docker ps -a --filter "name=chat" --format "{{.ID}}" | xargs -r sudo docker stop
             sudo docker ps -a --filter "name=chat" --format "{{.ID}}" | xargs -r sudo docker rm -f
             sudo docker pull ${{ secrets.DOCKER_REPO_chat }}:v2
-            sudo docker run -d -p 8081:8081 --name chat-app ${{ secrets.DOCKER_REPO_chat }}:v2
+            sudo docker run -d -p 8081:8081 --name chat-app --network bookwoori-network ${{ secrets.DOCKER_REPO_chat }}:v2
             sudo docker image prune -f
