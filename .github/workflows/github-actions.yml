@@ -2,7 +2,7 @@ name: bookwoori CI/CD v3
 
 on:
   push:
-    branches: [ "deploy"]
+    branches: ["deploy"]
 
 jobs:
   build-and-deploy:
