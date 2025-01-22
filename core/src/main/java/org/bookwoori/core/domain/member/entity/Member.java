@@ -72,9 +72,15 @@ public class Member extends BaseTimeEntity {
         this.status = Status.INACTIVE;
     }
 
-    public void updateMember(String nickname, String profileImgUrl, String backgroundImg) {
+    public void updateNickname(String nickname) {
         this.nickname = nickname;
-        this.profileImg = profileImgUrl;
-        this.backgroundImg = backgroundImg;
+    }
+
+    public void updateProfileImg(String url) {
+        this.profileImg = url;
+    }
+
+    public void updateBackgrounImg(String url) {
+        this.backgroundImg = url;
     }
 }
