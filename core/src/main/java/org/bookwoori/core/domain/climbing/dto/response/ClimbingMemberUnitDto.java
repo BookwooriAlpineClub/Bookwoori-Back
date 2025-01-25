@@ -1,7 +1,7 @@
 package org.bookwoori.core.domain.climbing.dto.response;
 
 import lombok.Builder;
-import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
+import org.bookwoori.core.domain.climbingMember.infrastructure.ClimbingMemberEntity;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
 
 @Builder
@@ -17,7 +17,7 @@ public record ClimbingMemberUnitDto(
     String memo
 ) {
 
-    public static ClimbingMemberUnitDto from(boolean isMine, ClimbingMember member,
+    public static ClimbingMemberUnitDto from(boolean isMine, ClimbingMemberEntity member,
         ReadingStatus status,
         int currentPage) {
         return ClimbingMemberUnitDto.builder()

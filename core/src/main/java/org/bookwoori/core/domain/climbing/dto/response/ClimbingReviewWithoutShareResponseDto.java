@@ -2,7 +2,7 @@ package org.bookwoori.core.domain.climbing.dto.response;
 
 import lombok.Builder;
 import org.bookwoori.core.domain.book.dto.response.BookInfoDto;
-import org.bookwoori.core.domain.climbing.entity.Climbing;
+import org.bookwoori.core.domain.climbing.infrastructure.ClimbingEntity;
 
 @Builder
 public record ClimbingReviewWithoutShareResponseDto(
@@ -11,7 +11,7 @@ public record ClimbingReviewWithoutShareResponseDto(
     BookInfoDto bookInfo
 ) {
 
-    public static ClimbingReviewWithoutShareResponseDto from(Climbing climbing) {
+    public static ClimbingReviewWithoutShareResponseDto from(ClimbingEntity climbing) {
         return ClimbingReviewWithoutShareResponseDto.builder()
             .hasShared(false)
             .isShareable(false)

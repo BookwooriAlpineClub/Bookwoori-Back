@@ -2,8 +2,8 @@ package org.bookwoori.core.domain.climbing.dto.response;
 
 import java.util.List;
 import lombok.Builder;
-import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
-import org.bookwoori.core.domain.review.entity.Review;
+import org.bookwoori.core.domain.climbingMember.infrastructure.ClimbingMemberEntity;
+import org.bookwoori.core.domain.review.infrastructure.ReviewEntity;
 
 @Builder
 public record ClimbingMemberReviewUnitDto(
@@ -15,7 +15,7 @@ public record ClimbingMemberReviewUnitDto(
     String content,
     List<ReviewEmojiListCountDto> reviewEmojiList) {
 
-    public static ClimbingMemberReviewUnitDto from(ClimbingMember member, Review review,
+    public static ClimbingMemberReviewUnitDto from(ClimbingMemberEntity member, ReviewEntity review,
         List<ReviewEmojiListCountDto> reviewEmojiList) {
         return ClimbingMemberReviewUnitDto.builder()
             .memberId(member.getMember().getMemberId())

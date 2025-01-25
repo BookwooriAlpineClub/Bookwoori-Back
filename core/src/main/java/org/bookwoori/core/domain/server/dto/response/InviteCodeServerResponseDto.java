@@ -3,7 +3,7 @@ package org.bookwoori.core.domain.server.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import lombok.Builder;
-import org.bookwoori.core.domain.server.entity.Server;
+import org.bookwoori.core.domain.server.infrastructure.ServerEntity;
 
 @Builder
 public record InviteCodeServerResponseDto(
@@ -17,7 +17,7 @@ public record InviteCodeServerResponseDto(
     String description
 ) {
 
-    public static InviteCodeServerResponseDto from(Server server, String nickname,
+    public static InviteCodeServerResponseDto from(ServerEntity server, String nickname,
         int memberCount) {
         return InviteCodeServerResponseDto.builder()
             .name(server.getName())

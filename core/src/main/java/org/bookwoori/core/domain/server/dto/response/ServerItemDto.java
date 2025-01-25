@@ -1,7 +1,7 @@
 package org.bookwoori.core.domain.server.dto.response;
 
 import lombok.Builder;
-import org.bookwoori.core.domain.server.entity.Server;
+import org.bookwoori.core.domain.server.infrastructure.ServerEntity;
 
 @Builder
 public record ServerItemDto(
@@ -10,7 +10,7 @@ public record ServerItemDto(
     String serverImg
 ) {
 
-    public static ServerItemDto from(Server server) {
+    public static ServerItemDto from(ServerEntity server) {
         return ServerItemDto.builder()
             .serverId(server.getServerId())
             .name(server.getName())

@@ -4,27 +4,27 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.bookwoori.core.domain.book.entity.Book;
-import org.bookwoori.core.domain.book.service.BookService;
+import org.bookwoori.core.domain.book.infrastructure.BookEntity;
+import org.bookwoori.core.domain.book.service.BookServiceImpl;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingDetailsResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.MyClimbingListResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReadyClimbingListResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.ServerClimbingListDto;
-import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
-import org.bookwoori.core.domain.climbing.service.ClimbingService;
-import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
+import org.bookwoori.core.domain.climbing.infrastructure.ClimbingEntity;
+import org.bookwoori.core.domain.climbing.service.ClimbingServiceImpl;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
-import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
-import org.bookwoori.core.domain.member.entity.Member;
-import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.climbingMember.infrastructure.ClimbingMemberEntity;
+import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberServiceImpl;
+import org.bookwoori.core.domain.member.infrastructure.MemberEntity;
+import org.bookwoori.core.domain.member.service.MemberServiceImpl;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
-import org.bookwoori.core.domain.record.service.RecordService;
-import org.bookwoori.core.domain.server.entity.Server;
-import org.bookwoori.core.domain.server.service.ServerService;
-import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
+import org.bookwoori.core.domain.record.service.RecordServiceImpl;
+import org.bookwoori.core.domain.server.infrastructure.ServerEntity;
+import org.bookwoori.core.domain.server.service.ServerServiceImpl;
+import org.bookwoori.core.domain.serverMember.service.ServerMemberServiceImpl;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,21 +36,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ClimbingFacade {
 
-    private final MemberService memberService;
-    private final ClimbingService climbingService;
-    private final ServerService serverService;
-    private final BookService bookService;
-    private final ClimbingMemberService climbingMemberService;
-    private final RecordService recordService;
-    private final ServerMemberService serverMemberService;
+    private final MemberServiceImpl memberService;
+    private final ClimbingServiceImpl climbingService;
+    private final ServerServiceImpl serverService;
+    private final BookServiceImpl bookService;
+    private final ClimbingMemberServiceImpl climbingMemberService;
+    private final RecordServiceImpl recordService;
+    private final ServerMemberServiceImpl serverMemberService;
 
     @Scheduled(cron = "0 0 0 * * *")
     public void updateClimbingStatus() {
         LocalDate today = LocalDate.now();
-        List<Climbing> climbingList = climbingService.getAllClimbings();
+        List<ClimbingEntity> climbingList = climbingService.getAllClimbings();
 
-        for (Climbing climbing : climbingList) {
-            List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
+        for (ClimbingEntity climbing : climbingList) {
+            List<ClimbingMemberEntity> climbingMemberList = climbingMemberService.getMembersByClimbing(
                 climbing);
             // 2명 이상 참여자일 때만 RUNNING으로 변경
             if (climbingMemberList.size() < 2) {
@@ -78,17 +78,17 @@ public class ClimbingFacade {
 
 
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
-        Server server = serverService.getServerById(requestDto.serverId());
-        Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn());
-        Climbing climbing = requestDto.toEntity(server, book, ClimbingStatus.READY);
+        MemberEntity currentMember = memberService.getCurrentMember();
+        ServerEntity server = serverService.getServerById(requestDto.serverId());
+        BookEntity book = bookService.getOrCreateBookByIsbn(requestDto.isbn());
+        ClimbingEntity climbing = requestDto.toEntity(server, book, ClimbingStatus.READY);
         climbingService.saveClimbingChannel(climbing);
         climbingMemberService.saveMember(currentMember, climbing, ClimbingRole.OWNER);
     }
 
     public void updateClimbing(Long climbingId, ClimbingChannelUpdateRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
-        Climbing climbing = climbingService.getClimbingById(climbingId);
+        MemberEntity currentMember = memberService.getCurrentMember();
+        ClimbingEntity climbing = climbingService.getClimbingById(climbingId);
         if (climbing.getStatus() != ClimbingStatus.READY) {
             throw new CustomException(ErrorCode.CLIMBING_NOT_READY);
         }
@@ -100,8 +100,8 @@ public class ClimbingFacade {
 
     @Transactional(readOnly = true)
     public ClimbingDetailsResponseDto getClimbingDetails(Long climbingId) {
-        Member currentMember = memberService.getCurrentMember();
-        Climbing climbing = climbingService.getClimbingById(climbingId);
+        MemberEntity currentMember = memberService.getCurrentMember();
+        ClimbingEntity climbing = climbingService.getClimbingById(climbingId);
         if (!serverMemberService.isJoined(currentMember, climbing.getServer())) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
@@ -113,8 +113,8 @@ public class ClimbingFacade {
 
     @Transactional(readOnly = true)
     public ServerClimbingListDto getClimbingList(Long serverId) {
-        Member currentMember = memberService.getCurrentMember();
-        Server server = serverService.getServerById(serverId);
+        MemberEntity currentMember = memberService.getCurrentMember();
+        ServerEntity server = serverService.getServerById(serverId);
         if (!serverMemberService.isJoined(currentMember, server)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
@@ -147,31 +147,31 @@ public class ClimbingFacade {
 
     @Transactional(readOnly = true)
     public MyClimbingListResponseDto getMyClimbingList(Long serverId) {
-        Member currentMember = memberService.getCurrentMember();
-        Server server = serverService.getServerById(serverId);
+        MemberEntity currentMember = memberService.getCurrentMember();
+        ServerEntity server = serverService.getServerById(serverId);
         if (!serverMemberService.isJoined(currentMember, server)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
-        List<Climbing> myClimbings = climbingService.getMyClimbings(currentMember, serverId);
+        List<ClimbingEntity> myClimbings = climbingService.getMyClimbings(currentMember, serverId);
         List<ClimbingDetailsResponseDto> myClimbingList = convertToDto(myClimbings);
         return new MyClimbingListResponseDto(myClimbingList);
     }
 
     @Transactional(readOnly = true)
     public ReadyClimbingListResponseDto getReadyClimbingList(Long serverId) {
-        Member currentMember = memberService.getCurrentMember();
-        Server server = serverService.getServerById(serverId);
+        MemberEntity currentMember = memberService.getCurrentMember();
+        ServerEntity server = serverService.getServerById(serverId);
         if (!serverMemberService.isJoined(currentMember, server)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
-        List<Climbing> readyClimbings = climbingService.getReadyClimbings(serverId);
+        List<ClimbingEntity> readyClimbings = climbingService.getReadyClimbings(serverId);
         List<ClimbingDetailsResponseDto> readyClimbingList = convertToDto(readyClimbings);
         return new ReadyClimbingListResponseDto(readyClimbingList);
     }
 
     @Transactional(readOnly = true)
-    protected List<ClimbingDetailsResponseDto> convertToDto(List<Climbing> climbings) {
-        Member currentMember = memberService.getCurrentMember();
+    protected List<ClimbingDetailsResponseDto> convertToDto(List<ClimbingEntity> climbings) {
+        MemberEntity currentMember = memberService.getCurrentMember();
         return climbings.stream()
             .map(climbing -> {
                 int memberCount = climbingMemberService.getMemberCount(climbing);
@@ -183,8 +183,8 @@ public class ClimbingFacade {
     }
 
     public void deleteClimbing(Long climbingId) {
-        Climbing climbing = climbingService.getClimbingById(climbingId);
-        Member currentMember = memberService.getCurrentMember();
+        ClimbingEntity climbing = climbingService.getClimbingById(climbingId);
+        MemberEntity currentMember = memberService.getCurrentMember();
         if (climbing.getStatus() != ClimbingStatus.READY) {
             throw new CustomException(ErrorCode.CLIMBING_NOT_READY);
         }

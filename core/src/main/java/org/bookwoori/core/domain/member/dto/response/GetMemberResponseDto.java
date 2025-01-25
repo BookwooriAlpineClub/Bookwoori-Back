@@ -1,7 +1,7 @@
 package org.bookwoori.core.domain.member.dto.response;
 
 import lombok.Builder;
-import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.member.infrastructure.MemberEntity;
 
 @Builder
 public record GetMemberResponseDto(
@@ -11,7 +11,7 @@ public record GetMemberResponseDto(
     String profileImg
 ) {
 
-    public static GetMemberResponseDto from(Member member) {
+    public static GetMemberResponseDto from(MemberEntity member) {
         return GetMemberResponseDto.builder()
             .memberId(member.getMemberId())
             .kakaoId(member.getKakaoId())

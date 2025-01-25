@@ -3,8 +3,8 @@ package org.bookwoori.core.domain.climbing.dto.response;
 import java.time.LocalDate;
 import lombok.Builder;
 import org.bookwoori.core.domain.book.dto.response.BookInfoDto;
-import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
+import org.bookwoori.core.domain.climbing.infrastructure.ClimbingEntity;
 
 @Builder
 public record ClimbingDetailsResponseDto(
@@ -19,7 +19,7 @@ public record ClimbingDetailsResponseDto(
     boolean isOWner,
     BookInfoDto bookInfo) {
 
-    public static ClimbingDetailsResponseDto from(Climbing climbing, int memberCount,
+    public static ClimbingDetailsResponseDto from(ClimbingEntity climbing, int memberCount,
         boolean isJoined, boolean isOWner) {
         return ClimbingDetailsResponseDto.builder()
             .climbingId(climbing.getClimbingId())

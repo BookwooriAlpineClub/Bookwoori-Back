@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bookwoori.core.domain.category.dto.response.CategoryResponseDto;
-import org.bookwoori.core.domain.category.entity.Category;
-import org.bookwoori.core.domain.category.service.CategoryService;
+import org.bookwoori.core.domain.category.infrastructure.CategoryEntity;
+import org.bookwoori.core.domain.category.service.CategoryServiceImpl;
 import org.bookwoori.core.domain.channel.dto.response.ChannelResponseDto;
-import org.bookwoori.core.domain.channel.entity.Channel;
-import org.bookwoori.core.domain.channel.service.ChannelService;
-import org.bookwoori.core.domain.member.entity.Member;
-import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.channel.infrastructure.ChannelEntity;
+import org.bookwoori.core.domain.channel.service.ChannelServiceImpl;
+import org.bookwoori.core.domain.member.infrastructure.MemberEntity;
+import org.bookwoori.core.domain.member.service.MemberServiceImpl;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
@@ -26,10 +26,10 @@ import org.bookwoori.core.domain.server.dto.response.ServerDetailsResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerItemDto;
 import org.bookwoori.core.domain.server.dto.response.ServerListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto;
-import org.bookwoori.core.domain.server.entity.Server;
-import org.bookwoori.core.domain.server.service.ServerService;
+import org.bookwoori.core.domain.server.infrastructure.ServerEntity;
+import org.bookwoori.core.domain.server.service.ServerServiceImpl;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
-import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
+import org.bookwoori.core.domain.serverMember.service.ServerMemberServiceImpl;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.s3.S3Util;
@@ -47,36 +47,36 @@ public class ServerFacade {
     private final S3Util s3Util;
     private final StringRedisTemplate redisTemplate;
 
-    private final ServerService serverService;
-    private final MemberService memberService;
-    private final CategoryService categoryService;
-    private final ChannelService channelService;
-    private final ServerMemberService serverMemberService;
+    private final ServerServiceImpl serverService;
+    private final MemberServiceImpl memberService;
+    private final CategoryServiceImpl categoryService;
+    private final ChannelServiceImpl channelService;
+    private final ServerMemberServiceImpl serverMemberService;
 
     @Transactional
     public ServerCreateResponseDto createServer(ServerCreateRequestDto requestDto) {
         //서버 저장
-        Server server = requestDto.toEntity(
+        ServerEntity server = requestDto.toEntity(
             s3Util.uploadImage(requestDto.serverImg(), "server"));
         serverService.saveServer(server);
 
         //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
-        Member member = memberService.getCurrentMember();
+        MemberEntity member = memberService.getCurrentMember();
         //서버장을 ServerMember 테이블에 추가
         serverMemberService.saveServerMember(member, server, ServerRole.OWNER);
 
         //DEFAULT 카테고리/채널 생성 및 저장
-        Category category = categoryService.makeDefaultCategory(server);
+        CategoryEntity category = categoryService.makeDefaultCategory(server);
         channelService.makeDefaultChannels(category);
         return ServerCreateResponseDto.from(server);
     }
 
     @Transactional(readOnly = true)
     public ServerDetailsResponseDto getServerDetails(Long serverId) {
-        Server server = serverService.getServerById(serverId);
-        Member owner = serverMemberService.getOwner(server);
+        ServerEntity server = serverService.getServerById(serverId);
+        MemberEntity owner = serverMemberService.getOwner(server);
         int memberCount = serverMemberService.getMemberCount(server);
-        Member currentMember = memberService.getCurrentMember();
+        MemberEntity currentMember = memberService.getCurrentMember();
 
         if (!serverMemberService.isJoined(currentMember, server)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
@@ -88,14 +88,15 @@ public class ServerFacade {
 
     @Transactional(readOnly = true)
     public ServerMemberListResponseDto getServerMemberList(Long serverId) {
-        Server server = serverService.getServerById(serverId);
+        ServerEntity server = serverService.getServerById(serverId);
         return new ServerMemberListResponseDto(serverMemberService.getAllMembersByServer(server));
     }
 
     @Transactional(readOnly = true)
     public ServerCategoryListResponseDto getServerCategoryList(Long serverId) {
-        Server server = serverService.getServerById(serverId);
-        List<Category> categories = sortCategory(categoryService.getCategoriesWithChannels(server));
+        ServerEntity server = serverService.getServerById(serverId);
+        List<CategoryEntity> categories = sortCategory(
+            categoryService.getCategoriesWithChannels(server));
         List<CategoryResponseDto> categoryDtoList = categories.stream()
             .map(category -> {
                 List<ChannelResponseDto> channelDtoList = sortChannel(
@@ -106,9 +107,9 @@ public class ServerFacade {
         return new ServerCategoryListResponseDto(categoryDtoList);
     }
 
-    private List<Category> sortCategory(List<Category> categories) {
-        List<Category> sortedList = new ArrayList<>();
-        Category currentCategory = categories.stream()
+    private List<CategoryEntity> sortCategory(List<CategoryEntity> categories) {
+        List<CategoryEntity> sortedList = new ArrayList<>();
+        CategoryEntity currentCategory = categories.stream()
             .filter(category -> category.getBeforeNode() == null).findFirst().orElse(null);
         while (currentCategory != null) {
             sortedList.add(currentCategory);
@@ -117,9 +118,9 @@ public class ServerFacade {
         return sortedList;
     }
 
-    private List<Channel> sortChannel(List<Channel> channels) {
-        List<Channel> sortedList = new ArrayList<>();
-        Channel currentChannel = channels.stream()
+    private List<ChannelEntity> sortChannel(List<ChannelEntity> channels) {
+        List<ChannelEntity> sortedList = new ArrayList<>();
+        ChannelEntity currentChannel = channels.stream()
             .filter(channel -> channel.getBeforeNode() == null).findFirst().orElse(null);
         while (currentChannel != null) {
             sortedList.add(currentChannel);
@@ -157,8 +158,8 @@ public class ServerFacade {
         }
         Long serverId = Long.valueOf(value);
 
-        Server server = serverService.getServerById(serverId);
-        Member owner = serverMemberService.getOwner(server);
+        ServerEntity server = serverService.getServerById(serverId);
+        MemberEntity owner = serverMemberService.getOwner(server);
         int memberCount = serverMemberService.getMemberCount(server);
 
         return InviteCodeServerResponseDto.from(server, owner.getNickname(), memberCount);
@@ -175,8 +176,8 @@ public class ServerFacade {
         }
         Long serverId = Long.valueOf(value);
 
-        Server server = serverService.getServerById(serverId);
-        Member currentMember = memberService.getCurrentMember();
+        ServerEntity server = serverService.getServerById(serverId);
+        MemberEntity currentMember = memberService.getCurrentMember();
 
         boolean isJoined = serverMemberService.isJoined(currentMember, server);
 
@@ -190,16 +191,16 @@ public class ServerFacade {
 
     @Transactional(readOnly = true)
     public ServerListResponseDto getServerList() {
-        Member member = memberService.getCurrentMember();
-        List<Server> servers = serverMemberService.getServerListByMember(member);
+        MemberEntity member = memberService.getCurrentMember();
+        List<ServerEntity> servers = serverMemberService.getServerListByMember(member);
         List<ServerItemDto> serverDtoList = servers.stream().map(ServerItemDto::from).toList();
         return new ServerListResponseDto(serverDtoList);
     }
 
     @Transactional
     public void leaveServer(Long serverId) {
-        Member member = memberService.getCurrentMember();
-        Server server = serverService.getServerById(serverId);
+        MemberEntity member = memberService.getCurrentMember();
+        ServerEntity server = serverService.getServerById(serverId);
 
         if (serverMemberService.isOwner(member, server)) {
             throw new CustomException(ErrorCode.DELEGATION_REQUIRED);
@@ -210,8 +211,8 @@ public class ServerFacade {
 
     @Transactional
     public void updateServerInfo(Long serverId, ServerInfoUpdateRequestDto requestDto) {
-        Member member = memberService.getCurrentMember();
-        Server server = serverService.getServerById(serverId);
+        MemberEntity member = memberService.getCurrentMember();
+        ServerEntity server = serverService.getServerById(serverId);
 
         if (!serverMemberService.isOwner(member, server)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
@@ -222,8 +223,8 @@ public class ServerFacade {
 
     @Transactional
     public void updateServerImage(Long serverId, MultipartFile newImage) {
-        Member member = memberService.getCurrentMember();
-        Server server = serverService.getServerById(serverId);
+        MemberEntity member = memberService.getCurrentMember();
+        ServerEntity server = serverService.getServerById(serverId);
 
         if (!serverMemberService.isOwner(member, server)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
@@ -236,16 +237,16 @@ public class ServerFacade {
 
     @Transactional
     public void delegateServerRole(Long serverId, ServerRoleDelegateRequestDto requestDto) {
-        Server server = serverService.getServerById(serverId);
-        Member currentMember = memberService.getCurrentMember();
-        Member newOwner = memberService.getMemberById(requestDto.memberId());
+        ServerEntity server = serverService.getServerById(serverId);
+        MemberEntity currentMember = memberService.getCurrentMember();
+        MemberEntity newOwner = memberService.getMemberById(requestDto.memberId());
         serverMemberService.delegateServerRole(server, currentMember, newOwner);
     }
 
     @Transactional
     public void deleteServer(Long serverId) {
-        Server server = serverService.getServerById(serverId);
-        Member currentMember = memberService.getCurrentMember();
+        ServerEntity server = serverService.getServerById(serverId);
+        MemberEntity currentMember = memberService.getCurrentMember();
 
         if (!serverMemberService.isOwner(currentMember, server)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);

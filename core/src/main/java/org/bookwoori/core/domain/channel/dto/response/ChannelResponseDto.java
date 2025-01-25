@@ -1,7 +1,7 @@
 package org.bookwoori.core.domain.channel.dto.response;
 
 import lombok.Builder;
-import org.bookwoori.core.domain.channel.entity.Channel;
+import org.bookwoori.core.domain.channel.infrastructure.ChannelEntity;
 import org.bookwoori.core.domain.channel.entity.ChannelType;
 
 @Builder
@@ -11,7 +11,7 @@ public record ChannelResponseDto(
     ChannelType type
 ) {
 
-    public static ChannelResponseDto from(Channel channel) {
+    public static ChannelResponseDto from(ChannelEntity channel) {
         return ChannelResponseDto.builder()
             .channelId(channel.getChannelId())
             .name(channel.getName())

@@ -4,11 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
-import org.bookwoori.core.domain.book.entity.Book;
-import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.book.infrastructure.BookEntity;
+import org.bookwoori.core.domain.member.infrastructure.MemberEntity;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
-import org.bookwoori.core.domain.record.entity.Record;
-import org.bookwoori.core.domain.review.entity.Review;
+import org.bookwoori.core.domain.record.infrastructure.RecordEntity;
+import org.bookwoori.core.domain.review.infrastructure.ReviewEntity;
 
 
 public record RecordRequestDto(
@@ -24,8 +24,8 @@ public record RecordRequestDto(
     String reviewContent
 ) {
 
-    public Record toRecordEntity(Member currentMember, Book book) {
-        return Record.builder()
+    public RecordEntity toRecordEntity(MemberEntity currentMember, BookEntity book) {
+        return RecordEntity.builder()
             .member(currentMember)
             .book(book)
             .status(status)
@@ -36,8 +36,8 @@ public record RecordRequestDto(
             .build();
     }
 
-    public Review toReviewEntity(Record record, String content) {
-        return Review.builder()
+    public ReviewEntity toReviewEntity(RecordEntity record, String content) {
+        return ReviewEntity.builder()
             .record(record)
             .content(content)
             .build();

@@ -2,7 +2,7 @@ package org.bookwoori.core.domain.book.dto.response;
 
 import java.time.LocalDate;
 import lombok.Builder;
-import org.bookwoori.core.domain.book.entity.Book;
+import org.bookwoori.core.domain.book.infrastructure.BookEntity;
 
 @Builder
 public record BookInfoDto(
@@ -15,7 +15,7 @@ public record BookInfoDto(
     String isbn13,
     String cover) {
 
-    public static BookInfoDto from(Book book) {
+    public static BookInfoDto from(BookEntity book) {
         return BookInfoDto.builder()
             .title(book.getTitle())
             .author(book.getAuthor())

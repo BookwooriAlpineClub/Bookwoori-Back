@@ -1,7 +1,7 @@
 package org.bookwoori.core.domain.member.dto.response;
 
 import lombok.Builder;
-import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.member.infrastructure.MemberEntity;
 
 @Builder
 public record MemberResponseDto(
@@ -14,7 +14,7 @@ public record MemberResponseDto(
     int height,
     int totalPage) {
 
-    public static MemberResponseDto from(Member member, boolean isMine) {
+    public static MemberResponseDto from(MemberEntity member, boolean isMine) {
         return MemberResponseDto.builder()
             .isMine(isMine)
             .nickname(member.getNickname())

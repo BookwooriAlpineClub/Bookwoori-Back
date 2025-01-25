@@ -1,40 +1,5 @@
 package org.bookwoori.core.domain.serverMember.repository;
 
-import java.util.List;
-import java.util.Optional;
-import org.bookwoori.core.domain.member.entity.Member;
-import org.bookwoori.core.domain.server.entity.Server;
-import org.bookwoori.core.domain.serverMember.entity.ServerMember;
-import org.bookwoori.core.domain.serverMember.entity.ServerRole;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+public interface ServerMemberRepository {
 
-public interface ServerMemberRepository extends JpaRepository<ServerMember, Long> {
-
-    int countByServer(Server server);
-
-    @Query("SELECT COUNT(sm) > 0 FROM ServerMember sm WHERE sm.member = :member AND sm.server = :server")
-    boolean existsByMemberAndServer(Member member, Server server);
-
-    @Query("SELECT COUNT(sm) > 0 FROM ServerMember sm WHERE sm.member = :member AND sm.server = :server AND sm.role = 'OWNER'")
-    boolean existsByMemberAndServerAndRole(Member member, Server server);
-
-    @Query("SELECT m.member FROM ServerMember m WHERE m.server = :server AND m.role = 'OWNER'")
-    Optional<Member> findOwnerByServer(@Param("server") Server server);
-
-    @Query("SELECT sm FROM ServerMember sm JOIN FETCH sm.member WHERE sm.server = :server")
-    List<ServerMember> findAllByServer(Server server);
-
-    Optional<ServerMember> findByMemberAndServer(Member member, Server server);
-
-
-    @Query("SELECT sm FROM ServerMember sm JOIN FETCH sm.server WHERE sm.member = :member")
-    List<ServerMember> findAllByMember(Member member);
-
-    void deleteByServerAndMember(Server server, Member member);
-
-    @Query("SELECT sm.server FROM ServerMember sm WHERE sm.member = :member AND sm.role = :role")
-    List<Server> findByMemberAndRole(@Param("member") Member member,
-        @Param("role") ServerRole role);
 }

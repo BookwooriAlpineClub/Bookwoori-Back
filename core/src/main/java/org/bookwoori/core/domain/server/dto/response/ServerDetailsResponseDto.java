@@ -3,7 +3,7 @@ package org.bookwoori.core.domain.server.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import lombok.Builder;
-import org.bookwoori.core.domain.server.entity.Server;
+import org.bookwoori.core.domain.server.infrastructure.ServerEntity;
 
 @Builder
 public record ServerDetailsResponseDto(
@@ -18,7 +18,8 @@ public record ServerDetailsResponseDto(
     boolean isOwner
 ) {
 
-    public static ServerDetailsResponseDto from(Server server, String nickname, int memberCount,
+    public static ServerDetailsResponseDto from(ServerEntity server, String nickname,
+        int memberCount,
         boolean isOwner) {
         return ServerDetailsResponseDto.builder()
             .name(server.getName())

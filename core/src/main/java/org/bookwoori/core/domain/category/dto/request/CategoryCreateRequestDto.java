@@ -2,8 +2,8 @@ package org.bookwoori.core.domain.category.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.bookwoori.core.domain.category.entity.Category;
-import org.bookwoori.core.domain.server.entity.Server;
+import org.bookwoori.core.domain.category.infrastructure.CategoryEntity;
+import org.bookwoori.core.domain.server.infrastructure.ServerEntity;
 
 public record CategoryCreateRequestDto(
     @NotNull
@@ -12,8 +12,8 @@ public record CategoryCreateRequestDto(
     String name
 ) {
 
-    public Category toEntity(Server server) {
-        return Category.builder()
+    public CategoryEntity toEntity(ServerEntity server) {
+        return CategoryEntity.builder()
             .server(server)
             .name(this.name)
             .build();

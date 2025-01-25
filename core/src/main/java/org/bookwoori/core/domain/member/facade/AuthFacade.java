@@ -5,11 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.dto.request.GetOrSaveMemberRequestDto;
 import org.bookwoori.core.domain.member.dto.response.GetMemberResponseDto;
-import org.bookwoori.core.domain.member.entity.Member;
-import org.bookwoori.core.domain.member.service.MemberService;
-import org.bookwoori.core.domain.server.entity.Server;
+import org.bookwoori.core.domain.member.infrastructure.MemberEntity;
+import org.bookwoori.core.domain.member.service.MemberServiceImpl;
+import org.bookwoori.core.domain.server.infrastructure.ServerEntity;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
-import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
+import org.bookwoori.core.domain.serverMember.service.ServerMemberServiceImpl;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.s3.S3Util;
@@ -22,15 +22,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class AuthFacade {
 
-    private final MemberService memberService;
-    private final ServerMemberService serverMemberService;
+    private final MemberServiceImpl memberService;
+    private final ServerMemberServiceImpl serverMemberService;
     private final S3Util s3Util;
 
     public void deleteMember() {
-        Member currentMember = memberService.getCurrentMember();
+        MemberEntity currentMember = memberService.getCurrentMember();
         s3Util.deleteImage(currentMember.getProfileImg());
         s3Util.deleteImage(currentMember.getBackgroundImg());
-        List<Server> ownedServers = serverMemberService.getAllByMemberAndRole(currentMember,
+        List<ServerEntity> ownedServers = serverMemberService.getAllByMemberAndRole(currentMember,
             ServerRole.OWNER);
         if (!ownedServers.isEmpty()) {
             throw new CustomException(ErrorCode.DELEGATION_REQUIRED);
@@ -41,10 +41,10 @@ public class AuthFacade {
     public GetMemberResponseDto getOrSaveMemberByKakaoId(GetOrSaveMemberRequestDto requestDto) {
         boolean isMember = memberService.existsByKakaoId(requestDto.kakaoId());
         if (isMember) {
-            Member member = memberService.getMemberByKakaoId(requestDto.kakaoId());
+            MemberEntity member = memberService.getMemberByKakaoId(requestDto.kakaoId());
             return GetMemberResponseDto.from(member);
         } else {
-            Member member = Member.builder()
+            MemberEntity member = MemberEntity.builder()
                 .kakaoId(requestDto.kakaoId())
                 .nickname(requestDto.nickname())
                 .profileImg(requestDto.profileImg())

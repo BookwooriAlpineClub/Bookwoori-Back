@@ -1,7 +1,7 @@
 package org.bookwoori.core.domain.serverMember.dto;
 
 import lombok.Builder;
-import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.member.infrastructure.MemberEntity;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
 
 @Builder
@@ -14,7 +14,7 @@ public record ServerMemberDto(
     ServerRole role
 ) {
 
-    public static ServerMemberDto from(Member member, ServerRole role) {
+    public static ServerMemberDto from(MemberEntity member, ServerRole role) {
         return ServerMemberDto.builder()
             .memberId(member.getMemberId())
             .nickname(member.getNickname())

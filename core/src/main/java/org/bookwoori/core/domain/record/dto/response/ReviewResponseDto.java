@@ -2,8 +2,8 @@ package org.bookwoori.core.domain.record.dto.response;
 
 import lombok.Builder;
 import org.bookwoori.core.domain.book.dto.response.BookInfoDto;
-import org.bookwoori.core.domain.record.entity.Record;
-import org.bookwoori.core.domain.review.entity.Review;
+import org.bookwoori.core.domain.record.infrastructure.RecordEntity;
+import org.bookwoori.core.domain.review.infrastructure.ReviewEntity;
 
 @Builder
 public record ReviewResponseDto(
@@ -15,7 +15,7 @@ public record ReviewResponseDto(
 
 ) {
 
-    public static ReviewResponseDto from(Record record, Review review) {
+    public static ReviewResponseDto from(RecordEntity record, ReviewEntity review) {
         return ReviewResponseDto.builder()
             .recordId(record.getRecordId())
             .memberId(record.getMember().getMemberId())

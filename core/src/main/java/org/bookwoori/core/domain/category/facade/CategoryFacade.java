@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.category.dto.request.CategoryCreateRequestDto;
 import org.bookwoori.core.domain.category.dto.request.CategoryLocateRequestDto;
 import org.bookwoori.core.domain.category.dto.request.CategoryUpdateRequestDto;
-import org.bookwoori.core.domain.category.entity.Category;
-import org.bookwoori.core.domain.category.service.CategoryService;
-import org.bookwoori.core.domain.channel.service.ChannelService;
-import org.bookwoori.core.domain.server.entity.Server;
-import org.bookwoori.core.domain.server.service.ServerService;
+import org.bookwoori.core.domain.category.infrastructure.CategoryEntity;
+import org.bookwoori.core.domain.category.service.CategoryServiceImpl;
+import org.bookwoori.core.domain.channel.service.ChannelServiceImpl;
+import org.bookwoori.core.domain.server.infrastructure.ServerEntity;
+import org.bookwoori.core.domain.server.service.ServerServiceImpl;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
@@ -18,34 +18,34 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CategoryFacade {
 
-    private final ChannelService channelService;
-    private final CategoryService categoryService;
-    private final ServerService serverService;
+    private final ChannelServiceImpl channelService;
+    private final CategoryServiceImpl categoryService;
+    private final ServerServiceImpl serverService;
 
     @Transactional
     public void createCategory(CategoryCreateRequestDto requestDto) {
-        Server server = serverService.getServerById(requestDto.serverId());
-        Category category = requestDto.toEntity(server);
-        Category beforeCategory = categoryService.getLastNodeByServer(server);
+        ServerEntity server = serverService.getServerById(requestDto.serverId());
+        CategoryEntity category = requestDto.toEntity(server);
+        CategoryEntity beforeCategory = categoryService.getLastNodeByServer(server);
         category.setBeforeNode(beforeCategory);
         categoryService.saveCategory(category);
     }
 
     @Transactional
     public void updateCategoryName(Long categoryId, CategoryUpdateRequestDto requestDto) {
-        Category category = categoryService.getCategoryById(categoryId);
+        CategoryEntity category = categoryService.getCategoryById(categoryId);
         category.modifyName(requestDto.name());
     }
 
     @Transactional
     public void deleteCategory(Long categoryId) {
-        Category categoryToDelete = categoryService.getCategoryWithChannels(categoryId);
+        CategoryEntity categoryToDelete = categoryService.getCategoryWithChannels(categoryId);
 
         //기본 카테고리를 삭제하려는 경우 예외처리
         if (categoryToDelete.isDefault()) {
             throw new CustomException(ErrorCode.DEFAULT_CATEGORY_EXCEPTION);
         }
-        Category defaultCategory = categoryService.getDefaultCategoryByServer(
+        CategoryEntity defaultCategory = categoryService.getDefaultCategoryByServer(
             categoryToDelete.getServer());
         //하위 채널들을 기본 카테고리로 이동
         channelService.moveChannelsToCategory(categoryToDelete, defaultCategory);
@@ -56,8 +56,9 @@ public class CategoryFacade {
 
     @Transactional
     public void locateCategory(Long categoryId, CategoryLocateRequestDto requestDto) {
-        Category categoryToMove = categoryService.getCategoryById(categoryId);
-        Category beforeCategory = categoryService.getCategoryById(requestDto.beforeCategoryId());
+        CategoryEntity categoryToMove = categoryService.getCategoryById(categoryId);
+        CategoryEntity beforeCategory = categoryService.getCategoryById(
+            requestDto.beforeCategoryId());
 
         if (categoryToMove.isDefault()) {
             throw new CustomException(ErrorCode.DEFAULT_CATEGORY_EXCEPTION);

@@ -1,7 +1,7 @@
 package org.bookwoori.core.domain.climbing.dto.response;
 
 import lombok.Builder;
-import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.member.infrastructure.MemberEntity;
 
 @Builder
 public record ReviewEmojiMemberUnitDto(
@@ -12,7 +12,7 @@ public record ReviewEmojiMemberUnitDto(
     String mountain
 ) {
 
-    public static ReviewEmojiMemberUnitDto from(Member member) {
+    public static ReviewEmojiMemberUnitDto from(MemberEntity member) {
         return ReviewEmojiMemberUnitDto.builder()
             .memberId(member.getMemberId())
             .nickname(member.getNickname())

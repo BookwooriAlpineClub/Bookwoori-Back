@@ -3,7 +3,7 @@ package org.bookwoori.core.domain.book.dto.response;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.LocalDate;
 import lombok.Builder;
-import org.bookwoori.core.domain.book.entity.Book;
+import org.bookwoori.core.domain.book.infrastructure.BookEntity;
 
 @Builder
 public record BookDetailsResponseDto(
@@ -29,8 +29,8 @@ public record BookDetailsResponseDto(
             .build();
     }
 
-    public Book toEntity() {
-        return Book.builder()
+    public BookEntity toEntity() {
+        return BookEntity.builder()
             .title(this.title)
             .author(this.author)
             .publisher(this.publisher)

@@ -4,11 +4,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
-import org.bookwoori.core.domain.book.entity.Book;
+import org.bookwoori.core.domain.book.infrastructure.BookEntity;
 import org.bookwoori.core.domain.climbing.dto.validation.ValidDateRange;
-import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
-import org.bookwoori.core.domain.server.entity.Server;
+import org.bookwoori.core.domain.climbing.infrastructure.ClimbingEntity;
+import org.bookwoori.core.domain.server.infrastructure.ServerEntity;
 
 @ValidDateRange
 public record ClimbingChannelCreateRequestDto(
@@ -22,8 +22,8 @@ public record ClimbingChannelCreateRequestDto(
     @NotNull LocalDate endDate
 ) {
 
-    public Climbing toEntity(Server server, Book book, ClimbingStatus status) {
-        return Climbing.builder()
+    public ClimbingEntity toEntity(ServerEntity server, BookEntity book, ClimbingStatus status) {
+        return ClimbingEntity.builder()
             .server(server)
             .book(book)
             .status(status)

@@ -5,8 +5,8 @@ import java.util.Optional;
 import lombok.Builder;
 import org.bookwoori.core.domain.book.dto.response.BookInfoDto;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
-import org.bookwoori.core.domain.record.entity.Record;
-import org.bookwoori.core.domain.review.entity.Review;
+import org.bookwoori.core.domain.record.infrastructure.RecordEntity;
+import org.bookwoori.core.domain.review.infrastructure.ReviewEntity;
 
 @Builder
 public record RecordDetailsResponseDto(
@@ -17,10 +17,11 @@ public record RecordDetailsResponseDto(
     int currentPage,
     int maxPage,
     BookInfoDto bookInfo,
-    Optional<Review> review
+    Optional<ReviewEntity> review
 ) {
 
-    public static RecordDetailsResponseDto from(Record record, Optional<Review> review) {
+    public static RecordDetailsResponseDto from(RecordEntity record,
+        Optional<ReviewEntity> review) {
         return RecordDetailsResponseDto.builder()
             .recordId(record.getRecordId())
             .startDate(record.getStartDate())
