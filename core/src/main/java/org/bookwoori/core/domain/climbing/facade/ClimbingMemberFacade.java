@@ -20,21 +20,21 @@ import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiListDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiMemberListResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiMemberUnitDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
-import org.bookwoori.core.domain.climbing.service.ClimbingService;
+import org.bookwoori.core.domain.climbing.service.ClimbingServiceImpl;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
-import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
+import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberServiceImpl;
 import org.bookwoori.core.domain.member.entity.Member;
-import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.member.service.MemberServiceImpl;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.entity.Record;
-import org.bookwoori.core.domain.record.service.RecordService;
+import org.bookwoori.core.domain.record.service.RecordServiceImpl;
 import org.bookwoori.core.domain.review.entity.Review;
-import org.bookwoori.core.domain.review.service.ReviewService;
+import org.bookwoori.core.domain.review.service.ReviewServiceImpl;
 import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
 import org.bookwoori.core.domain.reviewEmoji.entity.ReviewEmoji;
-import org.bookwoori.core.domain.reviewEmoji.service.ReviewEmojiService;
-import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
+import org.bookwoori.core.domain.reviewEmoji.service.ReviewEmojiServiceImpl;
+import org.bookwoori.core.domain.serverMember.service.ServerMemberServiceImpl;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
@@ -45,13 +45,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ClimbingMemberFacade {
 
-    private final MemberService memberService;
-    private final ClimbingService climbingService;
-    private final ClimbingMemberService climbingMemberService;
-    private final RecordService recordService;
-    private final ReviewService reviewService;
-    private final ReviewEmojiService reviewEmojiService;
-    private final ServerMemberService serverMemberService;
+    private final MemberServiceImpl memberService;
+    private final ClimbingServiceImpl climbingService;
+    private final ClimbingMemberServiceImpl climbingMemberService;
+    private final RecordServiceImpl recordService;
+    private final ReviewServiceImpl reviewService;
+    private final ReviewEmojiServiceImpl reviewEmojiService;
+    private final ServerMemberServiceImpl serverMemberService;
 
 
     public boolean toggleParticipation(Long climbingId) {

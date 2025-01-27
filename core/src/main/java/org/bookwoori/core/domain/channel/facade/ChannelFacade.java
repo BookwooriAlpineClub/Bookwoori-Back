@@ -2,11 +2,11 @@ package org.bookwoori.core.domain.channel.facade;
 
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.category.entity.Category;
-import org.bookwoori.core.domain.category.service.CategoryService;
+import org.bookwoori.core.domain.category.service.CategoryServiceImpl;
 import org.bookwoori.core.domain.channel.dto.request.ChannelCreateRequestDto;
 import org.bookwoori.core.domain.channel.dto.request.ChannelModifyRequestDto;
 import org.bookwoori.core.domain.channel.entity.Channel;
-import org.bookwoori.core.domain.channel.service.ChannelService;
+import org.bookwoori.core.domain.channel.service.ChannelServiceImpl;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ChannelFacade {
 
-    private final ChannelService channelService;
-    private final CategoryService categoryService;
+    private final ChannelServiceImpl channelService;
+    private final CategoryServiceImpl categoryService;
 
     @Transactional
     public void createChannel(ChannelCreateRequestDto requestDto) {

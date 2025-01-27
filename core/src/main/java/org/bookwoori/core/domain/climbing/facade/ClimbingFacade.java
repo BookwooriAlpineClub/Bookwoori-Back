@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
-import org.bookwoori.core.domain.book.service.BookService;
+import org.bookwoori.core.domain.book.service.BookServiceImpl;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.response.ClimbingDetailsResponseDto;
@@ -14,17 +14,17 @@ import org.bookwoori.core.domain.climbing.dto.response.ReadyClimbingListResponse
 import org.bookwoori.core.domain.climbing.dto.response.ServerClimbingListDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
-import org.bookwoori.core.domain.climbing.service.ClimbingService;
+import org.bookwoori.core.domain.climbing.service.ClimbingServiceImpl;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
-import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
+import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberServiceImpl;
 import org.bookwoori.core.domain.member.entity.Member;
-import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.member.service.MemberServiceImpl;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
-import org.bookwoori.core.domain.record.service.RecordService;
+import org.bookwoori.core.domain.record.service.RecordServiceImpl;
 import org.bookwoori.core.domain.server.entity.Server;
-import org.bookwoori.core.domain.server.service.ServerService;
-import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
+import org.bookwoori.core.domain.server.service.ServerServiceImpl;
+import org.bookwoori.core.domain.serverMember.service.ServerMemberServiceImpl;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,13 +36,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ClimbingFacade {
 
-    private final MemberService memberService;
-    private final ClimbingService climbingService;
-    private final ServerService serverService;
-    private final BookService bookService;
-    private final ClimbingMemberService climbingMemberService;
-    private final RecordService recordService;
-    private final ServerMemberService serverMemberService;
+    private final MemberServiceImpl memberService;
+    private final ClimbingServiceImpl climbingService;
+    private final ServerServiceImpl serverService;
+    private final BookServiceImpl bookService;
+    private final ClimbingMemberServiceImpl climbingMemberService;
+    private final RecordServiceImpl recordService;
+    private final ServerMemberServiceImpl serverMemberService;
 
     @Scheduled(cron = "0 0 0 * * *")
     public void updateClimbingStatus() {

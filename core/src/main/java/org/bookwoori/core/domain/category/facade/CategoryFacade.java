@@ -5,10 +5,10 @@ import org.bookwoori.core.domain.category.dto.request.CategoryCreateRequestDto;
 import org.bookwoori.core.domain.category.dto.request.CategoryLocateRequestDto;
 import org.bookwoori.core.domain.category.dto.request.CategoryUpdateRequestDto;
 import org.bookwoori.core.domain.category.entity.Category;
-import org.bookwoori.core.domain.category.service.CategoryService;
-import org.bookwoori.core.domain.channel.service.ChannelService;
+import org.bookwoori.core.domain.category.service.CategoryServiceImpl;
+import org.bookwoori.core.domain.channel.service.ChannelServiceImpl;
 import org.bookwoori.core.domain.server.entity.Server;
-import org.bookwoori.core.domain.server.service.ServerService;
+import org.bookwoori.core.domain.server.service.ServerServiceImpl;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
@@ -18,9 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CategoryFacade {
 
-    private final ChannelService channelService;
-    private final CategoryService categoryService;
-    private final ServerService serverService;
+    private final ChannelServiceImpl channelService;
+    private final CategoryServiceImpl categoryService;
+    private final ServerServiceImpl serverService;
 
     @Transactional
     public void createCategory(CategoryCreateRequestDto requestDto) {

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.dto.request.UpdateMemberRequestDto;
 import org.bookwoori.core.domain.member.dto.response.MemberResponseDto;
 import org.bookwoori.core.domain.member.entity.Member;
-import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.member.service.MemberServiceImpl;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.s3.S3Util;
@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional
 public class MemberFacade {
 
-    private final MemberService memberService;
+    private final MemberServiceImpl memberService;
 
     private final S3Util s3Util;
 
