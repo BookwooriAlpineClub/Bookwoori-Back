@@ -1,4 +1,4 @@
-package org.bookwoori.core.domain.xp;
+package org.bookwoori.core.domain.exp.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface GrantXpContainer {
-  GrantXp[] value();
+public @interface GrantExpContainer {
+  GrantExp[] value();
 }

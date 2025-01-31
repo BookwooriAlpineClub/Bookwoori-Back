@@ -1,4 +1,4 @@
-package org.bookwoori.core.domain.xp;
+package org.bookwoori.core.domain.exp.aspect;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +11,10 @@ import org.bookwoori.core.domain.climbing.entity.Climbing;
 import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
 import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
+import org.bookwoori.core.domain.exp.entity.ExpType;
+import org.bookwoori.core.domain.exp.annotation.GrantExp;
+import org.bookwoori.core.domain.exp.annotation.GrantExpContainer;
+import org.bookwoori.core.domain.exp.service.ExpService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.record.dto.request.RecordRequestDto;
@@ -26,55 +30,47 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class GrantXpAspect {
+public class GrantExpAspect {
 
   private final RecordService recordService;
   private final MemberService memberService;
   private final ReviewService reviewService;
   private final ClimbingMemberService climbingMemberService;
+  private final ExpService expService;
 
-
-  @Around("@annotation(grantXp) || @annotation(grantXpContainer)")
-  public Object handleGrantXp(ProceedingJoinPoint joinPoint, GrantXp grantXp, GrantXpContainer grantXpContainer) throws Throwable {
+  @Around("@annotation(grantEXp) || @annotation(grantEXpContainer)")
+  public Object handleGrantXp(ProceedingJoinPoint joinPoint, GrantExp grantEXp, GrantExpContainer grantEXpContainer) throws Throwable {
 
     // 메서드 실행
     Object result = joinPoint.proceed();
 
     // @GrantXp가 여러 개일 경우 처리
-    GrantXp[] grantXpAnnotations = grantXpContainer != null ? grantXpContainer.value() : new GrantXp[]{grantXp};
+    GrantExp[] grantExpAnnotations = grantEXpContainer != null ? grantEXpContainer.value() : new GrantExp[]{
+        grantEXp};
 
-    for (GrantXp annotation : grantXpAnnotations) {
-      XpType xpType = annotation.type();
-      double xp = calculateXp(xpType, joinPoint.getArgs());
+    for (GrantExp annotation : grantExpAnnotations) {
+      ExpType expType = annotation.type();
+      double exp = calculateXp(expType, joinPoint.getArgs());
 
-      if (xpType == XpType.FINISHED_CLIMBING){
+      if (expType == ExpType.FINISHED_CLIMBING){
         Climbing climbing = extractClimbing(joinPoint.getArgs());
         List<ClimbingMember> climbingMembers = climbingMemberService.getMembersByClimbing(climbing);
         for (ClimbingMember climbingMember : climbingMembers) {
-          grantXpToMember(climbingMember.getMember(), xp);
+          expService.grantExpToMember(climbingMember.getMember(), expType, exp);
         }
-        log.info("[GrantXpAspect] FINISHED_CLIMBING 경험치 {}m 부여 완료. 참여 멤버 수: {}", xp, climbingMembers.size());
+        log.info("[GrantExpAspect] FINISHED_CLIMBING 경험치 {}m 부여 완료. 참여 멤버 수: {}", exp, climbingMembers.size());
       }
       else{
         Member currentMember = memberService.getCurrentMember();
-        grantXpToMember(currentMember, xp);
-        log.info("[GrantXpAspect] 경험치 {}m 부여 완료. 현재 높이: {}m", xp, currentMember.getGrade().getHeight());
+        expService.grantExpToMember(currentMember, expType, exp);
+        log.info("[GrantExpAspect] 경험치 {}m 부여 완료. 현재 높이: {}m", exp, currentMember.getGrade().getHeight());
       }
     }
-
     return result;
   }
 
-  public void grantXpToMember(Member member, double xp) {
-    if (member == null) {
-      throw new CustomException(ErrorCode.BAD_REQUEST);
-    }
-    member.updateHeight(xp);
-  }
-
-
-  private double calculateXp(XpType xpType, Object[] args) throws CustomException {
-    switch (xpType) {
+  private double calculateXp(ExpType expType, Object[] args) throws CustomException {
+    switch (expType) {
       case FINISHED_CLIMBING: {
         Climbing climbing = extractClimbing(args);
         if (climbing != null && climbing.getStatus() == ClimbingStatus.FINISHED) {

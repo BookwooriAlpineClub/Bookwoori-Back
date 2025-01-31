@@ -24,7 +24,7 @@ public enum Grade {
 
     private final int level;
     private final String mountain;
-    public int height;
+    public double height;
 
     @JsonCreator
     public static Grade from(String s) {

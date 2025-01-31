@@ -18,6 +18,8 @@ import org.bookwoori.core.domain.climbing.service.ClimbingService;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
 import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
+import org.bookwoori.core.domain.exp.annotation.GrantExp;
+import org.bookwoori.core.domain.exp.entity.ExpType;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
@@ -25,8 +27,6 @@ import org.bookwoori.core.domain.record.service.RecordService;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
-import org.bookwoori.core.domain.xp.GrantXp;
-import org.bookwoori.core.domain.xp.XpType;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -72,7 +72,7 @@ public class ClimbingFacade {
     }
 
     @Transactional
-    @GrantXp(type = XpType.FINISHED_CLIMBING)
+    @GrantExp(type = ExpType.FINISHED_CLIMBING)
     public void updateEndClimbingStatus(Climbing climbing, List<ClimbingMember> climbingMemberList) {
         boolean allFinished = climbingMemberList.stream()
             .allMatch(member -> recordService.getClimbingMemberRecordOpt(member, climbing.getBook())
@@ -84,7 +84,7 @@ public class ClimbingFacade {
             climbing.updateStatus(ClimbingStatus.FAILED);
         }
     }
-    
+
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Server server = serverService.getServerById(requestDto.serverId());
