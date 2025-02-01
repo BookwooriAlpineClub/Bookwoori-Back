@@ -13,11 +13,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.bookwoori.core.global.BaseTimeEntity;
 
 @Entity
 @Table(name = "member")
 @Getter
+@Log4j2
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
 
@@ -82,7 +84,7 @@ public class Member extends BaseTimeEntity {
         if (!this.grade.equals(newGrade)) {
             this.grade = newGrade;
         }
-        return xp;
+        return this.grade.height;
     }
 
     public void updateMemberProfileImg(String url) {

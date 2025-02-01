@@ -68,16 +68,21 @@ public class RecordFacade {
         Member currentMember = memberService.getCurrentMember();
         Record record = recordService.getRecordById(recordId);
         // Record 업데이트
-        Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
         record.updateRecord(requestDto.toRecordEntity(currentMember, record.getBook()));
-        // Review 업데이트 (reviewContent가 있을 경우만)
-        if (requestDto.reviewContent() != null && !requestDto.reviewContent().isBlank()) {
+        // Review 업데이트
+        if (reviewService.getReviewByRecordId(
+            record.getRecordId()).isPresent()) {
+            // Review 업데이트
             Review review = reviewService.getReviewByRecordId(recordId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND)); // 리뷰가 없으면 예외
             review.updateReview(requestDto.reviewContent());
         }
+        else if (requestDto.reviewContent() != null && reviewService.getReviewByRecordId(
+            record.getRecordId()).isEmpty()){
+            // Review 생성
+            reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.reviewContent()));
+        }
     }
-
 
     public void deleteRecordAndReview(Long recordId) {
         if (reviewService.getReviewByRecordId(recordId).isPresent()) {

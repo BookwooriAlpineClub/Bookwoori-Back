@@ -40,8 +40,6 @@ public class GrantExpAspect {
 
   @Around("@annotation(grantExpContainer)")
   public Object handleGrantXp(ProceedingJoinPoint joinPoint, GrantExpContainer grantExpContainer) throws Throwable {
-    // 메서드 실행
-    Object result = joinPoint.proceed();
 
     // @GrantXp가 여러 개일 경우 처리
     GrantExp[] grantExpAnnotations = grantExpContainer.value();
@@ -49,20 +47,22 @@ public class GrantExpAspect {
     for (GrantExp annotation : grantExpAnnotations) {
       ExpType expType = annotation.type();
       double exp = calculateXp(expType, joinPoint.getArgs());
-
-      if (expType == ExpType.FINISHED_CLIMBING){
-        Climbing climbing = extractClimbing(joinPoint.getArgs());
-        List<ClimbingMember> climbingMembers = climbingMemberService.getMembersByClimbing(climbing);
-        for (ClimbingMember climbingMember : climbingMembers) {
-          expService.grantExpToMember(climbingMember.getMember(), expType, exp);
-        }
-      }
-      else{
-        log.info("ifelse문 안쪽으로 진입");
-        Member currentMember = memberService.getCurrentMember();
-        expService.grantExpToMember(currentMember, expType, exp);
+      if(exp != 0) {
+          if (expType == ExpType.FINISHED_CLIMBING) {
+            Climbing climbing = extractClimbing(joinPoint.getArgs());
+            List<ClimbingMember> climbingMembers = climbingMemberService.getMembersByClimbing(
+                climbing);
+            for (ClimbingMember climbingMember : climbingMembers) {
+              expService.grantExpToMember(climbingMember.getMember(), expType, exp);
+            }
+          } else {
+            Member currentMember = memberService.getCurrentMember();
+            expService.grantExpToMember(currentMember, expType, exp);
+          }
       }
     }
+    // 메서드 실행
+    Object result = joinPoint.proceed();
     return result;
   }
 
@@ -84,8 +84,8 @@ public class GrantExpAspect {
           return requestDto.currentPage() * 0.1;
         } else {
           // updateRecord
-          Record existingRecord = recordService.getRecordById(recordId);
-          int previousPage = existingRecord.getMaxPage();
+          Record record = recordService.getRecordById(recordId);
+          int previousPage = record.getMaxPage();
           int newPage = requestDto.currentPage();
           return Math.max(newPage - previousPage, 0) * 0.1;
         }
@@ -96,8 +96,8 @@ public class GrantExpAspect {
         if (recordId == null) {
           if (requestDto.star() > 0) return 3.0;
         } else {
-          Record existingRecord = recordService.getRecordById(recordId);
-          int previousStar = existingRecord.getStar();
+          Record record = recordService.getRecordById(recordId);
+          int previousStar = record.getStar();
           int newStar = requestDto.star();
           if (previousStar == 0 && newStar > 0) return 3.0;
         }
@@ -108,10 +108,10 @@ public class GrantExpAspect {
         Long recordId = extractRecordId(args);
 
         if (recordId == null) {
-          if (!requestDto.reviewContent().isBlank()) return 2.0;
+          if (requestDto.reviewContent() != null) return 2.0;
         } else {
           Optional<Review> existingReview = reviewService.getReviewByRecordId(recordId);
-          if (!existingReview.isPresent() && !requestDto.reviewContent().isBlank()) return 2.0;
+          if (existingReview.isEmpty() && requestDto.reviewContent() != null) return 2.0;
         }
         break;
       }

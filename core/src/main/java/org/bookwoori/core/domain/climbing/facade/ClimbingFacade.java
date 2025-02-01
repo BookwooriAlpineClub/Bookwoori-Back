@@ -65,7 +65,16 @@ public class ClimbingFacade {
             }
             // 종료 날짜가 지난 경우 상태 변경
             if (climbing.getEndDate().isBefore(today)) {
-                updateEndClimbingStatus(climbing, climbingMemberList);
+                boolean allFinished = climbingMemberList.stream()
+                    .allMatch(member -> recordService.getClimbingMemberRecordOpt(member, climbing.getBook())
+                        .map(record -> record.getStatus() == ReadingStatus.FINISHED)
+                        .orElse(false));
+                if (allFinished) {
+                    updateFinishedClimbingStatus(climbing);
+                }
+                else {
+                    climbing.updateStatus(ClimbingStatus.FAILED);
+                }
             }
             climbingService.saveClimbingChannel(climbing);
         }
@@ -73,16 +82,8 @@ public class ClimbingFacade {
 
     @Transactional
     @GrantExp(type = ExpType.FINISHED_CLIMBING)
-    public void updateEndClimbingStatus(Climbing climbing, List<ClimbingMember> climbingMemberList) {
-        boolean allFinished = climbingMemberList.stream()
-            .allMatch(member -> recordService.getClimbingMemberRecordOpt(member, climbing.getBook())
-                .map(record -> record.getStatus() == ReadingStatus.FINISHED)
-                .orElse(false));
-        if (allFinished) {
-            climbing.updateStatus(ClimbingStatus.FINISHED);
-        } else {
-            climbing.updateStatus(ClimbingStatus.FAILED);
-        }
+    public void updateFinishedClimbingStatus(Climbing climbing){
+        climbing.updateStatus(ClimbingStatus.FINISHED);
     }
 
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {

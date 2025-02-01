@@ -13,7 +13,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import lombok.AccessLevel;
@@ -76,6 +78,9 @@ public class Record {
         this.startDate = record.startDate;
         this.endDate = record.endDate;
         this.currentPage = record.currentPage;
+        if (this.maxPage < record.currentPage) {
+            this.maxPage = currentPage;
+        }
     }
 
 }
