@@ -3,10 +3,12 @@ package org.bookwoori.core.domain.climbing.dto.response;
 import java.util.List;
 import lombok.Builder;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
+import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.review.entity.Review;
 
 @Builder
 public record ClimbingMemberReviewUnitDto(
+    ReadingStatus readingStatus,
     Long memberId,
     String nickname,
     String profileImg,
@@ -18,6 +20,7 @@ public record ClimbingMemberReviewUnitDto(
     public static ClimbingMemberReviewUnitDto from(ClimbingMember member, Review review,
         List<ReviewEmojiListCountDto> reviewEmojiList) {
         return ClimbingMemberReviewUnitDto.builder()
+            .readingStatus(review.getRecord().getStatus())
             .memberId(member.getMember().getMemberId())
             .nickname(member.getMember().getNickname())
             .profileImg(member.getMember().getProfileImg())
