@@ -38,15 +38,13 @@ public class GrantExpAspect {
   private final ClimbingMemberService climbingMemberService;
   private final ExpService expService;
 
-  @Around("@annotation(grantEXp) || @annotation(grantEXpContainer)")
-  public Object handleGrantXp(ProceedingJoinPoint joinPoint, GrantExp grantEXp, GrantExpContainer grantEXpContainer) throws Throwable {
-
+  @Around("@annotation(grantExpContainer)")
+  public Object handleGrantXp(ProceedingJoinPoint joinPoint, GrantExpContainer grantExpContainer) throws Throwable {
     // 메서드 실행
     Object result = joinPoint.proceed();
 
     // @GrantXp가 여러 개일 경우 처리
-    GrantExp[] grantExpAnnotations = grantEXpContainer != null ? grantEXpContainer.value() : new GrantExp[]{
-        grantEXp};
+    GrantExp[] grantExpAnnotations = grantExpContainer.value();
 
     for (GrantExp annotation : grantExpAnnotations) {
       ExpType expType = annotation.type();
@@ -58,12 +56,11 @@ public class GrantExpAspect {
         for (ClimbingMember climbingMember : climbingMembers) {
           expService.grantExpToMember(climbingMember.getMember(), expType, exp);
         }
-        log.info("[GrantExpAspect] FINISHED_CLIMBING 경험치 {}m 부여 완료. 참여 멤버 수: {}", exp, climbingMembers.size());
       }
       else{
+        log.info("ifelse문 안쪽으로 진입");
         Member currentMember = memberService.getCurrentMember();
         expService.grantExpToMember(currentMember, expType, exp);
-        log.info("[GrantExpAspect] 경험치 {}m 부여 완료. 현재 높이: {}m", exp, currentMember.getGrade().getHeight());
       }
     }
     return result;
