@@ -170,8 +170,10 @@ public class ClimbingMemberFacade {
                     review.getReviewId(),
                     Collections.emptyMap());
                 List<ReviewEmojiListCountDto> reviewEmojiList = emojiCounts.entrySet().stream()
-                    .map(entry -> new ReviewEmojiListCountDto(entry.getKey(),
-                        entry.getValue().intValue()))
+                    .map(entry -> {
+                        boolean isClicked = reviewEmojiService.hasClickedEmoji(review, memberService.getCurrentMember(), entry.getKey());
+                        return new ReviewEmojiListCountDto(isClicked, entry.getKey(), entry.getValue().intValue());
+                    })
                     .collect(Collectors.toList());
                 ClimbingMember climbingMember = climbingMemberService.getClimbingMemberWithMember(
                     climbingId, memberId);

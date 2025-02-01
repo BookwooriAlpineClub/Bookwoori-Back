@@ -17,4 +17,6 @@ public interface ReviewEmojiRepository extends JpaRepository<ReviewEmoji, Long> 
         Review review, EmojiType emoji);
 
     List<ReviewEmoji> findByReview(Review review);
+
+    boolean existsByReviewAndMemberAndEmoji(Review review, Member member, EmojiType emojiType);
 }
