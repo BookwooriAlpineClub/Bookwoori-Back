@@ -25,6 +25,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication) throws IOException, ServletException {
+        // INACTIVE 관련 에러 처리 필요
+
         // accessToken 발급
         Long memberId = tokenProvider.extractMemberId(authentication);
         Long kakaoId = tokenProvider.extractKakaoId(authentication);
