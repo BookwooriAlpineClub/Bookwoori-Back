@@ -10,12 +10,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bookwoori.core.domain.category.dto.response.CategoryResponseDto;
 import org.bookwoori.core.domain.category.entity.Category;
-import org.bookwoori.core.domain.category.service.CategoryServiceImpl;
+import org.bookwoori.core.domain.category.service.CategoryService;
 import org.bookwoori.core.domain.channel.dto.response.ChannelResponseDto;
 import org.bookwoori.core.domain.channel.entity.Channel;
-import org.bookwoori.core.domain.channel.service.ChannelServiceImpl;
+import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.bookwoori.core.domain.member.entity.Member;
-import org.bookwoori.core.domain.member.service.MemberServiceImpl;
+import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
@@ -27,10 +27,10 @@ import org.bookwoori.core.domain.server.dto.response.ServerItemDto;
 import org.bookwoori.core.domain.server.dto.response.ServerListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
-import org.bookwoori.core.domain.server.service.ServerServiceImpl;
+import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.entity.ServerMember;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
-import org.bookwoori.core.domain.serverMember.service.ServerMemberServiceImpl;
+import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.bookwoori.core.global.s3.S3Util;
@@ -48,11 +48,11 @@ public class ServerFacade {
     private final S3Util s3Util;
     private final StringRedisTemplate redisTemplate;
 
-    private final ServerServiceImpl serverService;
-    private final MemberServiceImpl memberService;
-    private final CategoryServiceImpl categoryService;
-    private final ChannelServiceImpl channelService;
-    private final ServerMemberServiceImpl serverMemberService;
+    private final ServerService serverService;
+    private final MemberService memberService;
+    private final CategoryService categoryService;
+    private final ChannelService channelService;
+    private final ServerMemberService serverMemberService;
 
     /* TODO @crHwang0822 리팩토링 */
     @Transactional
