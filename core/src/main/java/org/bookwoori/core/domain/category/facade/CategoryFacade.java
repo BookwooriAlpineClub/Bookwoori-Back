@@ -22,6 +22,7 @@ public class CategoryFacade {
     private final CategoryServiceImpl categoryService;
     private final ServerServiceImpl serverService;
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void createCategory(CategoryCreateRequestDto requestDto) {
         Server server = serverService.getServerById(requestDto.serverId());
@@ -37,6 +38,7 @@ public class CategoryFacade {
         category.modifyName(requestDto.name());
     }
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void deleteCategory(Long categoryId) {
         Category categoryToDelete = categoryService.getCategoryWithChannels(categoryId);
@@ -54,6 +56,7 @@ public class CategoryFacade {
         categoryService.delete(categoryToDelete);
     }
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void locateCategory(Long categoryId, CategoryLocateRequestDto requestDto) {
         Category categoryToMove = categoryService.getCategoryById(categoryId);

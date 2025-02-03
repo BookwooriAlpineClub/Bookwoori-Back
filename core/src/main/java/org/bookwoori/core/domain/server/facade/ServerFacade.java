@@ -54,6 +54,7 @@ public class ServerFacade {
     private final ChannelServiceImpl channelService;
     private final ServerMemberServiceImpl serverMemberService;
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public ServerCreateResponseDto createServer(ServerCreateRequestDto requestDto) {
         //서버 생성
@@ -242,6 +243,7 @@ public class ServerFacade {
         server.updateServerImg(s3Util.uploadImage(newImage, "server"));
     }
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void delegateServerRole(Long serverId, ServerRoleDelegateRequestDto requestDto) {
         Server server = serverService.getServerById(serverId);

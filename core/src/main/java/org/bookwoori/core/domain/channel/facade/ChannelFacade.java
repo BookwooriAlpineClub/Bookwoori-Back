@@ -19,6 +19,7 @@ public class ChannelFacade {
     private final ChannelServiceImpl channelService;
     private final CategoryServiceImpl categoryService;
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void createChannel(ChannelCreateRequestDto requestDto) {
         Category category = categoryService.getCategoryById(requestDto.categoryId());
@@ -28,6 +29,7 @@ public class ChannelFacade {
         channelService.save(channel);
     }
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void modifyChannel(Long channelId, ChannelModifyRequestDto requestDto) {
         Channel channel = channelService.getChannelById(channelId);
@@ -48,6 +50,7 @@ public class ChannelFacade {
         channel.modifyName(requestDto.name());
     }
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void deleteChannel(Long channelId) {
         Channel channel = channelService.getChannelById(channelId);
