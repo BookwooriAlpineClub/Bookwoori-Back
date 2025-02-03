@@ -54,8 +54,7 @@ public class MessageSender { //토픽에 이벤트를 발행
     public void replyToDirectMessage(DirectMessageReplyRequestDto requestDto, Long memberId) {
         DirectMessage parentDirectMessage = directMessageRepository.findById(requestDto.parentId())
             .orElseThrow(() -> new CustomException(ErrorCode.DIRECT_MESSAGE_NOT_FOUND));
-        DirectMessage directMessage = requestDto.toEntity(memberId,
-            parentDirectMessage.getContent());
+        DirectMessage directMessage = requestDto.toEntity(memberId, parentDirectMessage);
         directMessageRepository.save(directMessage);
         kafkaTemplate.send(KafkaConstants.DIRECT_CHAT_EVENT_TOPIC, directMessage);
     }

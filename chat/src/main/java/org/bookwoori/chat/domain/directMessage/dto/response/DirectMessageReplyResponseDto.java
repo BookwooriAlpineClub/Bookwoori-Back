@@ -16,6 +16,7 @@ public record DirectMessageReplyResponseDto(
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdAt,
     String parentId,
+    Long parentMemberId,
     String parentContent
 ) {
 
@@ -28,6 +29,7 @@ public record DirectMessageReplyResponseDto(
             .content(directMessage.getContent())
             .createdAt(directMessage.getCreatedAt())
             .parentId(directMessage.getParentId())
+            .parentMemberId(directMessage.getParentMemberId())
             .parentContent(directMessage.getParentContent())
             .build();
     }
