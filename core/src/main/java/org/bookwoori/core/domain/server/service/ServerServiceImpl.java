@@ -14,11 +14,11 @@ public class ServerServiceImpl implements ServerService {
 
     private final ServerRepository serverRepository;
 
-    public Server saveServer(Server server) {
+    public Server save(Server server) {
         return serverRepository.save(server);
     }
 
-    public void deleteServer(Server server) {
+    public void delete(Server server) {
         serverRepository.delete(server);
     }
 

@@ -58,7 +58,7 @@ public class ServerFacade {
         //서버 저장
         Server server = requestDto.toEntity(
             s3Util.uploadImage(requestDto.serverImg(), "server"));
-        serverService.saveServer(server);
+        serverService.save(server);
 
         //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
         Member member = memberService.getCurrentMember();
@@ -129,7 +129,7 @@ public class ServerFacade {
     }
 
     @Transactional
-    public Object createInviteCode(Long serverId) {
+    public String createInviteCode(Long serverId) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
         String uuid = UUID.randomUUID().toString().replace("-", "");
 
@@ -143,11 +143,10 @@ public class ServerFacade {
         ops.set("server:invitation:" + inviteCode, String.valueOf(serverId), 1,
             TimeUnit.DAYS); // Redis에 저장, TTL 1일
         return inviteCode;
-
     }
 
     @Transactional(readOnly = true)
-    public Object getServerByInviteCode(String inviteCode) {
+    public InviteCodeServerResponseDto getServerByInviteCode(String inviteCode) {
 
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
 
@@ -162,7 +161,6 @@ public class ServerFacade {
         int memberCount = serverMemberService.getMemberCount(server);
 
         return InviteCodeServerResponseDto.from(server, owner.getNickname(), memberCount);
-
     }
 
     @Transactional
@@ -252,6 +250,6 @@ public class ServerFacade {
         }
 
         s3Util.deleteImage(server.getServerImg());
-        serverService.deleteServer(server);
+        serverService.delete(server);
     }
 }
