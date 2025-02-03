@@ -24,7 +24,7 @@ public enum Grade {
 
     private final int level;
     private final String mountain;
-    public double height;
+    public final int height;
 
     @JsonCreator
     public static Grade from(String s) {
@@ -37,7 +37,7 @@ public enum Grade {
 
     public static Grade findGradeByHeight(double height) {
         for (Grade grade : Grade.values()) {
-            if (height <= grade.height) {
+            if (height >= grade.height) {
                 return grade;
             }
         }

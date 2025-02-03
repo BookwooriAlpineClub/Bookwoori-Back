@@ -28,10 +28,10 @@ public class ExpServiceImpl implements ExpService {
     if (member == null) {
       throw new CustomException(ErrorCode.BAD_REQUEST);
     }
-    double height = member.updateHeight(amount);
+    double totalHeight = member.updateHeight(amount);
     Exp expLog = Exp.builder()
         .member(member)
-        .height(height)
+        .height(totalHeight)
         .amount(amount)
         .expType(expType)
         .build();
