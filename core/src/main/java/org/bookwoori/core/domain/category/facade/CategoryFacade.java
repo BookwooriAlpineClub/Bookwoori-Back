@@ -28,7 +28,7 @@ public class CategoryFacade {
         Category category = requestDto.toEntity(server);
         Category beforeCategory = categoryService.getLastNodeByServer(server);
         category.setBeforeNode(beforeCategory);
-        categoryService.saveCategory(category);
+        categoryService.save(category);
     }
 
     @Transactional

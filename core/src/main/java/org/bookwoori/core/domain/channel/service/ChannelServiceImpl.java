@@ -16,7 +16,7 @@ public class ChannelServiceImpl implements ChannelService {
 
     private final ChannelRepository channelRepository;
 
-    public Channel saveChannel(Channel channel) {
+    public Channel save(Channel channel) {
         return channelRepository.save(channel);
     }
 
@@ -36,7 +36,7 @@ public class ChannelServiceImpl implements ChannelService {
         channelRepository.save(voiceChannel);
     }
 
-    public void deleteChannel(Channel channel) {
+    public void delete(Channel channel) {
         channelRepository.delete(channel);
     }
 

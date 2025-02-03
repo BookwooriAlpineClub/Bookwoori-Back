@@ -25,7 +25,7 @@ public class ChannelFacade {
         Channel channel = requestDto.toEntity(category);
         Channel beforeChannel = channelService.getLastNodeByCategory(category);
         channel.setBeforeNode(beforeChannel);
-        channelService.saveChannel(channel);
+        channelService.save(channel);
     }
 
     @Transactional
@@ -52,6 +52,6 @@ public class ChannelFacade {
     public void deleteChannel(Long channelId) {
         Channel channel = channelService.getChannelById(channelId);
         channelService.detach(channel);
-        channelService.deleteChannel(channel);
+        channelService.delete(channel);
     }
 }

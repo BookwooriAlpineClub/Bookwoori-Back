@@ -63,7 +63,7 @@ public class ServerFacade {
         //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
         Member member = memberService.getCurrentMember();
         //서버장을 ServerMember 테이블에 추가
-        serverMemberService.saveServerMember(member, server, ServerRole.OWNER);
+        serverMemberService.save(member, server, ServerRole.OWNER);
 
         //DEFAULT 카테고리/채널 생성 및 저장
         Category category = categoryService.makeDefaultCategory(server);
@@ -181,7 +181,7 @@ public class ServerFacade {
         if (isJoined) {
             throw new CustomException(ErrorCode.ALREADY_JOINED_SERVER);
         } else {
-            serverMemberService.saveServerMember(currentMember, server,
+            serverMemberService.save(currentMember, server,
                 ServerRole.MEMBER); // 서버멤버 생성
         }
     }
@@ -203,7 +203,7 @@ public class ServerFacade {
             throw new CustomException(ErrorCode.DELEGATION_REQUIRED);
         }
 
-        serverMemberService.deleteServerMember(server, member);
+        serverMemberService.delete(server, member);
     }
 
     @Transactional
