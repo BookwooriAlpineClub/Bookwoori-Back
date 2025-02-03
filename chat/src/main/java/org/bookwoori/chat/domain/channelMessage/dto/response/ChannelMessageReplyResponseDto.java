@@ -16,6 +16,7 @@ public record ChannelMessageReplyResponseDto(
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdAt,
     String parentId,
+    Long parentMemberId,
     String parentContent
 ) {
 
@@ -28,6 +29,7 @@ public record ChannelMessageReplyResponseDto(
             .content(channelMessage.getContent())
             .createdAt(channelMessage.getCreatedAt())
             .parentId(channelMessage.getParentId())
+            .parentMemberId(channelMessage.getParentMemberId())
             .parentContent(channelMessage.getParentContent())
             .build();
     }
