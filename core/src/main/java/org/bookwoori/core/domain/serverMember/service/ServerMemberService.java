@@ -9,7 +9,7 @@ import org.bookwoori.core.domain.serverMember.entity.ServerRole;
 
 public interface ServerMemberService {
 
-    ServerMember save(Member member, Server server, ServerRole role);
+    ServerMember save(ServerMember serverMember);
 
     boolean isJoined(Member member, Server server);
 

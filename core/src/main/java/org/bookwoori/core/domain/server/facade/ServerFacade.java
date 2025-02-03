@@ -28,6 +28,7 @@ import org.bookwoori.core.domain.server.dto.response.ServerListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerServiceImpl;
+import org.bookwoori.core.domain.serverMember.entity.ServerMember;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
 import org.bookwoori.core.domain.serverMember.service.ServerMemberServiceImpl;
 import org.bookwoori.core.global.exception.CustomException;
@@ -55,17 +56,21 @@ public class ServerFacade {
 
     @Transactional
     public ServerCreateResponseDto createServer(ServerCreateRequestDto requestDto) {
-        //서버 저장
+        //서버 생성
         Server server = requestDto.toEntity(
             s3Util.uploadImage(requestDto.serverImg(), "server"));
         serverService.save(server);
 
-        //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
-        Member member = memberService.getCurrentMember();
-        //서버장을 ServerMember 테이블에 추가
-        serverMemberService.save(member, server, ServerRole.OWNER);
+        //서버장 생성
+        Member currentMember = memberService.getCurrentMember();
+        ServerMember serverMember = ServerMember.builder()
+            .server(server)
+            .member(currentMember)
+            .role(ServerRole.OWNER)
+            .build();
+        serverMemberService.save(serverMember);
 
-        //DEFAULT 카테고리/채널 생성 및 저장
+        //기본 카테고리 및 채널 생성
         Category category = categoryService.makeDefaultCategory(server);
         channelService.makeDefaultChannels(category);
         return ServerCreateResponseDto.from(server);
@@ -181,8 +186,13 @@ public class ServerFacade {
         if (isJoined) {
             throw new CustomException(ErrorCode.ALREADY_JOINED_SERVER);
         } else {
-            serverMemberService.save(currentMember, server,
-                ServerRole.MEMBER); // 서버멤버 생성
+            // 서버멤버 생성
+            ServerMember serverMember = ServerMember.builder()
+                .server(server)
+                .member(currentMember)
+                .role(ServerRole.MEMBER)
+                .build();
+            serverMemberService.save(serverMember);
         }
     }
 

@@ -20,12 +20,7 @@ public class ServerMemberServiceImpl implements ServerMemberService {
 
     private final ServerMemberRepository serverMemberRepository;
 
-    public ServerMember save(Member member, Server server, ServerRole role) {
-        ServerMember serverMember = ServerMember.builder()
-            .member(member)
-            .server(server)
-            .role(role)
-            .build();
+    public ServerMember save(ServerMember serverMember) {
         return serverMemberRepository.save(serverMember);
     }
 
