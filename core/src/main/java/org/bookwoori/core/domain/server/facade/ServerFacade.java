@@ -1,13 +1,13 @@
 package org.bookwoori.core.domain.server.facade;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.bookwoori.core.domain.category.dto.response.CategoryResponseDto;
 import org.bookwoori.core.domain.category.entity.Category;
 import org.bookwoori.core.domain.category.service.CategoryService;
@@ -33,20 +33,19 @@ import org.bookwoori.core.domain.serverMember.entity.ServerRole;
 import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
-import org.bookwoori.core.global.s3.S3Util;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.bookwoori.core.global.util.RedisUtil;
+import org.bookwoori.core.global.util.S3Util;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @RequiredArgsConstructor
-@Log4j2
+@Builder
 public class ServerFacade {
 
     private final S3Util s3Util;
-    private final StringRedisTemplate redisTemplate;
+    private final RedisUtil redisUtil;
 
     private final ServerService serverService;
     private final MemberService memberService;
@@ -136,7 +135,6 @@ public class ServerFacade {
 
     @Transactional
     public String createInviteCode(Long serverId) {
-        ValueOperations<String, String> ops = redisTemplate.opsForValue();
         String uuid = UUID.randomUUID().toString().replace("-", "");
 
         Random random = new Random();
@@ -146,17 +144,17 @@ public class ServerFacade {
 
         String inviteCode = uuid.substring(startIndex, endIndex);
 
-        ops.set("server:invitation:" + inviteCode, String.valueOf(serverId), 1,
-            TimeUnit.DAYS); // Redis에 저장, TTL 1일
+        // Redis에 저장, TTL 1일
+        redisUtil.setValuesWithTimeout("server:invitation:" + inviteCode, String.valueOf(serverId),
+            Duration.ofDays(1));
+
         return inviteCode;
     }
 
     @Transactional(readOnly = true)
     public InviteCodeServerResponseDto getServerByInviteCode(String inviteCode) {
+        String value = (String) redisUtil.getValues("server:invitation:" + inviteCode);
 
-        ValueOperations<String, String> ops = redisTemplate.opsForValue();
-
-        String value = ops.get("server:invitation:" + inviteCode);
         if (value == null) {
             throw new CustomException(ErrorCode.INVALID_INVITE_CODE);
         }
@@ -171,9 +169,8 @@ public class ServerFacade {
 
     @Transactional
     public void createServerMember(String inviteCode) {
-        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+        String value = (String) redisUtil.getValues("server:invitation:" + inviteCode);
 
-        String value = ops.get("server:invitation:" + inviteCode);
         if (value == null) {
             throw new CustomException(ErrorCode.INVALID_INVITE_CODE);
         }
