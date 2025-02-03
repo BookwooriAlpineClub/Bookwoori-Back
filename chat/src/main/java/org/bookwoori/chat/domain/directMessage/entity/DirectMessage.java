@@ -47,6 +47,9 @@ public class DirectMessage {
      * 데이터베이스에 저장되지 않는 필드
      */
     @Transient
+    private Long parentMemberId;
+
+    @Transient
     private String parentContent;
 
     @Transient
