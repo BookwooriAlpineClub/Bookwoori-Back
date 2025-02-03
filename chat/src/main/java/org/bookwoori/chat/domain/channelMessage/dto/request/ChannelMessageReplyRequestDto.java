@@ -12,7 +12,7 @@ public record ChannelMessageReplyRequestDto(
     String content
 ) {
 
-    public ChannelMessage toEntity(Long memberId, String parentContent) {
+    public ChannelMessage toEntity(Long memberId, ChannelMessage parentMessage) {
         return ChannelMessage.builder()
             .parentId(this.parentId)
             .channelId(this.channelId)
@@ -20,7 +20,8 @@ public record ChannelMessageReplyRequestDto(
             .type(this.type)
             .content(this.content)
             .createdAt(LocalDateTime.now())
-            .parentContent(parentContent)
+            .parentMemberId(parentMessage.getMemberId())
+            .parentContent(parentMessage.getContent())
             .eventType(EventType.REPLY)
             .build();
     }

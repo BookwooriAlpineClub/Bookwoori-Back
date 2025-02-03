@@ -119,8 +119,7 @@ public class MessageSender { //토픽에 이벤트를 발행
         ChannelMessage parentChannelMessage = channelMessageRepository.findById(
                 requestDto.parentId())
             .orElseThrow(() -> new CustomException(ErrorCode.CHANNEL_MESSAGE_NOT_FOUND));
-        ChannelMessage channelMessage = requestDto.toEntity(memberId,
-            parentChannelMessage.getContent());
+        ChannelMessage channelMessage = requestDto.toEntity(memberId, parentChannelMessage);
         channelMessageRepository.save(channelMessage);
         kafkaTemplate.send(KafkaConstants.CHANNEL_CHAT_EVENT_TOPIC, channelMessage);
     }
