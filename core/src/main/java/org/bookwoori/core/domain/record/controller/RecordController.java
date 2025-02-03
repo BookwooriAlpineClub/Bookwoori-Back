@@ -41,7 +41,8 @@ public class RecordController {
         recordFacade.updateRecord(recordId, requestDto);
         return ResponseEntity.ok().build();
     }
-    
+
+
     @Operation(summary = "책 기록 삭제", description = "책기록을 삭제합니다.")
     @DeleteMapping("/{recordId}")
     public ResponseEntity<?> deleteRecord(@PathVariable Long recordId) {

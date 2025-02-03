@@ -20,7 +20,8 @@ public record RecordRequestDto(
     int star,
     LocalDate startDate,
     LocalDate endDate,
-    int currentPage
+    int currentPage,
+    String reviewContent
 ) {
 
     public Record toRecordEntity(Member currentMember, Book book) {
