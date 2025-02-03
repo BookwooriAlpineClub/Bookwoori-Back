@@ -37,11 +37,7 @@ public class RecordFacade {
     private final BookService bookService;
     private final ReviewService reviewService;
 
-    @GrantExpContainer({
-        @GrantExp(type = ExpType.READ_PAGE),
-        @GrantExp(type = ExpType.ADD_STAR),
-        @GrantExp(type = ExpType.WRITE_REVIEW)
-    })
+    @GrantExp(type = ExpType.READ_PAGE)
     public void createRecord(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
@@ -49,45 +45,17 @@ public class RecordFacade {
             throw new CustomException(ErrorCode.ALREADY_EXIST_RECORD);
         }
         Record record = requestDto.toRecordEntity(currentMember, book);
-        Record newRecord = recordService.saveRecord(record);
-        if (requestDto.reviewContent() != null && !requestDto.reviewContent().isBlank()) {
-            if (reviewService.existsReviewByMemberAndBook(currentMember, book)) {
-                throw new CustomException(ErrorCode.ALREADY_EXIST_REVIEW);
-            }
-            reviewService.saveReview(
-                requestDto.toReviewEntity(newRecord, requestDto.reviewContent()));
-        }
+        recordService.saveRecord(record);
     }
 
-    @GrantExpContainer({
-        @GrantExp(type = ExpType.READ_PAGE),
-        @GrantExp(type = ExpType.ADD_STAR),
-        @GrantExp(type = ExpType.WRITE_REVIEW)
-    })
+    @GrantExp(type = ExpType.READ_PAGE)
     public void updateRecord(Long recordId, RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Record record = recordService.getRecordById(recordId);
-        // Record 업데이트
         record.updateRecord(requestDto.toRecordEntity(currentMember, record.getBook()));
-        // Review 업데이트
-        if (reviewService.getReviewByRecordId(
-            record.getRecordId()).isPresent()) {
-            // Review 업데이트
-            Review review = reviewService.getReviewByRecordId(recordId)
-                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND)); // 리뷰가 없으면 예외
-            review.updateReview(requestDto.reviewContent());
-        }
-        else if (requestDto.reviewContent() != null && reviewService.getReviewByRecordId(
-            record.getRecordId()).isEmpty()){
-            // Review 생성
-            reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.reviewContent()));
-        }
     }
 
     public void deleteRecordAndReview(Long recordId) {
-        if (reviewService.getReviewByRecordId(recordId).isPresent()) {
-            reviewService.deleteReviewByRecordId(recordId);
-        }
         recordService.deleteRecord(recordId);
     }
 

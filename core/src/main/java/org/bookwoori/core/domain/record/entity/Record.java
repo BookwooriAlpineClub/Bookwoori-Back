@@ -45,7 +45,7 @@ public class Record {
     @JsonIgnore
     private Book book;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id", updatable = false)
     @NotNull
     @JsonIgnore
@@ -55,9 +55,6 @@ public class Record {
     @NotNull
     @Enumerated(EnumType.STRING)
     private ReadingStatus status;
-
-    @Column(name = "star")
-    private int star;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -74,7 +71,6 @@ public class Record {
 
     public void updateRecord(Record record) {
         this.status = record.status;
-        this.star = record.star;
         this.startDate = record.startDate;
         this.endDate = record.endDate;
         this.currentPage = record.currentPage;

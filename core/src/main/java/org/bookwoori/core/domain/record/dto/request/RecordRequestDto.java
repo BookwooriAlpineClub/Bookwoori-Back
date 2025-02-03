@@ -20,8 +20,7 @@ public record RecordRequestDto(
     int star,
     LocalDate startDate,
     LocalDate endDate,
-    int currentPage,
-    String reviewContent
+    int currentPage
 ) {
 
     public Record toRecordEntity(Member currentMember, Book book) {
@@ -29,17 +28,9 @@ public record RecordRequestDto(
             .member(currentMember)
             .book(book)
             .status(status)
-            .star(star)
             .startDate(startDate)
             .endDate(endDate)
             .currentPage(currentPage)
-            .build();
-    }
-
-    public Review toReviewEntity(Record record, String content) {
-        return Review.builder()
-            .record(record)
-            .content(content)
             .build();
     }
 
