@@ -10,23 +10,17 @@ public record RecordResponseDto(
     Long recordId,
     Long memberId,
     ReadingStatus readingStatus,
-    int star,
     int currentPage,
-    int maxPage,
-    String reviewContent,
-    BookInfoDto bookInfo
+    int maxPage
 ) {
 
-    public static RecordResponseDto from(Record record, String reviewContent) {
+    public static RecordResponseDto from(Record record) {
         return RecordResponseDto.builder()
             .recordId(record.getRecordId())
             .memberId(record.getMember().getMemberId())
             .readingStatus(record.getStatus())
-            .star(record.getStar())
             .currentPage(record.getCurrentPage())
             .maxPage(record.getMaxPage())
-            .reviewContent(reviewContent)
-            .bookInfo(BookInfoDto.from(record.getBook()))
             .build();
     }
 

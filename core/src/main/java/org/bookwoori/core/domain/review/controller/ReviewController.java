@@ -9,6 +9,7 @@ import org.bookwoori.core.domain.review.facade.ReviewFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,12 @@ public class ReviewController {
   public ResponseEntity<?> deleteReview(@PathVariable Long reviewId) {
     reviewFacade.deleteReview(reviewId);
     return ResponseEntity.ok().build();
+  }
+
+  @Operation(summary = "책 감상평 목록 조회", description = "내 서재의 책평가 목록을 조회합니다.")
+  @GetMapping
+  public ResponseEntity<?> getReviews() {
+    return ResponseEntity.ok(reviewFacade.getReviews());
   }
 
 }

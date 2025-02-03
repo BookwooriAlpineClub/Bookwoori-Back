@@ -110,7 +110,7 @@ public class GrantExpAspect {
         if (recordId == null) {
           if (requestDto.reviewContent() != null) return 2.0;
         } else {
-          Optional<Review> existingReview = reviewService.getReviewByRecordId(recordId);
+          Optional<Review> existingReview = reviewService.getReviewListByRecordId(recordId);
           if (existingReview.isEmpty() && requestDto.reviewContent() != null) return 2.0;
         }
         break;
