@@ -12,7 +12,7 @@ public record DirectMessageReplyRequestDto(
     String content
 ) {
 
-    public DirectMessage toEntity(Long memberId, String parentContent) {
+    public DirectMessage toEntity(Long memberId, DirectMessage parentMessage) {
         return DirectMessage.builder()
             .parentId(this.parentId)
             .messageRoomId(this.messageRoomId)
@@ -20,7 +20,8 @@ public record DirectMessageReplyRequestDto(
             .type(this.type)
             .content(this.content)
             .createdAt(LocalDateTime.now())
-            .parentContent(parentContent)
+            .parentMemberId(parentMessage.getMemberId())
+            .parentContent(parentMessage.getContent())
             .eventType(EventType.REPLY)
             .build();
     }
