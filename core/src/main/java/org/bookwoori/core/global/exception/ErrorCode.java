@@ -18,6 +18,7 @@ public enum ErrorCode {
     INVALID_FILE_FORMAT(400, 1500, "잘못된 파일 형식입니다."),
     UNSUPPORTED_FILE_FORMAT(400, 1501, "지원하지 않는 파일 형식입니다."),
     FILE_UPLOAD_FAIL(500, 1502, "파일 업로드에 실패했습니다."),
+    FILE_COMPARISON_FAIL(500, 1502, "파일 비교에 실패했습니다."),
 
     /*
      * 인증/인가 관련 오류
@@ -40,6 +41,7 @@ public enum ErrorCode {
     // Member (3000 ~ 3099)
     MEMBER_NOT_FOUND(404, 3000, "사용자를 찾을 수 없습니다."),
     MEMBER_INACTIVE(404, 3001, "이미 계정을 삭제한 멤버입니다."),
+    ALREADY_EXIST_NICKNAME(409, 3002, "이미 존재하는 닉네임입니다."),
 
     // Server (3100 ~ 3199)
     SERVER_NOT_FOUND(404, 3100, "서버를 찾을 수 없습니다."),
@@ -72,14 +74,21 @@ public enum ErrorCode {
     // Record (3600 ~ 3699)
     RECORD_NOT_FOUND(404, 3600, "레코드를 찾을 수 없습니다."),
     RECORD_NOT_FINISHED(409, 3601, "다 읽은 책이 아닙니다."),
+    ALREADY_EXIST_RECORD(409, 3602, "이미 존재하는 레코드입니다."),
 
     // Review (3700 ~ 3799)
     REVIEW_NOT_FOUND(404, 3700, "리뷰를 찾을 수 없습니다."),
     REVIEW_ALREADY_SHARED(409, 3701, "클라이밍 채널에 이미 공유된 리뷰입니다."),
-    REVIEW_EMOJI_NOT_FOUND(404, 3702, "리뷰 이모지를 찾을 수 없습니다.");
+    REVIEW_EMOJI_NOT_FOUND(404, 3702, "리뷰 이모지를 찾을 수 없습니다."),
+    ALREADY_EXIST_REVIEW(409, 3703, "이미 레코드에 대한 리뷰가 존재합니다."),
 
+    // MessageRoom (3800 ~ 3899)
+    MESSAGE_ROOM_NOT_FOUND(404, 3800, "채팅방을 찾을 수 없습니다."),
+
+    ;
 
     private final int status;
     private final int code;
     private final String message;
+
 }

@@ -30,6 +30,11 @@ public class ServerMemberService {
     }
 
     @Transactional(readOnly = true)
+    public boolean isJoined(Member member, Server server) {
+        return serverMemberRepository.existsByMemberAndServer(member, server);
+    }
+
+    @Transactional(readOnly = true)
     public boolean isOwner(Member member, Server server) {
         return serverMemberRepository.existsByMemberAndServerAndRole(member, server);
     }
@@ -80,4 +85,8 @@ public class ServerMemberService {
         newOwner.updateRole(ServerRole.OWNER);
     }
 
+    @Transactional(readOnly = true)
+    public List<Server> getAllByMemberAndRole(Member currentMember, ServerRole serverRole) {
+        return serverMemberRepository.findByMemberAndRole(currentMember, serverRole);
+    }
 }

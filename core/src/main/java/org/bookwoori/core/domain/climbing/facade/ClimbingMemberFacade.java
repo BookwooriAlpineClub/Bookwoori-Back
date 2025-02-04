@@ -34,6 +34,7 @@ import org.bookwoori.core.domain.review.service.ReviewService;
 import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
 import org.bookwoori.core.domain.reviewEmoji.entity.ReviewEmoji;
 import org.bookwoori.core.domain.reviewEmoji.service.ReviewEmojiService;
+import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
@@ -50,6 +51,7 @@ public class ClimbingMemberFacade {
     private final RecordService recordService;
     private final ReviewService reviewService;
     private final ReviewEmojiService reviewEmojiService;
+    private final ServerMemberService serverMemberService;
 
 
     public boolean toggleParticipation(Long climbingId) {
@@ -71,6 +73,10 @@ public class ClimbingMemberFacade {
     @Transactional(readOnly = true)
     public ClimbingMemberResponseDto getClimbingMembers(Long climbingId) {
         Climbing climbing = climbingService.getClimbingById(climbingId);
+        Member currentMember = memberService.getCurrentMember();
+        if (!serverMemberService.isJoined(currentMember, climbing.getServer())) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
         List<ClimbingMember> climbingMemberList = climbingMemberService.getMembersByClimbing(
             climbing);
         List<ClimbingMemberUnitDto> climbingMembers = climbingMemberList.stream()
@@ -78,8 +84,9 @@ public class ClimbingMemberFacade {
                 Optional<Record> record = recordService.getClimbingMemberRecordOpt(member,
                     climbing.getBook());
                 ReadingStatus status = record.map(Record::getStatus).orElse(ReadingStatus.UNREAD);
+                boolean isMine = member.getMember().equals(currentMember);
                 int currentPage = record.map(Record::getCurrentPage).orElse(0);
-                return ClimbingMemberUnitDto.from(member, status, currentPage);
+                return ClimbingMemberUnitDto.from(isMine, member, status, currentPage);
             })
             .collect(Collectors.toList());
 

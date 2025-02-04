@@ -1,8 +1,8 @@
-name: bookwoori CI/CD with Docker
+name: bookwoori CI/CD v2 
 
 on:
   push:
-    branches: [ "deploy", "develop" ]
+    branches: [ "deploy", "main" ]
 
 jobs:
   deploy:
@@ -10,21 +10,82 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version: 17
+
+      # Eureka 관련 설정 삭제
+      - name: Remove Eureka Dependencies
+        run: |
+          find . -name 'build.gradle' | while read -r file; do
+            sed -i '/spring-cloud-starter-netflix-eureka-client/d' "$file"
+            sed -i '/spring-cloud-starter-netflix-eureka-server/d' "$file"
+          done
+          find . -name 'application*.yml' | while read -r file; do
+            sed -i '/eureka:/,+3d' "$file"
+          done
 
       - name: Make application-prod.yml
         run: |
-          cd ./core/src/main/resources
-          touch ./application.yml
-          echo "${{ secrets.APPLICATION }}" > ./application.yml
+          mkdir -p ./core/src/main/resources
+          touch ./core/src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_CORE }}" > ./core/src/main/resources/application.yml
+          mkdir -p ./auth/src/main/resources
+          touch ./auth/src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_AUTH }}" > ./auth/src/main/resources/application.yml
+          mkdir -p ./chat/src/main/resources
+          touch ./chat/src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_CHAT }}" > ./chat/src/main/resources/application.yml
 
-      - name: Build with Gradle
+      - name: Make Gateway application-prod.yml
+        run: |
+          mkdir -p ./gateway/src/main/resources
+          touch ./gateway/src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_GATEWAY }}" > ./gateway/src/main/resources/application.yml
+
+      - name: Make Notification application-prod.yml
+        run: |
+          mkdir -p ./notification/src/main/resources
+          touch ./notification/src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_NOTIFICATION }}" > ./notification/src/main/resources/application.yml
+
+      - name: create-json
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.3
+        with:
+          name: "firebase-adminsdk.json"
+          json: ${{ secrets.FIREBASE_ADMINSDK }}
+          dir: "./notification/src/main/resources"
+
+      - name: Build Core Server with Gradle
         run: |
           cd ./core
+          chmod +x ./gradlew
+          ./gradlew build -x test
+
+      - name: Build Auth Server with Gradle
+        run: |
+          cd ./auth
+          chmod +x ./gradlew
+          ./gradlew build -x test
+
+      - name: Build Chat Server with Gradle
+        run: |
+          cd ./chat
+          chmod +x ./gradlew
+          ./gradlew build -x test
+
+      - name: Build Gateway Server with Gradle
+        run: |
+          cd ./gateway
+          chmod +x ./gradlew
+          ./gradlew build -x test
+
+      - name: Build Notification Server with Gradle
+        run: |
+          cd ./notification
           chmod +x ./gradlew
           ./gradlew build -x test
 
@@ -34,6 +95,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Gateway Server build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./gateway
+          file: ./gateway/Dockerfile
+          platforms: linux/arm64/v8
+          push: true
+          tags: ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
+
       - name: Core Server build & push
         uses: docker/build-push-action@v6
         with:
@@ -41,7 +111,34 @@ jobs:
           file: ./core/Dockerfile
           platforms: linux/arm64/v8
           push: true
-          tags: ${{ secrets.DOCKER_REPO_CORE }}:latest
+          tags: ${{ secrets.DOCKER_REPO_CORE }}:v2
+
+      - name: Auth Server build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./auth
+          file: ./auth/Dockerfile
+          platforms: linux/arm64/v8
+          push: true
+          tags: ${{ secrets.DOCKER_REPO_AUTH }}:v2
+
+      - name: Chat Server build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./chat
+          file: ./chat/Dockerfile
+          platforms: linux/arm64/v8
+          push: true
+          tags: ${{ secrets.DOCKER_REPO_CHAT }}:v2
+
+      - name: Notification Server build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./notification
+          file: ./notification/Dockerfile
+          platforms: linux/arm64/v8
+          push: true
+          tags: ${{ secrets.DOCKER_REPO_NOTIFICATION }}:v2
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
@@ -52,7 +149,10 @@ jobs:
           envs: GITHUB_SHA
           script: |
             echo "${{ secrets.DOCKER_COMPOSE }}" | sudo tee ./docker-compose.yml
-            sudo docker ps -q | xargs -r sudo docker stop && sudo docker ps -aq | xargs -r sudo docker rm
-            sudo docker-compose -f ./docker-compose.yml down --rmi all
-            sudo docker pull ${{ secrets.DOCKER_REPO_CORE }}:latest
+            sudo docker pull ${{ secrets.DOCKER_REPO_CORE }}:v2
+            sudo docker pull ${{ secrets.DOCKER_REPO_AUTH }}:v2
+            sudo docker pull ${{ secrets.DOCKER_REPO_CHAT }}:v2
+            sudo docker pull ${{ secrets.DOCKER_REPO_GATEWAY }}:v2
+            sudo docker pull ${{ secrets.DOCKER_REPO_NOTIFICATION }}:v2
             sudo docker-compose -f ./docker-compose.yml up -d
+            sudo docker image prune -f

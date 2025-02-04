@@ -1,6 +1,7 @@
 package org.bookwoori.core.domain.review.service;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.member.entity.Member;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -44,7 +46,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public Review getReviewByRecordId(Long recordId) {
+    public Optional<Review> getReviewByRecordId(Long recordId) {
         return reviewRepository.findByRecord_RecordId(recordId);
     }
 

@@ -43,8 +43,7 @@ public class ServerController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createServer(
         @Valid @ModelAttribute ServerCreateRequestDto requestDto) {
-        serverFacade.createServer(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.ok(serverFacade.createServer(requestDto));
     }
 
     @Operation(summary = "서버 정보 조회", description = "특정 서버의 정보를 조회합니다.")

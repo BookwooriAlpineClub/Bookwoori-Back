@@ -1,6 +1,7 @@
 package org.bookwoori.core.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.entity.Status;
 import org.bookwoori.core.domain.member.repository.MemberRepository;
@@ -11,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -27,14 +29,27 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member getCurrentMember() throws CustomException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Member member = memberRepository.findByKakaoId(Long.valueOf(authentication.getName()))
-            .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
-        return member;
+        if (authentication == null) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+        try {
+            String memberIdString = (String) authentication.getPrincipal();
+            Long memberId = Long.valueOf(memberIdString);
+            Member member = getMemberById(memberId);
+            if (member.getStatus() == Status.INACTIVE) {
+                throw new CustomException(ErrorCode.MEMBER_INACTIVE);
+            }
+            return member;
+        } catch (NumberFormatException e) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
     }
 
     @Transactional(readOnly = true)
-    public Long getMemberIdByKakaoId(Long kakaoId) {
-        return memberRepository.findIdByKakaoId(kakaoId);
+    public Member getMemberByKakaoId(Long kakaoId) {
+        Member member = memberRepository.findByKakaoId(kakaoId)
+            .orElseThrow(() -> new CustomException(ErrorCode.UNAUTHORIZED));
+        return member;
     }
 
     @Transactional(readOnly = true)
@@ -46,5 +61,15 @@ public class MemberService {
 
     public void saveMember(Member member) {
         memberRepository.save(member);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsByKakaoId(Long kakaoId) {
+        return memberRepository.existsByKakaoId(kakaoId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean existsByNickname(String newNickname) {
+        return memberRepository.existsByNickname(newNickname);
     }
 }

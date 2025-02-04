@@ -11,7 +11,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 @Log4j2
@@ -31,18 +30,31 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDto, HttpStatusCode.valueOf(e.getErrorCode().getStatus()));
     }
 
-    @ExceptionHandler({BindException.class})
-    protected ResponseEntity<ErrorDto> handleBindException(BindException e,
+    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
+    protected ResponseEntity<ErrorDto> handleValidationException(Exception e,
         HttpServletRequest request) {
-        final BindingResult bindingResult = e.getBindingResult();
-        final FieldError fieldError = bindingResult.getFieldError();
+        BindingResult bindingResult = null;
+
+        if (e instanceof BindException) {
+            bindingResult = ((BindException) e).getBindingResult();
+        } else if (e instanceof MethodArgumentNotValidException) {
+            bindingResult = ((MethodArgumentNotValidException) e).getBindingResult();
+        }
+        FieldError fieldError = bindingResult != null ? bindingResult.getFieldError() : null;
+
+        String errorMessage = fieldError != null
+            ? fieldError.getField() + ": " + fieldError.getDefaultMessage()
+            : "Validation error";
+
         ErrorDto errorDto = ErrorDto.builder()
             .timestamp(LocalDateTime.now().toString())
             .status(ErrorCode.BAD_REQUEST.getStatus())
             .code(ErrorCode.BAD_REQUEST.getCode())
-            .message(fieldError.getField() + ": " + fieldError.getDefaultMessage())
+            .message(errorMessage)
             .path(request.getRequestURI())
             .build();
-        return new ResponseEntity<>(errorDto, HttpStatusCode.valueOf(errorDto.getStatus()));
+
+        return new ResponseEntity<>(errorDto,
+            HttpStatusCode.valueOf(ErrorCode.BAD_REQUEST.getStatus()));
     }
 }

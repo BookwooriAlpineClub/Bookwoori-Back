@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.serverMember.entity.ServerMember;
+import org.bookwoori.core.domain.serverMember.entity.ServerRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +13,9 @@ import org.springframework.data.repository.query.Param;
 public interface ServerMemberRepository extends JpaRepository<ServerMember, Long> {
 
     int countByServer(Server server);
+
+    @Query("SELECT COUNT(sm) > 0 FROM ServerMember sm WHERE sm.member = :member AND sm.server = :server")
+    boolean existsByMemberAndServer(Member member, Server server);
 
     @Query("SELECT COUNT(sm) > 0 FROM ServerMember sm WHERE sm.member = :member AND sm.server = :server AND sm.role = 'OWNER'")
     boolean existsByMemberAndServerAndRole(Member member, Server server);
@@ -29,4 +33,8 @@ public interface ServerMemberRepository extends JpaRepository<ServerMember, Long
     List<ServerMember> findAllByMember(Member member);
 
     void deleteByServerAndMember(Server server, Member member);
+
+    @Query("SELECT sm.server FROM ServerMember sm WHERE sm.member = :member AND sm.role = :role")
+    List<Server> findByMemberAndRole(@Param("member") Member member,
+        @Param("role") ServerRole role);
 }

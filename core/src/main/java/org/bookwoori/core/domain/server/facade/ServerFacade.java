@@ -21,6 +21,7 @@ import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
 import org.bookwoori.core.domain.server.dto.response.InviteCodeServerResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerCategoryListResponseDto;
+import org.bookwoori.core.domain.server.dto.response.ServerCreateResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerDetailsResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerItemDto;
 import org.bookwoori.core.domain.server.dto.response.ServerListResponseDto;
@@ -28,7 +29,6 @@ import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto
 import org.bookwoori.core.domain.server.entity.Server;
 import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
-import org.bookwoori.core.domain.serverMember.repository.ServerMemberRepository;
 import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
@@ -52,11 +52,9 @@ public class ServerFacade {
     private final CategoryService categoryService;
     private final ChannelService channelService;
     private final ServerMemberService serverMemberService;
-    private final ServerMemberRepository serverMemberRepository;
 
     @Transactional
-    public void createServer(ServerCreateRequestDto requestDto) {
-
+    public ServerCreateResponseDto createServer(ServerCreateRequestDto requestDto) {
         //서버 저장
         Server server = requestDto.toEntity(
             s3Util.uploadImage(requestDto.serverImg(), "server"));
@@ -70,6 +68,7 @@ public class ServerFacade {
         //DEFAULT 카테고리/채널 생성 및 저장
         Category category = categoryService.makeDefaultCategory(server);
         channelService.makeDefaultChannels(category);
+        return ServerCreateResponseDto.from(server);
     }
 
     @Transactional(readOnly = true)
@@ -78,6 +77,10 @@ public class ServerFacade {
         Member owner = serverMemberService.getOwner(server);
         int memberCount = serverMemberService.getMemberCount(server);
         Member currentMember = memberService.getCurrentMember();
+
+        if (!serverMemberService.isJoined(currentMember, server)) {
+            throw new CustomException(ErrorCode.ACCESS_DENIED);
+        }
 
         return ServerDetailsResponseDto.from(server, owner.getNickname(), memberCount,
             currentMember.equals(owner));
@@ -175,8 +178,7 @@ public class ServerFacade {
         Server server = serverService.getServerById(serverId);
         Member currentMember = memberService.getCurrentMember();
 
-        boolean isJoined = serverMemberRepository.findByMemberAndServer(currentMember, server)
-            .isPresent();
+        boolean isJoined = serverMemberService.isJoined(currentMember, server);
 
         if (isJoined) {
             throw new CustomException(ErrorCode.ALREADY_JOINED_SERVER);
@@ -227,9 +229,7 @@ public class ServerFacade {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
 
-        if (server.getServerImg() != null) {
-            s3Util.deleteImage(server.getServerImg());
-        }
+        s3Util.deleteImage(server.getServerImg());
 
         server.updateServerImg(s3Util.uploadImage(newImage, "server"));
     }
@@ -251,6 +251,7 @@ public class ServerFacade {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
 
+        s3Util.deleteImage(server.getServerImg());
         serverService.deleteServer(server);
     }
 }
