@@ -30,8 +30,8 @@ public class ReviewService {
   }
 
   @Transactional(readOnly = true)
-  public Review getReviewByMemberAndBook(Member member, Book book) {
-    return reviewRepository.findByMemberAndBook(member, book);
+  public List<Review> getReviewListByMemberAndBook(Member member, Book book) {
+    return (List<Review>) reviewRepository.findByMemberAndBook(member, book);
   }
 
   public boolean existsReviewByMemberAndBook(Member member, Book book) {

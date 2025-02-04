@@ -26,9 +26,11 @@ import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
 import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.review.dto.response.ReviewListResponseDto;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.record.service.RecordService;
+import org.bookwoori.core.domain.review.dto.response.ReviewUnitDto;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.bookwoori.core.domain.review.service.ReviewService;
 import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
@@ -108,7 +110,7 @@ public class ClimbingMemberFacade {
         climbingMemberService.delegateClimbingRole(climbingId, currentMember, newOwner);
     }
 
-    public void shareReviewToClimbing(Long climbingId) {
+    public void shareReviewToClimbing(Long climbingId, Long reviewId) {
         Member currentMember = memberService.getCurrentMember();
         ClimbingMember climbingMember = climbingMemberService.getMemberInClimbing(currentMember,
             climbingId);
@@ -241,4 +243,11 @@ public class ClimbingMemberFacade {
         return new ReviewEmojiMemberListResponseDto(emojiLists);
     }
 
+    public List<ReviewUnitDto> getReviewListToClimbing(Long climbingId) {
+        Member currentMember = memberService.getCurrentMember();
+        Climbing climbing = climbingService.getClimbingById(climbingId);
+        return reviewService.getReviewListByMemberAndBook(currentMember, climbing.getBook()).stream()
+            .map(ReviewUnitDto::from)
+            .collect(Collectors.toList());
+    }
 }

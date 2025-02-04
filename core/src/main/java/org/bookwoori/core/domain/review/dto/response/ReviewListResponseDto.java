@@ -1,10 +1,9 @@
-package org.bookwoori.core.domain.record.dto.response;
+package org.bookwoori.core.domain.review.dto.response;
 
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 import org.bookwoori.core.domain.record.entity.Record;
-import org.bookwoori.core.domain.review.dto.response.ReviewUnitDto;
 
 @Builder
 public record ReviewListResponseDto(

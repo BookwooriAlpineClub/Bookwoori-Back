@@ -100,11 +100,11 @@ public class ClimbingController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "클라이밍 채널 참여자 감상평 공유", description = "클라이밍 채널 참여자가 감상평을 공유합니다")
-    @PatchMapping("/{climbingId}/reviews")
+    @Operation(summary = "클라이밍 채널 참여자 감상평 공유", description = "클라이밍 채널 참여자가 감상평을 공유합니다.")
+    @PatchMapping("/{climbingId}/reviews/{reviewId}")
     public ResponseEntity<?> shareReviewToClimbing(
-        @PathVariable("climbingId") final Long climbingId) {
-        climbingMemberFacade.shareReviewToClimbing(climbingId);
+        @PathVariable("climbingId") final Long climbingId, @PathVariable("reviewId") final Long reviewId) {
+        climbingMemberFacade.shareReviewToClimbing(climbingId, reviewId);
         return ResponseEntity.ok().build();
     }
 

@@ -8,7 +8,7 @@ import org.bookwoori.core.domain.exp.annotation.GrantExp;
 import org.bookwoori.core.domain.exp.annotation.GrantExpContainer;
 import org.bookwoori.core.domain.exp.entity.ExpType;
 import org.bookwoori.core.domain.member.service.MemberService;
-import org.bookwoori.core.domain.record.dto.response.ReviewListResponseDto;
+import org.bookwoori.core.domain.review.dto.response.ReviewListResponseDto;
 import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.record.service.RecordService;
 import org.bookwoori.core.domain.review.dto.request.ReviewRequestDto;
