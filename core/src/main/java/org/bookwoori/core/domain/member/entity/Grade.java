@@ -24,7 +24,7 @@ public enum Grade {
 
     private final int level;
     private final String mountain;
-    private final int height;
+    public final int height;
 
     @JsonCreator
     public static Grade from(String s) {
@@ -33,5 +33,14 @@ public enum Grade {
         } catch (IllegalArgumentException e) {
             throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
         }
+    }
+
+    public static Grade findGradeByHeight(double height) {
+        for (Grade grade : Grade.values()) {
+            if (height >= grade.height) {
+                return grade;
+            }
+        }
+        return Grade.Dongsan;
     }
 }

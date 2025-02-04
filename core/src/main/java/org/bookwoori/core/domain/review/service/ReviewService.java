@@ -17,40 +17,40 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ReviewService {
 
-    private final ReviewRepository reviewRepository;
+  private final ReviewRepository reviewRepository;
 
-    @Transactional(readOnly = true)
-    public Review getReviewById(Long reviewId) {
-        return reviewRepository.findById(reviewId)
-            .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
-    }
+  @Transactional(readOnly = true)
+  public Review getReviewById(Long reviewId) {
+    return reviewRepository.findById(reviewId)
+        .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+  }
 
-    @Transactional(readOnly = true)
-    public List<Review> getReviewsByMembersAndBook(List<Long> members, Book book) {
-        return reviewRepository.findByMemberIdsAndBook(members, book);
-    }
+  @Transactional(readOnly = true)
+  public List<Review> getReviewsByMembersAndBook(List<Long> members, Book book) {
+    return reviewRepository.findByMemberIdsAndBook(members, book);
+  }
 
-    @Transactional(readOnly = true)
-    public Review getReviewByMemberAndBook(Member member, Book book) {
-        return reviewRepository.findByMemberAndBook(member, book);
-    }
+  @Transactional(readOnly = true)
+  public Review getReviewByMemberAndBook(Member member, Book book) {
+    return reviewRepository.findByMemberAndBook(member, book);
+  }
 
-    public boolean existsReviewByMemberAndBook(Member member, Book book) {
-        return reviewRepository.existsByRecord_MemberAndRecord_Book(member, book);
-    }
+  public boolean existsReviewByMemberAndBook(Member member, Book book) {
+    return reviewRepository.existsByRecord_MemberAndRecord_Book(member, book);
+  }
 
 
-    @Transactional
-    public void saveReview(Review review) {
-        reviewRepository.save(review);
-    }
+  @Transactional
+  public void saveReview(Review review) {
+    reviewRepository.save(review);
+  }
 
-    @Transactional(readOnly = true)
-    public Optional<Review> getReviewByRecordId(Long recordId) {
-        return reviewRepository.findByRecord_RecordId(recordId);
-    }
+  @Transactional(readOnly = true)
+  public Optional<Review> getReviewByRecordId(Long recordId) {
+    return reviewRepository.findByRecord_RecordId(recordId);
+  }
 
-    public void deleteReviewByRecordId(Long recordId) {
-        reviewRepository.deleteByRecord_RecordId(recordId);
-    }
+  public void deleteReviewByRecordId(Long recordId) {
+    reviewRepository.deleteByRecord_RecordId(recordId);
+  }
 }

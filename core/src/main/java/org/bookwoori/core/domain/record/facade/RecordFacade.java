@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.book.service.BookService;
+import org.bookwoori.core.domain.exp.annotation.GrantExp;
+import org.bookwoori.core.domain.exp.annotation.GrantExpContainer;
+import org.bookwoori.core.domain.exp.entity.ExpType;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.record.dto.request.RecordRequestDto;
@@ -34,6 +37,11 @@ public class RecordFacade {
     private final BookService bookService;
     private final ReviewService reviewService;
 
+    @GrantExpContainer({
+        @GrantExp(type = ExpType.READ_PAGE),
+        @GrantExp(type = ExpType.ADD_STAR),
+        @GrantExp(type = ExpType.WRITE_REVIEW)
+    })
     public void createRecord(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
@@ -46,40 +54,34 @@ public class RecordFacade {
             if (reviewService.existsReviewByMemberAndBook(currentMember, book)) {
                 throw new CustomException(ErrorCode.ALREADY_EXIST_REVIEW);
             }
-            reviewService.saveReview(requestDto.toReviewEntity(newRecord, requestDto.reviewContent()));
+            reviewService.saveReview(
+                requestDto.toReviewEntity(newRecord, requestDto.reviewContent()));
         }
     }
 
-    public void createReview(RecordRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
-        Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
-        Record record = recordService.getRecordByMemberAndBook(currentMember, book);
-        if (reviewService.existsReviewByMemberAndBook(currentMember, book)) {
-            throw new CustomException(ErrorCode.ALREADY_EXIST_REVIEW);
-        }
-        reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.reviewContent()));
-    }
-
+    @GrantExpContainer({
+        @GrantExp(type = ExpType.READ_PAGE),
+        @GrantExp(type = ExpType.ADD_STAR),
+        @GrantExp(type = ExpType.WRITE_REVIEW)
+    })
     public void updateRecord(Long recordId, RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Record record = recordService.getRecordById(recordId);
         // Record 업데이트
-        Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
         record.updateRecord(requestDto.toRecordEntity(currentMember, record.getBook()));
-        // Review 업데이트 (reviewContent가 있을 경우만)
-        if (requestDto.reviewContent() != null && !requestDto.reviewContent().isBlank()) {
+        // Review 업데이트
+        if (reviewService.getReviewByRecordId(
+            record.getRecordId()).isPresent()) {
+            // Review 업데이트
             Review review = reviewService.getReviewByRecordId(recordId)
                 .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND)); // 리뷰가 없으면 예외
             review.updateReview(requestDto.reviewContent());
         }
-    }
-
-
-    public void updateReview(Long recordId, RecordRequestDto requestDto) {
-        Review review = reviewService.getReviewByRecordId(recordId)
-            .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
-        review.updateReview(requestDto.reviewContent());
-
+        else if (requestDto.reviewContent() != null && reviewService.getReviewByRecordId(
+            record.getRecordId()).isEmpty()){
+            // Review 생성
+            reviewService.saveReview(requestDto.toReviewEntity(record, requestDto.reviewContent()));
+        }
     }
 
     public void deleteRecordAndReview(Long recordId) {

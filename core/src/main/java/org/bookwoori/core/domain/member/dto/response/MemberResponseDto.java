@@ -11,7 +11,7 @@ public record MemberResponseDto(
     String backgroundImg,
     int level,
     String mountain,
-    int height,
+    double height,
     int totalPage) {
 
     public static MemberResponseDto from(Member member, boolean isMine) {

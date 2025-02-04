@@ -34,26 +34,11 @@ public class RecordController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @Operation(summary = "책 감상평 추가", description = "수정 페이지_책기록 에서 새로운 감상평을 추가합니다.")
-    @PostMapping("/reviews")
-    public ResponseEntity<?> createReview(@RequestBody @Valid RecordRequestDto requestDto) {
-        recordFacade.createReview(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
     @Operation(summary = "책 기록 수정", description = "수정 페이지_책기록 에서 기존 책기록을 수정합니다.")
     @PutMapping("/{recordId}")
     public ResponseEntity<?> updateRecord(@PathVariable Long recordId,
         @RequestBody @Valid RecordRequestDto requestDto) {
         recordFacade.updateRecord(recordId, requestDto);
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(summary = "책 감상평 수정", description = "수정 페이지_책기록 에서 기존 감상평을 수정합니다.")
-    @PutMapping("/reviews/{recordId}")
-    public ResponseEntity<?> updateReview(@PathVariable Long recordId,
-        @RequestBody @Valid RecordRequestDto requestDto) {
-        recordFacade.updateReview(recordId, requestDto);
         return ResponseEntity.ok().build();
     }
 

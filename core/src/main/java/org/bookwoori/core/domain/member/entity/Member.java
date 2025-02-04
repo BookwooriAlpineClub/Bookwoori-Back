@@ -13,11 +13,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.bookwoori.core.global.BaseTimeEntity;
 
 @Entity
 @Table(name = "member")
 @Getter
+@Log4j2
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseTimeEntity {
 
@@ -54,6 +56,10 @@ public class Member extends BaseTimeEntity {
     @NotNull
     private int totalPage;
 
+    @Column(name = "total_height")
+    @NotNull
+    private double totalHeight;
+
     @Builder
     public Member(Long kakaoId, String nickname, String profileImg) {
         this.kakaoId = kakaoId;
@@ -63,6 +69,7 @@ public class Member extends BaseTimeEntity {
         this.grade = Grade.Dongsan;
         this.status = Status.ACTIVE;
         this.totalPage = 0;
+        this.totalHeight = 0;
     }
 
     public void deleteMember() {
@@ -70,6 +77,15 @@ public class Member extends BaseTimeEntity {
         this.profileImg = null; // 추후 수정
         this.backgroundImg = null;
         this.status = Status.INACTIVE;
+    }
+
+    public double updateHeight(double xp) {
+        this.totalHeight += xp;
+        Grade newGrade = Grade.findGradeByHeight(this.totalHeight);
+        if (!this.grade.equals(newGrade)) {
+            this.grade = newGrade;
+        }
+        return this.totalHeight;
     }
 
     public void updateNickname(String nickname) {
