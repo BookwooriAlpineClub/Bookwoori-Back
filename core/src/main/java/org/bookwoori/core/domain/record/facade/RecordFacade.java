@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.record.facade;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.book.service.BookService;
 import org.bookwoori.core.domain.exp.annotation.GrantExp;
+import org.bookwoori.core.domain.exp.annotation.GrantExpContainer;
 import org.bookwoori.core.domain.exp.entity.ExpType;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
@@ -35,7 +37,9 @@ public class RecordFacade {
     private final BookService bookService;
     private final ReviewService reviewService;
 
-    @GrantExp(type = ExpType.READ_PAGE)
+    @GrantExpContainer({
+        @GrantExp(type = ExpType.READ_PAGE)
+    })
     public void createRecord(RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
@@ -46,7 +50,9 @@ public class RecordFacade {
         recordService.saveRecord(record);
     }
 
-    @GrantExp(type = ExpType.READ_PAGE)
+    @GrantExpContainer({
+        @GrantExp(type = ExpType.READ_PAGE)
+    })
     public void updateRecord(Long recordId, RecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Record record = recordService.getRecordById(recordId);
@@ -61,6 +67,9 @@ public class RecordFacade {
     @Transactional(readOnly = true)
     public List<RecordListResponseDto> getRecordsByStatus(ReadingStatus status) {
         List<Record> recordList = recordService.getRecordsByStatus(status);
+        if (recordList.isEmpty()) {
+            return Collections.emptyList();
+        }
         return recordList.stream()
             .map(RecordListResponseDto::from)
             .collect(Collectors.toList());

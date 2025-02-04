@@ -25,4 +25,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     void deleteByRecord_RecordId(Long recordId);
 
     List<Review> findAllByRecord_RecordId(Long recordId);
+
+    @Query("SELECT r FROM Review r WHERE r.record.member = :member AND r.record.book = :book")
+    List<Review> findAllByMemberAndBook(@Param("member") Member member, @Param("book") Book book);
 }
