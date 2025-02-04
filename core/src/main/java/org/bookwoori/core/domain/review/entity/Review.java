@@ -41,7 +41,7 @@ public class Review extends BaseTimeEntity {
     private Record record;
 
     @Column(name = "star")
-    private int star;
+    private int star = 0;
 
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
