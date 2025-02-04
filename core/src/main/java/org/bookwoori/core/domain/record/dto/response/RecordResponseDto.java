@@ -8,7 +8,6 @@ import org.bookwoori.core.domain.record.entity.Record;
 @Builder
 public record RecordResponseDto(
     Long recordId,
-    Long memberId,
     ReadingStatus readingStatus,
     int currentPage,
     int maxPage
@@ -17,7 +16,6 @@ public record RecordResponseDto(
     public static RecordResponseDto from(Record record) {
         return RecordResponseDto.builder()
             .recordId(record.getRecordId())
-            .memberId(record.getMember().getMemberId())
             .readingStatus(record.getStatus())
             .currentPage(record.getCurrentPage())
             .maxPage(record.getMaxPage())

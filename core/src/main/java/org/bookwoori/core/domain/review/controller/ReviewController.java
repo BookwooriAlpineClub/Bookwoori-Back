@@ -20,15 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Tag(name = "Review")
 @RequiredArgsConstructor
-@RequestMapping("/records/{recordId}/reviews")
+@RequestMapping("/reviews")
 public class ReviewController {
 
   private final ReviewFacade reviewFacade;
 
   @Operation(summary = "책 감상평 추가", description = "수정 페이지_책기록 에서 새로운 감상평을 추가합니다.")
   @PostMapping
-  public ResponseEntity<?> createReview(@PathVariable Long recordId, @RequestBody @Valid ReviewRequestDto requestDto) {
-    reviewFacade.createReview(recordId, requestDto);
+  public ResponseEntity<?> createReview(@RequestBody @Valid ReviewRequestDto requestDto) {
+    reviewFacade.createReview(requestDto);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 

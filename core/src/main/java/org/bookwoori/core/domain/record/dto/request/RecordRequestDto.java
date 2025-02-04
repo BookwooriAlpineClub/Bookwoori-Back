@@ -19,7 +19,6 @@ public record RecordRequestDto(
     String isbn13,
     @NotNull
     ReadingStatus status,
-    int star,
     LocalDate startDate,
     LocalDate endDate,
     int currentPage

@@ -2,6 +2,7 @@ package org.bookwoori.core.domain.review.facade;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.exp.annotation.GrantExp;
@@ -31,8 +32,8 @@ public class ReviewFacade {
       @GrantExp(type = ExpType.ADD_STAR),
       @GrantExp(type = ExpType.WRITE_REVIEW)
   })
-  public void createReview(Long recordId, ReviewRequestDto requestDto) {
-    Record record = recordService.getRecordById(recordId);
+  public void createReview(ReviewRequestDto requestDto) {
+    Record record = recordService.getRecordById(requestDto.recordId());
     reviewService.saveReview(requestDto.toEntity(record));
     }
 
@@ -61,8 +62,13 @@ public class ReviewFacade {
                   .thenComparing(ReviewUnitDto::reviewId, Comparator.reverseOrder())
               )
               .collect(Collectors.toList());
+          if (reviewList.isEmpty()) {
+            return null;
+          }
           return ReviewListResponseDto.from(record, reviewList);
         })
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
+
 }
