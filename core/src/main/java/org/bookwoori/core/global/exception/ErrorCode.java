@@ -11,7 +11,6 @@ public enum ErrorCode {
      * 공통적으로 발생하는 오류
      * (1000 ~ 1999)
      */
-
     BAD_REQUEST(400, 1000, "요청의 형식이나 내용이 잘못되었습니다."),
     MISSING_PARAMETER(400, 1001, "필수 파라미터가 누락되었습니다."),
     INVALID_ENUM_VALUE(400, 1002, "잘못된 ENUM 값입니다."),
@@ -24,7 +23,6 @@ public enum ErrorCode {
      * 인증/인가 관련 오류
      * (2000 ~ 2999)
      */
-
     UNAUTHORIZED(401, 2000, "인증 정보가 누락되거나 잘못되었습니다."),
     ACCESS_DENIED(403, 2001, "접근 권한이 없습니다."),
     INVALID_JWT_SIGNATURE(401, 2003, "잘못된 JWT 서명입니다."),
@@ -37,7 +35,6 @@ public enum ErrorCode {
      * 리소스 관련 오류
      * (3000 ~ 3999)
      */
-
     // Member (3000 ~ 3099)
     MEMBER_NOT_FOUND(404, 3000, "사용자를 찾을 수 없습니다."),
     MEMBER_INACTIVE(404, 3001, "이미 계정을 삭제한 멤버입니다."),
@@ -83,9 +80,7 @@ public enum ErrorCode {
     ALREADY_EXIST_REVIEW(409, 3703, "이미 레코드에 대한 리뷰가 존재합니다."),
 
     // MessageRoom (3800 ~ 3899)
-    MESSAGE_ROOM_NOT_FOUND(404, 3800, "채팅방을 찾을 수 없습니다."),
-
-    ;
+    MESSAGE_ROOM_NOT_FOUND(404, 3800, "채팅방을 찾을 수 없습니다.");
 
     private final int status;
     private final int code;

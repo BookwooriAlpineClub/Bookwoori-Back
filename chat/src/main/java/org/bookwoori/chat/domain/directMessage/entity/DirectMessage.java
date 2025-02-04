@@ -37,6 +37,8 @@ public class DirectMessage {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime modifiedAt;
+
     private Map<EmojiType, Set<Long>> reactions = new HashMap<>();
 
     private String parentId;
@@ -44,6 +46,9 @@ public class DirectMessage {
     /*
      * 데이터베이스에 저장되지 않는 필드
      */
+    @Transient
+    private Long parentMemberId;
+
     @Transient
     private String parentContent;
 
@@ -65,6 +70,11 @@ public class DirectMessage {
                 reactions.remove(emoji);
             }
         }
+    }
+
+    public void modifyContent(String content) {
+        this.content = content;
+        this.modifiedAt = LocalDateTime.now();
     }
 
     public void setEventType(EventType eventType) {

@@ -37,6 +37,8 @@ public class ChannelMessage {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime modifiedAt;
+
     private Map<EmojiType, Set<Long>> reactions = new HashMap<>();
 
     private String parentId;
@@ -44,6 +46,9 @@ public class ChannelMessage {
     /*
      * 데이터베이스에 저장되지 않는 필드
      */
+    @Transient
+    private Long parentMemberId;
+
     @Transient
     private String parentContent;
 
@@ -65,6 +70,11 @@ public class ChannelMessage {
                 reactions.remove(emoji);
             }
         }
+    }
+
+    public void modifyContent(String content) {
+        this.content = content;
+        this.modifiedAt = LocalDateTime.now();
     }
 
     public void setEventType(EventType eventType) {

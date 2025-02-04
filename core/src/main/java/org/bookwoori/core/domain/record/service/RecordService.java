@@ -35,7 +35,6 @@ public class RecordService {
         return recordRepository.findByMemberAndBook(climbingMember.getMember(), book);
     }
 
-
     public Record saveRecord(Record record) {
         return recordRepository.save(record);
     }

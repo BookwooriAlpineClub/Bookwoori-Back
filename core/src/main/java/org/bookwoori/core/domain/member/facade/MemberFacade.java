@@ -23,38 +23,12 @@ public class MemberFacade {
 
     private final S3Util s3Util;
 
-    public void updateMember(UpdateMemberRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
-        String newNickname = requestDto.nickname();
-        if (!currentMember.getNickname().equals(newNickname)) {
-            if (memberService.existsByNickname(newNickname)) {
-                throw new CustomException(ErrorCode.ALREADY_EXIST_NICKNAME);
-            }
-        }
-        String profileImgUrl = updateImage(requestDto.profileImg(), currentMember.getProfileImg(),
-            "member/profile-image");
-        String backgroundImgUrl = updateImage(requestDto.backgroundImg(),
-            currentMember.getBackgroundImg(), "member/background-image");
-        currentMember.updateMember(requestDto.nickname(), profileImgUrl, backgroundImgUrl);
-    }
-
-    private String updateImage(MultipartFile newImage, String oldImageUrl, String path) {
-        if (newImage == null) {
-            return null;
-        }
-        if (oldImageUrl != null && s3Util.isSameImage(newImage, oldImageUrl)) {
-            return oldImageUrl;
-        }
-
-        s3Util.deleteImage(oldImageUrl);
-        return s3Util.uploadImage(newImage, path);
-    }
-
     @Transactional(readOnly = true)
     public MemberResponseDto getMemberProfile(Long memberId) {
         Member member = memberService.getMemberById(memberId);
         Member currentMember = memberService.getCurrentMember();
         boolean isMine = member.equals(currentMember);
+        // INACTIVE인 멤버 예외 처리 필요
         return MemberResponseDto.from(member, isMine);
     }
 
@@ -63,4 +37,28 @@ public class MemberFacade {
         Member currentMember = memberService.getCurrentMember();
         return MemberResponseDto.from(currentMember, true);
     }
+
+    public void update(UpdateMemberRequestDto requestDto) {
+        Member currentMember = memberService.getCurrentMember();
+        String newNickname = requestDto.nickname();
+        if (!currentMember.getNickname().equals(newNickname)) {
+            if (memberService.existsByNickname(newNickname)) {
+                throw new CustomException(ErrorCode.ALREADY_EXIST_NICKNAME);
+            }
+        }
+        currentMember.updateNickname(requestDto.nickname());
+    }
+
+    public void updateProfileImg(MultipartFile newImage) {
+        Member member = memberService.getCurrentMember();
+        s3Util.deleteImage(member.getProfileImg());
+        member.updateProfileImg(s3Util.uploadImage(newImage, "member/profile-image"));
+    }
+
+    public void updateBackgroundImg(MultipartFile newImage) {
+        Member member = memberService.getCurrentMember();
+        s3Util.deleteImage(member.getProfileImg());
+        member.updateBackgrounImg(s3Util.uploadImage(newImage, "member/background-image"));
+    }
+
 }
