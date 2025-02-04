@@ -14,7 +14,7 @@ public record BookDetailsResponseDto(
     Long itemPage,
     String description,
     String isbn13,
-    String coverImg) {
+    String cover) {
 
     public static BookDetailsResponseDto from(JsonNode item) {
         return BookDetailsResponseDto.builder()
@@ -25,7 +25,7 @@ public record BookDetailsResponseDto(
             .itemPage(item.path("subInfo").path("itemPage").asLong())
             .description(item.path("description").asText())
             .isbn13(item.path("isbn13").asText())
-            .coverImg(item.path("cover").asText())
+            .cover(item.path("cover").asText())
             .build();
     }
 
@@ -38,7 +38,7 @@ public record BookDetailsResponseDto(
             .itemPage(this.itemPage != null ? Math.toIntExact(this.itemPage) : null)
             .isbn13(this.isbn13)
             .description(this.description)
-            .coverImg(this.coverImg)
+            .coverImg(this.cover)
             .build();
     }
 }

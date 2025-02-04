@@ -39,8 +39,8 @@ public class Book {
     @NotNull
     private String publisher;
 
-    @Column(name = "pub_year")
-    private String pubYear;
+    @Column(name = "pub_date")
+    private LocalDate pubDate;
 
     @Column(name = "item_page")
     private int itemPage;
@@ -52,6 +52,6 @@ public class Book {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "cover", columnDefinition = "TEXT")
-    private String cover;
+    @Column(name = "cover_image", columnDefinition = "TEXT")
+    private String coverImg;
 }
