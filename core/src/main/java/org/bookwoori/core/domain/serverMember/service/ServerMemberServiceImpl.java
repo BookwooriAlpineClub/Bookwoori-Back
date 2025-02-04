@@ -20,13 +20,8 @@ public class ServerMemberServiceImpl implements ServerMemberService {
 
     private final ServerMemberRepository serverMemberRepository;
 
-    public void saveServerMember(Member member, Server server, ServerRole role) {
-        ServerMember serverMember = ServerMember.builder()
-            .member(member)
-            .server(server)
-            .role(role)
-            .build();
-        serverMemberRepository.save(serverMember);
+    public ServerMember save(ServerMember serverMember) {
+        return serverMemberRepository.save(serverMember);
     }
 
     @Transactional(readOnly = true)
@@ -63,7 +58,7 @@ public class ServerMemberServiceImpl implements ServerMemberService {
             .map(ServerMember::getServer).toList();
     }
 
-    public void deleteServerMember(Server server, Member member) {
+    public void delete(Server server, Member member) {
         serverMemberRepository.deleteByServerAndMember(server, member);
     }
 

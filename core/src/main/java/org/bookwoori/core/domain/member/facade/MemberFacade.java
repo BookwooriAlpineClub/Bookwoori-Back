@@ -8,7 +8,7 @@ import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberServiceImpl;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
-import org.bookwoori.core.global.s3.S3Util;
+import org.bookwoori.core.global.util.S3Util;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;

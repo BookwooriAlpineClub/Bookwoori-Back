@@ -5,10 +5,10 @@ import org.bookwoori.core.domain.category.dto.request.CategoryCreateRequestDto;
 import org.bookwoori.core.domain.category.dto.request.CategoryLocateRequestDto;
 import org.bookwoori.core.domain.category.dto.request.CategoryUpdateRequestDto;
 import org.bookwoori.core.domain.category.entity.Category;
-import org.bookwoori.core.domain.category.service.CategoryServiceImpl;
-import org.bookwoori.core.domain.channel.service.ChannelServiceImpl;
+import org.bookwoori.core.domain.category.service.CategoryService;
+import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.bookwoori.core.domain.server.entity.Server;
-import org.bookwoori.core.domain.server.service.ServerServiceImpl;
+import org.bookwoori.core.domain.server.service.ServerService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
@@ -18,17 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CategoryFacade {
 
-    private final ChannelServiceImpl channelService;
-    private final CategoryServiceImpl categoryService;
-    private final ServerServiceImpl serverService;
+    private final ChannelService channelService;
+    private final CategoryService categoryService;
+    private final ServerService serverService;
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void createCategory(CategoryCreateRequestDto requestDto) {
         Server server = serverService.getServerById(requestDto.serverId());
         Category category = requestDto.toEntity(server);
         Category beforeCategory = categoryService.getLastNodeByServer(server);
         category.setBeforeNode(beforeCategory);
-        categoryService.saveCategory(category);
+        categoryService.save(category);
     }
 
     @Transactional
@@ -37,6 +38,7 @@ public class CategoryFacade {
         category.modifyName(requestDto.name());
     }
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void deleteCategory(Long categoryId) {
         Category categoryToDelete = categoryService.getCategoryWithChannels(categoryId);
@@ -54,6 +56,7 @@ public class CategoryFacade {
         categoryService.delete(categoryToDelete);
     }
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void locateCategory(Long categoryId, CategoryLocateRequestDto requestDto) {
         Category categoryToMove = categoryService.getCategoryById(categoryId);

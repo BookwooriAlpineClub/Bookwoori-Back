@@ -1,21 +1,21 @@
 package org.bookwoori.core.domain.server.facade;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.bookwoori.core.domain.category.dto.response.CategoryResponseDto;
 import org.bookwoori.core.domain.category.entity.Category;
-import org.bookwoori.core.domain.category.service.CategoryServiceImpl;
+import org.bookwoori.core.domain.category.service.CategoryService;
 import org.bookwoori.core.domain.channel.dto.response.ChannelResponseDto;
 import org.bookwoori.core.domain.channel.entity.Channel;
-import org.bookwoori.core.domain.channel.service.ChannelServiceImpl;
+import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.bookwoori.core.domain.member.entity.Member;
-import org.bookwoori.core.domain.member.service.MemberServiceImpl;
+import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
@@ -27,45 +27,50 @@ import org.bookwoori.core.domain.server.dto.response.ServerItemDto;
 import org.bookwoori.core.domain.server.dto.response.ServerListResponseDto;
 import org.bookwoori.core.domain.server.dto.response.ServerMemberListResponseDto;
 import org.bookwoori.core.domain.server.entity.Server;
-import org.bookwoori.core.domain.server.service.ServerServiceImpl;
+import org.bookwoori.core.domain.server.service.ServerService;
+import org.bookwoori.core.domain.serverMember.entity.ServerMember;
 import org.bookwoori.core.domain.serverMember.entity.ServerRole;
-import org.bookwoori.core.domain.serverMember.service.ServerMemberServiceImpl;
+import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
-import org.bookwoori.core.global.s3.S3Util;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.bookwoori.core.global.util.RedisUtil;
+import org.bookwoori.core.global.util.S3Util;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @RequiredArgsConstructor
-@Log4j2
+@Builder
 public class ServerFacade {
 
     private final S3Util s3Util;
-    private final StringRedisTemplate redisTemplate;
+    private final RedisUtil redisUtil;
 
-    private final ServerServiceImpl serverService;
-    private final MemberServiceImpl memberService;
-    private final CategoryServiceImpl categoryService;
-    private final ChannelServiceImpl channelService;
-    private final ServerMemberServiceImpl serverMemberService;
+    private final ServerService serverService;
+    private final MemberService memberService;
+    private final CategoryService categoryService;
+    private final ChannelService channelService;
+    private final ServerMemberService serverMemberService;
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public ServerCreateResponseDto createServer(ServerCreateRequestDto requestDto) {
-        //서버 저장
+        //서버 생성
         Server server = requestDto.toEntity(
             s3Util.uploadImage(requestDto.serverImg(), "server"));
-        serverService.saveServer(server);
+        serverService.save(server);
 
-        //로그인한 유저 정보 불러오기 - 임시로 작성, 이후 수정 필요
-        Member member = memberService.getCurrentMember();
-        //서버장을 ServerMember 테이블에 추가
-        serverMemberService.saveServerMember(member, server, ServerRole.OWNER);
+        //서버장 생성
+        Member currentMember = memberService.getCurrentMember();
+        ServerMember serverMember = ServerMember.builder()
+            .server(server)
+            .member(currentMember)
+            .role(ServerRole.OWNER)
+            .build();
+        serverMemberService.save(serverMember);
 
-        //DEFAULT 카테고리/채널 생성 및 저장
+        //기본 카테고리 및 채널 생성
         Category category = categoryService.makeDefaultCategory(server);
         channelService.makeDefaultChannels(category);
         return ServerCreateResponseDto.from(server);
@@ -129,8 +134,7 @@ public class ServerFacade {
     }
 
     @Transactional
-    public Object createInviteCode(Long serverId) {
-        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+    public String createInviteCode(Long serverId) {
         String uuid = UUID.randomUUID().toString().replace("-", "");
 
         Random random = new Random();
@@ -140,18 +144,17 @@ public class ServerFacade {
 
         String inviteCode = uuid.substring(startIndex, endIndex);
 
-        ops.set("server:invitation:" + inviteCode, String.valueOf(serverId), 1,
-            TimeUnit.DAYS); // Redis에 저장, TTL 1일
-        return inviteCode;
+        // Redis에 저장, TTL 1일
+        redisUtil.setValuesWithTimeout("server:invitation:" + inviteCode, String.valueOf(serverId),
+            Duration.ofDays(1));
 
+        return inviteCode;
     }
 
     @Transactional(readOnly = true)
-    public Object getServerByInviteCode(String inviteCode) {
+    public InviteCodeServerResponseDto getServerByInviteCode(String inviteCode) {
+        String value = (String) redisUtil.getValues("server:invitation:" + inviteCode);
 
-        ValueOperations<String, String> ops = redisTemplate.opsForValue();
-
-        String value = ops.get("server:invitation:" + inviteCode);
         if (value == null) {
             throw new CustomException(ErrorCode.INVALID_INVITE_CODE);
         }
@@ -162,14 +165,12 @@ public class ServerFacade {
         int memberCount = serverMemberService.getMemberCount(server);
 
         return InviteCodeServerResponseDto.from(server, owner.getNickname(), memberCount);
-
     }
 
     @Transactional
     public void createServerMember(String inviteCode) {
-        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+        String value = (String) redisUtil.getValues("server:invitation:" + inviteCode);
 
-        String value = ops.get("server:invitation:" + inviteCode);
         if (value == null) {
             throw new CustomException(ErrorCode.INVALID_INVITE_CODE);
         }
@@ -183,8 +184,13 @@ public class ServerFacade {
         if (isJoined) {
             throw new CustomException(ErrorCode.ALREADY_JOINED_SERVER);
         } else {
-            serverMemberService.saveServerMember(currentMember, server,
-                ServerRole.MEMBER); // 서버멤버 생성
+            // 서버멤버 생성
+            ServerMember serverMember = ServerMember.builder()
+                .server(server)
+                .member(currentMember)
+                .role(ServerRole.MEMBER)
+                .build();
+            serverMemberService.save(serverMember);
         }
     }
 
@@ -205,7 +211,7 @@ public class ServerFacade {
             throw new CustomException(ErrorCode.DELEGATION_REQUIRED);
         }
 
-        serverMemberService.deleteServerMember(server, member);
+        serverMemberService.delete(server, member);
     }
 
     @Transactional
@@ -234,6 +240,7 @@ public class ServerFacade {
         server.updateServerImg(s3Util.uploadImage(newImage, "server"));
     }
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void delegateServerRole(Long serverId, ServerRoleDelegateRequestDto requestDto) {
         Server server = serverService.getServerById(serverId);
@@ -252,6 +259,6 @@ public class ServerFacade {
         }
 
         s3Util.deleteImage(server.getServerImg());
-        serverService.deleteServer(server);
+        serverService.delete(server);
     }
 }

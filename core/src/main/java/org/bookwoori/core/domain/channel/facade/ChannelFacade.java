@@ -2,11 +2,11 @@ package org.bookwoori.core.domain.channel.facade;
 
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.category.entity.Category;
-import org.bookwoori.core.domain.category.service.CategoryServiceImpl;
+import org.bookwoori.core.domain.category.service.CategoryService;
 import org.bookwoori.core.domain.channel.dto.request.ChannelCreateRequestDto;
 import org.bookwoori.core.domain.channel.dto.request.ChannelModifyRequestDto;
 import org.bookwoori.core.domain.channel.entity.Channel;
-import org.bookwoori.core.domain.channel.service.ChannelServiceImpl;
+import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
@@ -16,18 +16,20 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ChannelFacade {
 
-    private final ChannelServiceImpl channelService;
-    private final CategoryServiceImpl categoryService;
+    private final ChannelService channelService;
+    private final CategoryService categoryService;
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void createChannel(ChannelCreateRequestDto requestDto) {
         Category category = categoryService.getCategoryById(requestDto.categoryId());
         Channel channel = requestDto.toEntity(category);
         Channel beforeChannel = channelService.getLastNodeByCategory(category);
         channel.setBeforeNode(beforeChannel);
-        channelService.saveChannel(channel);
+        channelService.save(channel);
     }
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void modifyChannel(Long channelId, ChannelModifyRequestDto requestDto) {
         Channel channel = channelService.getChannelById(channelId);
@@ -48,10 +50,11 @@ public class ChannelFacade {
         channel.modifyName(requestDto.name());
     }
 
+    /* TODO @crHwang0822 리팩토링 */
     @Transactional
     public void deleteChannel(Long channelId) {
         Channel channel = channelService.getChannelById(channelId);
         channelService.detach(channel);
-        channelService.deleteChannel(channel);
+        channelService.delete(channel);
     }
 }
