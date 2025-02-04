@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.exp.service;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.exp.entity.Exp;
@@ -24,16 +25,17 @@ public class ExpServiceImpl implements ExpService {
   }
 
   @Override
-  public void grantExpToMember(Member member, ExpType expType, double amount) {
+  public void grantExpToMember(Member member, ExpType expType, double amount, String title) {
     if (member == null) {
       throw new CustomException(ErrorCode.BAD_REQUEST);
     }
-    double height = member.updateHeight(amount);
+    double totalHeight = member.updateHeight(amount);
     Exp expLog = Exp.builder()
         .member(member)
-        .height(height)
+        .height(totalHeight)
         .amount(amount)
         .expType(expType)
+        .title(title)
         .build();
     expRepository.save(expLog);
   }
