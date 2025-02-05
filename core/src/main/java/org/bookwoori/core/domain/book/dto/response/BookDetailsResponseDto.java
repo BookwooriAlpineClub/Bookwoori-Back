@@ -7,25 +7,25 @@ import org.bookwoori.core.domain.book.entity.Book;
 
 @Builder
 public record BookDetailsResponseDto(
+    String isbn13,
     String title,
     String author,
+    String cover,
     String publisher,
-    String pubDate,
-    Long itemPage,
+    LocalDate pubDate,
     String description,
-    String isbn13,
-    String coverImg) {
+    int itemPage) {
 
     public static BookDetailsResponseDto from(JsonNode item) {
         return BookDetailsResponseDto.builder()
             .title(item.path("title").asText())
             .author(item.path("author").asText())
             .publisher(item.path("publisher").asText())
-            .pubDate(item.path("pubDate").asText())
-            .itemPage(item.path("subInfo").path("itemPage").asLong())
+            .pubDate(LocalDate.parse(item.path("pubDate").asText()))
+            .itemPage((int) item.path("subInfo").path("itemPage").asLong())
             .description(item.path("description").asText())
             .isbn13(item.path("isbn13").asText())
-            .coverImg(item.path("cover").asText())
+            .cover(item.path("cover").asText())
             .build();
     }
 
@@ -34,11 +34,11 @@ public record BookDetailsResponseDto(
             .title(this.title)
             .author(this.author)
             .publisher(this.publisher)
-            .pubDate(LocalDate.parse(this.pubDate))
-            .itemPage(this.itemPage != null ? Math.toIntExact(this.itemPage) : null)
+            .pubDate(this.pubDate)
+            .itemPage(this.itemPage)
             .isbn13(this.isbn13)
             .description(this.description)
-            .coverImg(this.coverImg)
+            .coverImg(this.cover)
             .build();
     }
 }

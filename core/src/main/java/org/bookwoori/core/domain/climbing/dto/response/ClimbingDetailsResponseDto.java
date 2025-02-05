@@ -16,11 +16,11 @@ public record ClimbingDetailsResponseDto(
     String description,
     int memberCount,
     boolean isJoined,
-    boolean isOWner,
+    boolean isOwner,
     BookInfoDto bookInfo) {
 
     public static ClimbingDetailsResponseDto from(Climbing climbing, int memberCount,
-        boolean isJoined, boolean isOWner) {
+        boolean isJoined, boolean isOwner) {
         return ClimbingDetailsResponseDto.builder()
             .climbingId(climbing.getClimbingId())
             .status(climbing.getStatus())
@@ -30,7 +30,7 @@ public record ClimbingDetailsResponseDto(
             .description(climbing.getDescription())
             .memberCount(memberCount)
             .isJoined(isJoined)
-            .isOWner(isOWner)
+            .isOwner(isOwner)
             .bookInfo(BookInfoDto.from(climbing.getBook()))
             .build();
     }

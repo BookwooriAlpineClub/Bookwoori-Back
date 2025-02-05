@@ -60,5 +60,4 @@ public class MemberFacade {
         s3Util.deleteImage(member.getProfileImg());
         member.updateBackgrounImg(s3Util.uploadImage(newImage, "member/background-image"));
     }
-
 }
