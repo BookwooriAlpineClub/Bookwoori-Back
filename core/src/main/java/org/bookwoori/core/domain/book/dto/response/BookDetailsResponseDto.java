@@ -7,14 +7,14 @@ import org.bookwoori.core.domain.book.entity.Book;
 
 @Builder
 public record BookDetailsResponseDto(
+    String isbn13,
     String title,
     String author,
+    String cover,
     String publisher,
     LocalDate pubDate,
-    Long itemPage,
     String description,
-    String isbn13,
-    String cover) {
+    int itemPage) {
 
     public static BookDetailsResponseDto from(JsonNode item) {
         return BookDetailsResponseDto.builder()
@@ -22,7 +22,7 @@ public record BookDetailsResponseDto(
             .author(item.path("author").asText())
             .publisher(item.path("publisher").asText())
             .pubDate(LocalDate.parse(item.path("pubDate").asText()))
-            .itemPage(item.path("subInfo").path("itemPage").asLong())
+            .itemPage((int) item.path("subInfo").path("itemPage").asLong())
             .description(item.path("description").asText())
             .isbn13(item.path("isbn13").asText())
             .cover(item.path("cover").asText())
@@ -35,7 +35,7 @@ public record BookDetailsResponseDto(
             .author(this.author)
             .publisher(this.publisher)
             .pubDate(this.pubDate)
-            .itemPage(this.itemPage != null ? Math.toIntExact(this.itemPage) : null)
+            .itemPage(this.itemPage)
             .isbn13(this.isbn13)
             .description(this.description)
             .coverImg(this.cover)

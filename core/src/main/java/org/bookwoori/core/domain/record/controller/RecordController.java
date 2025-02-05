@@ -56,12 +56,6 @@ public class RecordController {
         return ResponseEntity.ok(recordFacade.getRecordsByStatus(status));
     }
 
-    @Operation(summary = "책 평가 목록 조회", description = "내 서재의 책평가 목록을 조회합니다.")
-    @GetMapping("/reviews")
-    public ResponseEntity<?> getReviews() {
-        return ResponseEntity.ok(recordFacade.getReviews());
-    }
-
     @Operation(summary = "책 기록 상세 조회", description = "내 서재의 책 기록을 상세 조회합니다.")
     @GetMapping("/{recordId}")
     public ResponseEntity<?> getReviewDetails(@PathVariable("recordId") final Long recordId) {

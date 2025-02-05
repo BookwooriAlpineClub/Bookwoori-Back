@@ -1,7 +1,9 @@
 package org.bookwoori.core.domain.climbing.facade;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,9 +28,11 @@ import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
 import org.bookwoori.core.domain.climbingMember.service.ClimbingMemberService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.review.dto.response.ReviewListResponseDto;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.record.service.RecordService;
+import org.bookwoori.core.domain.review.dto.response.ReviewUnitDto;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.bookwoori.core.domain.review.service.ReviewService;
 import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
@@ -52,7 +56,6 @@ public class ClimbingMemberFacade {
     private final ReviewService reviewService;
     private final ReviewEmojiService reviewEmojiService;
     private final ServerMemberService serverMemberService;
-
 
     public boolean toggleParticipation(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
@@ -108,16 +111,6 @@ public class ClimbingMemberFacade {
         climbingMemberService.delegateClimbingRole(climbingId, currentMember, newOwner);
     }
 
-    public void shareReviewToClimbing(Long climbingId) {
-        Member currentMember = memberService.getCurrentMember();
-        ClimbingMember climbingMember = climbingMemberService.getMemberInClimbing(currentMember,
-            climbingId);
-        if (climbingMember.isHasShared()) {
-            throw new CustomException(ErrorCode.REVIEW_ALREADY_SHARED);
-        }
-        climbingMember.updateShared(true);
-    }
-
     @Transactional(readOnly = true)
     public boolean getHasShared(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
@@ -134,62 +127,18 @@ public class ClimbingMemberFacade {
     }
 
     @Transactional(readOnly = true)
-    public ClimbingReviewListResponseDto getClimbingReviewList(Long climbingId) {
+    public ClimbingReviewWithShareResponseDto getReviewWithAllowShare(Long climbingId) {
         Climbing climbing = climbingService.getClimbingById(climbingId);
-        // sharedReviews: hasShared true인 ClimbingMember의 Review 리스트
-        // sharedReviewEmojis: sharedReviews의 ReviewEmoji 리스트
-        List<Long> sharedMemberIds = climbingMemberService.getSharedMemberIds(climbing);
-        List<Review> sharedReviews = reviewService.getReviewsByMembersAndBook(sharedMemberIds,
-            climbing.getBook());
-        if (sharedReviews == null || sharedReviews.isEmpty()) {
-            return new ClimbingReviewListResponseDto(true, Collections.emptyList());
-        }
-        // reviewMap: memberId(key), Review 객체(value)
-        Map<Long, Review> reviewMap = sharedReviews.stream()
-            .collect(Collectors.toMap(
-                review -> review.getRecord().getMember().getMemberId(),
-                review -> review
-            ));
-        // sharedReviewEmoji
-        List<ReviewEmoji> sharedReviewEmojis = reviewEmojiService.getEmojisByClimbingAndReviews(
-            climbing,
-            sharedReviews);
-        // reviewEmojiCounts: Emoij와 reviewId 기준으로 그룹화
-        Map<Long, Map<EmojiType, Long>> reviewEmojiCounts = sharedReviewEmojis.stream()
-            .collect(Collectors.groupingBy(
-                reviewEmoji -> reviewEmoji.getReview().getReviewId(),
-                Collectors.groupingBy(
-                    ReviewEmoji::getEmoji,
-                    Collectors.counting()
-                )
-            ));
-        // climbingReviews: sharedMemberIds를 순회하면서 ClimbingMemberReviewUnitDto 생성
-        List<ClimbingMemberReviewUnitDto> climbingReviews = sharedMemberIds.stream()
-            .map(memberId -> {
-                Review review = reviewMap.get(memberId);
-                Map<EmojiType, Long> emojiCounts = reviewEmojiCounts.getOrDefault(
-                    review.getReviewId(),
-                    Collections.emptyMap());
-                List<ReviewEmojiListCountDto> reviewEmojiList = emojiCounts.entrySet().stream()
-                    .map(entry -> {
-                        boolean isClicked = reviewEmojiService.hasClickedEmoji(review, memberService.getCurrentMember(), entry.getKey());
-                        return new ReviewEmojiListCountDto(isClicked, entry.getKey(), entry.getValue().intValue());
-                    })
-                    .collect(Collectors.toList());
-                ClimbingMember climbingMember = climbingMemberService.getClimbingMemberWithMember(
-                    climbingId, memberId);
-                return ClimbingMemberReviewUnitDto.from(climbingMember, review, reviewEmojiList);
-            })
-            .collect(Collectors.toList());
-        return new ClimbingReviewListResponseDto(true, climbingReviews);
+        List<ReviewUnitDto> reviewList = getReviewListToClimbing(climbingId);
+        return ClimbingReviewWithShareResponseDto.from(climbing, reviewList);
     }
 
-    @Transactional(readOnly = true)
-    public ClimbingReviewWithShareResponseDto getReviewWithAllowShare(Long climbingId) {
+    public List<ReviewUnitDto> getReviewListToClimbing(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
         Climbing climbing = climbingService.getClimbingById(climbingId);
-        Review review = reviewService.getReviewByMemberAndBook(currentMember, climbing.getBook());
-        return ClimbingReviewWithShareResponseDto.from(climbing, review);
+        return reviewService.getReviewListByMemberAndBook(currentMember, climbing.getBook()).stream()
+            .map(ReviewUnitDto::from)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -240,5 +189,4 @@ public class ClimbingMemberFacade {
             .collect(Collectors.toList());
         return new ReviewEmojiMemberListResponseDto(emojiLists);
     }
-
 }

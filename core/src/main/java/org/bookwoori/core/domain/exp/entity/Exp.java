@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.global.BaseTimeEntity;
 
 @Entity
 @Table(name = "exp")
@@ -24,7 +25,7 @@ import org.bookwoori.core.domain.member.entity.Member;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
-public class Exp {
+public class Exp extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,5 +46,8 @@ public class Exp {
 
   @Column(name = "type")
   private ExpType expType;
+
+  @Column(name = "title")
+  private String title;
 
 }

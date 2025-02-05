@@ -1,7 +1,7 @@
 package org.bookwoori.core.domain.review.service;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.member.entity.Member;
@@ -31,8 +31,8 @@ public class ReviewService {
   }
 
   @Transactional(readOnly = true)
-  public Review getReviewByMemberAndBook(Member member, Book book) {
-    return reviewRepository.findByMemberAndBook(member, book);
+  public List<Review> getReviewListByMemberAndBook(Member member, Book book) {
+    return reviewRepository.findAllByMemberAndBook(member, book);
   }
 
   public boolean existsReviewByMemberAndBook(Member member, Book book) {
@@ -46,11 +46,16 @@ public class ReviewService {
   }
 
   @Transactional(readOnly = true)
-  public Optional<Review> getReviewByRecordId(Long recordId) {
-    return reviewRepository.findByRecord_RecordId(recordId);
+  public List<Review> getReviewListByRecordId(Long recordId) {
+    return reviewRepository.findAllByRecord_RecordId(recordId);
   }
 
   public void deleteReviewByRecordId(Long recordId) {
     reviewRepository.deleteByRecord_RecordId(recordId);
   }
+
+  public void deleteReview(Long reviewId) {
+    reviewRepository.deleteById(reviewId);
+  }
+
 }
