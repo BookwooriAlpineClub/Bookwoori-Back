@@ -15,6 +15,8 @@ public record DirectMessageItemDto(
     @JsonInclude(Include.NON_EMPTY)
     String parentId,
     @JsonInclude(Include.NON_EMPTY)
+    Long parentMemberId,
+    @JsonInclude(Include.NON_EMPTY)
     String parentContent,
     String id,
     Long messageRoomId,
@@ -27,6 +29,7 @@ public record DirectMessageItemDto(
     public static DirectMessageItemDto from(DirectMessage directMessage) {
         return DirectMessageItemDto.builder()
             .parentId(directMessage.getParentId())
+            .parentMemberId(directMessage.getParentMemberId())
             .parentContent(directMessage.getParentContent())
             .id(directMessage.getId())
             .messageRoomId(directMessage.getMessageRoomId())

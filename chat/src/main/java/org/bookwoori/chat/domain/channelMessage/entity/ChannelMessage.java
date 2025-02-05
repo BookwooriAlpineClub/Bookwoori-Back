@@ -85,6 +85,10 @@ public class ChannelMessage {
         this.targetEmoji = emoji;
     }
 
+    public void setParentMemberId(Long parentMemberId) {
+        this.parentMemberId = parentMemberId;
+    }
+
     public void setParentContent(String parentContent) {
         this.parentContent = parentContent;
     }
