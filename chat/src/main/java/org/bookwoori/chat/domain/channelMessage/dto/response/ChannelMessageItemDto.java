@@ -15,6 +15,8 @@ public record ChannelMessageItemDto(
     @JsonInclude(Include.NON_EMPTY)
     String parentId,
     @JsonInclude(Include.NON_EMPTY)
+    Long parentMemberId,
+    @JsonInclude(Include.NON_EMPTY)
     String parentContent,
     String id,
     Long channelId,
@@ -27,6 +29,7 @@ public record ChannelMessageItemDto(
     public static ChannelMessageItemDto from(ChannelMessage channelMessage) {
         return ChannelMessageItemDto.builder()
             .parentId(channelMessage.getParentId())
+            .parentMemberId(channelMessage.getParentMemberId())
             .parentContent(channelMessage.getParentContent())
             .id(channelMessage.getId())
             .channelId(channelMessage.getChannelId())
