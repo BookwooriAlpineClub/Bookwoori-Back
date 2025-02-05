@@ -33,21 +33,20 @@ public class ChannelMessageService {
             .filter(Objects::nonNull)
             .toList();
 
-        Map<String, String> parentContents = channelMessageRepository.findAllById(parentIds)
-            .stream()
-            .collect(Collectors.toMap(
-                ChannelMessage::getId,
-                message -> message.getContent() != null ? message.getContent() : "삭제된 메시지입니다."
-            ));
+        Map<String, ChannelMessage> parentMessages = channelMessageRepository.findAllById(parentIds)
+            .stream().collect(Collectors.toMap(ChannelMessage::getId, message -> message));
 
         List<ChannelMessageItemDto> channelMessageDtoList = channelMessageList.stream()
             .map(channelMessage -> {
                 if (channelMessage.getParentId() != null) {
-                    String parentContent = parentContents.getOrDefault(
-                        channelMessage.getParentId(),
-                        "삭제된 메시지입니다."
-                    );
+                    ChannelMessage parentMessage = parentMessages.get(channelMessage.getParentId());
+                    String parentContent =
+                        parentMessage != null && parentMessage.getContent() != null
+                            ? parentMessage.getContent() : "삭제된 메시지입니다.";
+                    Long parentMemberId =
+                        parentMessage != null ? parentMessage.getMemberId() : null;
                     channelMessage.setParentContent(parentContent);
+                    channelMessage.setParentMemberId(parentMemberId);
                 }
                 return ChannelMessageItemDto.from(channelMessage);
             }).toList();
