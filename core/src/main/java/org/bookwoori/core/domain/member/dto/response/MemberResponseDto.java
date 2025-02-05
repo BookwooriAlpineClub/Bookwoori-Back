@@ -11,7 +11,7 @@ public record MemberResponseDto(
     String backgroundImg,
     int level,
     String mountain,
-    double height,
+    double totalHeight,
     int totalPage) {
 
     public static MemberResponseDto from(Member member, boolean isMine) {
@@ -22,7 +22,7 @@ public record MemberResponseDto(
             .backgroundImg(member.getBackgroundImg())
             .level(member.getGrade().getLevel())
             .mountain(member.getGrade().getMountain())
-            .height(member.getGrade().getHeight())
+            .totalHeight(member.getTotalHeight())
             .totalPage(member.getTotalPage())
             .build();
     }
