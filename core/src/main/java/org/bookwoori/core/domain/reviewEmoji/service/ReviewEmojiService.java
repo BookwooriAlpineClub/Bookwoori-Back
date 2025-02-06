@@ -46,4 +46,9 @@ public class ReviewEmojiService {
     public List<ReviewEmoji> getEmojisByReview(Review review) {
         return reviewEmojiRepository.findByReview(review);
     }
+
+    @Transactional(readOnly = true)
+    public boolean hasClickedEmoji(Review review, Member member, EmojiType emojiType) {
+        return reviewEmojiRepository.existsByReviewAndMemberAndEmoji(review, member, emojiType);
+    }
 }

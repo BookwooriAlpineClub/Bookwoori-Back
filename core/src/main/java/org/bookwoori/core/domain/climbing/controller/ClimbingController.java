@@ -10,6 +10,7 @@ import org.bookwoori.core.domain.climbing.dto.request.ClimbingMemoUpdateRequestD
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingRoleDelegateRequestDto;
 import org.bookwoori.core.domain.climbing.facade.ClimbingFacade;
 import org.bookwoori.core.domain.climbing.facade.ClimbingMemberFacade;
+import org.bookwoori.core.domain.climbing.facade.ClimbingReviewFacade;
 import org.bookwoori.core.domain.reviewEmoji.entity.EmojiType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ public class ClimbingController {
 
     private final ClimbingFacade climbingFacade;
     private final ClimbingMemberFacade climbingMemberFacade;
+    private final ClimbingReviewFacade climbingReviewFacade;
 
     @Operation(summary = "클라이밍 채널 생성", description = "클라이밍 채널을 생성합니다.")
     @PostMapping
@@ -100,11 +102,11 @@ public class ClimbingController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "클라이밍 채널 참여자 감상평 공유", description = "클라이밍 채널 참여자가 감상평을 공유합니다")
-    @PatchMapping("/{climbingId}/reviews")
+    @Operation(summary = "클라이밍 채널 참여자 감상평 공유", description = "클라이밍 채널 참여자가 감상평을 공유합니다.")
+    @PatchMapping("/{climbingId}/reviews/{reviewId}")
     public ResponseEntity<?> shareReviewToClimbing(
-        @PathVariable("climbingId") final Long climbingId) {
-        climbingMemberFacade.shareReviewToClimbing(climbingId);
+        @PathVariable("climbingId") final Long climbingId, @PathVariable("reviewId") final Long reviewId) {
+        climbingReviewFacade.shareReviewToClimbing(climbingId, reviewId);
         return ResponseEntity.ok().build();
     }
 
@@ -114,7 +116,7 @@ public class ClimbingController {
         @PathVariable("climbingId") final Long climbingId) {
         boolean hasShared = climbingMemberFacade.getHasShared(climbingId);
         if (hasShared) {
-            return ResponseEntity.ok(climbingMemberFacade.getClimbingReviewList(climbingId));
+            return ResponseEntity.ok(climbingReviewFacade.getClimbingReviewList(climbingId));
         } else {
             boolean isShareable = climbingMemberFacade.isShareable(climbingId);
             if (isShareable) {

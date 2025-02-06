@@ -29,4 +29,7 @@ public interface ClimbingMemberRepository extends JpaRepository<ClimbingMember, 
         "WHERE cm.climbing.climbingId = :climbingId AND m.memberId = :memberId")
     ClimbingMember findClimbingMemberWithMember(@Param("climbingId") Long climbingId,
         @Param("memberId") Long memberId);
+
+    @Query("SELECT cm.climbingMemberId FROM ClimbingMember cm WHERE cm.climbing = :climbing AND cm.hasShared = true ")
+    List<Long> findSharedClimbingMemberIdsByClimbing(Climbing climbing);
 }

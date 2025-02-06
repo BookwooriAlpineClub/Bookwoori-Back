@@ -35,20 +35,20 @@ public class DirectMessageService {
             .filter(Objects::nonNull)
             .toList();
 
-        Map<String, String> parentContents = directMessageRepository.findAllById(parentIds).stream()
-            .collect(Collectors.toMap(
-                DirectMessage::getId,
-                message -> message.getContent() != null ? message.getContent() : "삭제된 메시지입니다."
-            ));
+        Map<String, DirectMessage> parentMessages = directMessageRepository.findAllById(parentIds)
+            .stream().collect(Collectors.toMap(DirectMessage::getId, message -> message));
 
         List<DirectMessageItemDto> directMessageDtoList = directMessageList.stream()
             .map(directMessage -> {
                 if (directMessage.getParentId() != null) {
-                    String parentContent = parentContents.getOrDefault(
-                        directMessage.getParentId(),
-                        "삭제된 메시지입니다."
-                    );
+                    DirectMessage parentMessage = parentMessages.get(directMessage.getParentId());
+                    String parentContent =
+                        parentMessage != null && parentMessage.getContent() != null
+                            ? parentMessage.getContent() : "삭제된 메시지입니다.";
+                    Long parentMemberId =
+                        parentMessage != null ? parentMessage.getMemberId() : null;
                     directMessage.setParentContent(parentContent);
+                    directMessage.setParentMemberId(parentMemberId);
                 }
                 return DirectMessageItemDto.from(directMessage);
             }).toList();
