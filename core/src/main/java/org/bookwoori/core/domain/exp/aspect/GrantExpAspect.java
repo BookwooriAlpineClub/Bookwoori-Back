@@ -63,6 +63,7 @@ public class GrantExpAspect {
             Book book = bookService.getOrCreateBookByIsbn(requestDto.isbn13());
             Member currentMember = memberService.getCurrentMember();
             expService.grantExpToMember(currentMember, expType, exp, book.getTitle());
+            currentMember.updatePage(exp*10);
           } else {
             ReviewRequestDto requestDto = extractReviewRequestDto(joinPoint.getArgs());
             Record record = recordService.getRecordById(requestDto.recordId());
