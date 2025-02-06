@@ -168,7 +168,7 @@ public class ServerFacade {
     }
 
     @Transactional
-    public Object createServerMember(String inviteCode) {
+    public Object joinServerMember(String inviteCode) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
 
         String value = ops.get("server:invitation:" + inviteCode);
