@@ -49,7 +49,8 @@ public class SecurityConfig {
             "https://localhost:8000",
             "https://api.bookwoori.p-e.kr",
             "https://d1b8jphm7kfx0c.cloudfront.net",
-            "https://www.bookwoori.site/"));
+            "https://www.bookwoori.site/",
+            "https://bookwoori-vercel.vercel.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"));
         configuration.addAllowedHeader("*");
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Location", "Set-Cookie", "Content-Type"));
