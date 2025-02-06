@@ -16,6 +16,7 @@ public record BookDetailsResponseDto(
     String description,
     int itemPage) {
 
+
     public static BookDetailsResponseDto from(JsonNode item) {
         return BookDetailsResponseDto.builder()
             .title(item.path("title").asText())

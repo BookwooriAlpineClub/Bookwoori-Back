@@ -19,7 +19,7 @@ public record BookResponseDto(
             .title(item.path("title").asText())
             .author(item.path("author").asText())
             .publisher(item.path("publisher").asText())
-            .pubDate(LocalDate.parse(item.path("pubDate").asText().split("-")[0]))
+            .pubDate(LocalDate.parse(item.path("pubDate").asText()))
             .isbn13(item.path("isbn13").asText())
             .cover(item.path("cover").asText())
             .build();
