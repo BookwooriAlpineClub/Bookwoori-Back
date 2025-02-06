@@ -140,8 +140,7 @@ public class ServerController {
     @Operation(summary = "초대코드로 서버 참가", description = "초대코드로 서버에 참가합니다.")
     @PostMapping("/join/{inviteCode}")
     public ResponseEntity<?> createServerMember(@PathVariable final String inviteCode) {
-        serverFacade.createServerMember(inviteCode);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.ok(serverFacade.createServerMember(inviteCode));
     }
 
 }

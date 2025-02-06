@@ -16,6 +16,7 @@ import org.bookwoori.core.domain.channel.entity.Channel;
 import org.bookwoori.core.domain.channel.service.ChannelService;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
+import org.bookwoori.core.domain.server.ServerIdResponseDto;
 import org.bookwoori.core.domain.server.dto.request.ServerCreateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerInfoUpdateRequestDto;
 import org.bookwoori.core.domain.server.dto.request.ServerRoleDelegateRequestDto;
@@ -167,7 +168,7 @@ public class ServerFacade {
     }
 
     @Transactional
-    public void createServerMember(String inviteCode) {
+    public Object createServerMember(String inviteCode) {
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
 
         String value = ops.get("server:invitation:" + inviteCode);
@@ -186,6 +187,7 @@ public class ServerFacade {
         } else {
             serverMemberService.saveServerMember(currentMember, server,
                 ServerRole.MEMBER); // 서버멤버 생성
+            return ServerIdResponseDto.from(server);
         }
     }
 
