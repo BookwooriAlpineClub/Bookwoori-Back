@@ -99,4 +99,8 @@ public class Member extends BaseTimeEntity {
     public void updateBackgrounImg(String url) {
         this.backgroundImg = url;
     }
+
+  public void updatePage(double page) {
+        this.totalPage += (int) page;
+  }
 }
