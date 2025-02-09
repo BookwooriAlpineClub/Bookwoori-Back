@@ -69,7 +69,7 @@ public class ClimbingReviewFacade {
     List<ClimbingReview> climbingReviews = sharedClimbingMemberIds.stream()
         .map(climbingReviewService::findByClimbingMemberId)
         .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        .toList();
 
     if (climbingReviews.isEmpty()) {
       return new ClimbingReviewListResponseDto(true, Collections.emptyList());
@@ -114,8 +114,8 @@ public class ClimbingReviewFacade {
                 ))
                 .collect(Collectors.toList());
 
-//            ClimbingMember climbingMember = climbingMemberService.getClimbingMemberWithMember(climbingId, memberId);
-            Member member = memberService.getMemberById(memberId);
+            ClimbingMember climbingMember = climbingMemberService.getClimbingMemberWithMember(climbingId, memberId);
+            Member member = memberService.getMemberById(climbingMember.getMember().getMemberId());
             return ClimbingMemberReviewUnitDto.from(member, review, reviewEmojiList);
           }).orElse(null);
         })
