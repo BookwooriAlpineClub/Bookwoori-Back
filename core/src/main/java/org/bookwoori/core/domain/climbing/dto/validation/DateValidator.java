@@ -5,63 +5,42 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.time.LocalDate;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
+
 
 public class DateValidator implements ConstraintValidator<ValidDateRange, Object> {
 
     @Override
     public boolean isValid(Object obj, ConstraintValidatorContext context) {
         LocalDate today = LocalDate.now();
-        LocalDate minDate = today.plusDays(1); // 최소 기준 날짜 (당일 + 1)
+        LocalDate minDate = today.plusDays(1); // 최소 기준 날짜 (오늘 + 1)
 
         if (obj instanceof ClimbingChannelCreateRequestDto dto) {
-            // startDate가 최소 기준 이후인지 확인
-            if (dto.startDate().isBefore(minDate)) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(
-                        "INVALID_INPUT_DATE-시작 날짜는 최소 현재 날짜의 다음 날 이후여야 합니다.")
-                    .addConstraintViolation();
-                return false;
+            // startDate가 오늘 이후인지 확인
+            if (!dto.startDate().isAfter(today)) {
+                throw new CustomException(ErrorCode.INVALID_START_DATE);
             }
-            // endDate가 최소 기준 이후인지 확인
-            if (dto.endDate().isBefore(minDate)) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(
-                        "INVALID_INPUT_DATE-종료 날짜는 최소 현재 날짜의 다음 날 이후여야 합니다.")
-                    .addConstraintViolation();
-                return false;
+            // endDate가 오늘 이후인지 확인
+            if (!dto.endDate().isAfter(today)) {
+                throw new CustomException(ErrorCode.INVALID_END_DATE);
             }
             // endDate가 startDate 이후인지 확인
-            if (dto.endDate().isBefore(dto.startDate())) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(
-                        "INVALID_INPUT_DATE-종료 날짜는 시작 날짜 이후여야 합니다.")
-                    .addConstraintViolation();
-                return false;
+            if (!dto.endDate().isAfter(dto.startDate())) {
+                throw new CustomException(ErrorCode.INVALID_INPUT_DATE);
             }
         } else if (obj instanceof ClimbingChannelUpdateRequestDto dto) {
-            // startDate가 최소 기준 이후인지 확인
-            if (dto.startDate().isBefore(minDate)) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(
-                        "INVALID_INPUT_DATE-시작 날짜는 최소 현재 날짜의 다음 날 이후여야 합니다.")
-                    .addConstraintViolation();
-                return false;
+            // startDate가 오늘 이후인지 확인
+            if (!dto.startDate().isAfter(today)) {
+                throw new CustomException(ErrorCode.INVALID_START_DATE);
             }
-            // endDate가 최소 기준 이후인지 확인
-            if (dto.endDate().isBefore(minDate)) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(
-                        "INVALID_INPUT_DATE-종료 날짜는 최소 현재 날짜의 다음 날 이후여야 합니다.")
-                    .addConstraintViolation();
-                return false;
+            // endDate가 오늘 이후인지 확인
+            if (!dto.endDate().isAfter(today)) {
+                throw new CustomException(ErrorCode.INVALID_END_DATE);
             }
             // endDate가 startDate 이후인지 확인
-            if (dto.endDate().isBefore(dto.startDate())) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(
-                        "INVALID_INPUT_DATE-종료 날짜는 시작 날짜 이후여야 합니다.")
-                    .addConstraintViolation();
-                return false;
+            if (!dto.endDate().isAfter(dto.startDate())) {
+                throw new CustomException(ErrorCode.INVALID_INPUT_DATE);
             }
         }
         return true;
