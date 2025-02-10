@@ -14,8 +14,9 @@ import org.bookwoori.core.domain.review.dto.response.ReviewUnitDto;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
+import org.bookwoori.core.global.validation.ValidDateRange;
 
-
+@ValidDateRange
 public record RecordRequestDto(
     @NotBlank
     @Size(min = 13, max = 13)

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
-import org.bookwoori.core.domain.climbing.dto.validation.ValidDateRange;
+import org.bookwoori.core.global.validation.ValidDateRange;
 
 @ValidDateRange
 public record ClimbingChannelUpdateRequestDto(
