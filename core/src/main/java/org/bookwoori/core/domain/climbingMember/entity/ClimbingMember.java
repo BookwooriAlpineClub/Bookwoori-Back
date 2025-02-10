@@ -18,7 +18,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
+import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
 import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.record.entity.ReadingStatus;
 
 @Entity
 @Table(name = "climbing_member")
@@ -55,12 +57,20 @@ public class ClimbingMember {
     @NotNull
     private ClimbingRole role;
 
+    @Column(name = "final_page")
+    private int finalPage;
+
+    @Column(name = "final_status")
+    private ReadingStatus finalStatus;
+
     public ClimbingMember(Member member, Climbing climbing, ClimbingRole role) {
         this.member = member;
         this.climbing = climbing;
         this.role = role;
         this.hasShared = false;
         this.memo = null;
+        this.finalPage = 0;
+        this.finalStatus = ReadingStatus.UNREAD;
     }
 
     public void updateMemo(String memo) {
@@ -73,5 +83,10 @@ public class ClimbingMember {
 
     public void updateShared(boolean hasShared) {
         this.hasShared = hasShared;
+    }
+
+    public void updateFinalDate(int maxPage, ReadingStatus status) {
+        this.finalPage = maxPage;
+        this.finalStatus = status;
     }
 }

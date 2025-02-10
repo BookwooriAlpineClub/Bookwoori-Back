@@ -2,9 +2,11 @@ package org.bookwoori.core.domain.climbing.facade;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
+import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.book.service.BookService;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
@@ -75,15 +77,23 @@ public class ClimbingFacade {
                 else {
                     climbing.updateStatus(ClimbingStatus.FAILED);
                 }
+                // 클라이밍 종료 시점의 climbingMember 데이터 저장
+                updateEndClimbingMemberFinalData(climbing, climbingMemberList);
             }
             climbingService.saveClimbingChannel(climbing);
         }
     }
 
-    @Transactional
     @GrantExp(type = ExpType.FINISHED_CLIMBING)
     public void updateFinishedClimbingStatus(Climbing climbing){
         climbing.updateStatus(ClimbingStatus.FINISHED);
+    }
+
+    private void updateEndClimbingMemberFinalData(Climbing climbing, List<ClimbingMember> climbingMemberList){
+        for (ClimbingMember member : climbingMemberList) {
+            recordService.getRecordOptByMemberAndBook(member.getMember(), climbing.getBook())
+                .ifPresent(record -> member.updateFinalDate(record.getMaxPage(), record.getStatus()));
+        }
     }
 
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {
