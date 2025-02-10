@@ -31,14 +31,26 @@ public record RecordRequestDto(
         if (currentPage > book.getItemPage()) {
             throw new CustomException(ErrorCode.INVALID_INPUT_PAGE);
         }
-        return Record.builder()
-            .member(currentMember)
-            .book(book)
-            .status(status)
-            .startDate(startDate)
-            .endDate(endDate)
-            .currentPage(currentPage)
-            .build();
+        else if(status == ReadingStatus.FINISHED){
+            return Record.builder()
+                .member(currentMember)
+                .book(book)
+                .status(status)
+                .startDate(startDate)
+                .endDate(endDate)
+                .currentPage(book.getItemPage())
+                .build();
+        }
+        else {
+            return Record.builder()
+                .member(currentMember)
+                .book(book)
+                .status(status)
+                .startDate(startDate)
+                .endDate(endDate)
+                .currentPage(currentPage)
+                .build();
+        }
     }
 
 }
