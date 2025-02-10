@@ -79,11 +79,11 @@ public class ClimbingReviewFacade {
     List<Review> reviews = climbingReviews.stream()
         .map(ClimbingReview::getReview)
         .collect(Collectors.toList());
-
+    
     // 리뷰가 있을 때만 이모지 데이터 조회
     List<ReviewEmoji> sharedReviewEmojis = reviews.isEmpty()
         ? Collections.emptyList()
-        : reviewEmojiService.getEmojisByClimbingAndReviews(climbing, reviews);
+        : reviewEmojiService.getEmojisByReviews(reviews);
 
     // 리뷰 ID 기준으로 이모지 그룹화
     Map<Long, Map<EmojiType, Long>> reviewEmojiCounts = sharedReviewEmojis.stream()
