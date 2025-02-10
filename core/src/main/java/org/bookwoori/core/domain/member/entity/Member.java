@@ -66,7 +66,7 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         this.profileImg = profileImg;
         this.backgroundImg = null;
-        this.grade = Grade.Dongsan;
+        this.grade = Grade.Flatland;
         this.status = Status.ACTIVE;
         this.totalPage = 0;
         this.totalHeight = 0;
