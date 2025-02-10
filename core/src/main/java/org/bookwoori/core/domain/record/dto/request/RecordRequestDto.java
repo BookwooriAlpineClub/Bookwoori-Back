@@ -31,6 +31,9 @@ public record RecordRequestDto(
         if (currentPage > book.getItemPage()) {
             throw new CustomException(ErrorCode.INVALID_INPUT_PAGE);
         }
+        else if(status == ReadingStatus.UNREAD){
+            throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
+        }
         else if(status == ReadingStatus.FINISHED){
             return Record.builder()
                 .member(currentMember)
