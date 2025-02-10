@@ -69,10 +69,10 @@ public enum ErrorCode {
     INVALID_END_DATE(400, 3407, "종료 날짜는 최소 오늘 이후여야 합니다."),
     INVALID_INPUT_DATE(400, 3408, "종료 날짜는 시작 날짜 이후여야 합니다."),
 
-
     // Book (3500 ~ 3599)
     BOOK_NOT_FOUND(404, 3500, "책을 찾을 수 없습니다."),
     ALADIN_API_EXCEPTION(404, 3501, "알라딘 API 호출에 실패했습니다."),
+    INVALID_INPUT_PAGE(400, 3502, "책의 최대 페이지를 초과할 수 없습니다."),
 
     // Record (3600 ~ 3699)
     RECORD_NOT_FOUND(404, 3600, "레코드를 찾을 수 없습니다."),

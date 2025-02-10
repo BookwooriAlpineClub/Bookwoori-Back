@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.record.dto.request;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -11,6 +12,8 @@ import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.review.dto.response.ReviewUnitDto;
 import org.bookwoori.core.domain.review.entity.Review;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
 
 
 public record RecordRequestDto(
@@ -25,6 +28,9 @@ public record RecordRequestDto(
 ) {
 
     public Record toRecordEntity(Member currentMember, Book book) {
+        if (currentPage > book.getItemPage()) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_PAGE);
+        }
         return Record.builder()
             .member(currentMember)
             .book(book)
