@@ -2,7 +2,7 @@ package org.bookwoori.notification.domain.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.bookwoori.notification.domain.Device;
+import org.bookwoori.notification.domain.entity.Device;
 import org.bookwoori.notification.domain.dto.request.RegisterRequestDto;
 import org.bookwoori.notification.domain.dto.response.DeviceResponseDto;
 import org.bookwoori.notification.global.exception.CustomException;

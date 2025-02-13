@@ -1,4 +1,4 @@
-package org.bookwoori.notification.domain;
+package org.bookwoori.notification.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

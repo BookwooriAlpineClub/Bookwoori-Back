@@ -4,7 +4,7 @@ package org.bookwoori.notification.domain.dto.response;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Builder;
-import org.bookwoori.notification.domain.Device;
+import org.bookwoori.notification.domain.entity.Device;
 import org.bookwoori.notification.domain.type.Platform;
 
 
