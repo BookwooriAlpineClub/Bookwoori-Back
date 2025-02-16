@@ -10,6 +10,7 @@ import org.bookwoori.core.domain.channel.facade.ChannelFacade;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,5 +46,11 @@ public class ChannelController {
         @Valid @RequestBody ChannelModifyRequestDto requestDto) {
         channelFacade.modifyChannel(channelId, requestDto);
         return ResponseEntity.ok().build();
+    }
+
+    //@Operation(summary = "(채팅) 채널 참여자 정보 조회", description = "(채팅) 채널에 참여하고 있는 회원들의 정보를 조회합니다.")
+    @GetMapping("/{channelId}/members")
+    public ResponseEntity<?> getParticipants(@PathVariable final Long channelId) {
+        return ResponseEntity.ok(channelFacade.getParticipants(channelId));
     }
 }

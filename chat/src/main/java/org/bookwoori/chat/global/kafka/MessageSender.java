@@ -1,5 +1,8 @@
 package org.bookwoori.chat.global.kafka;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.bookwoori.chat.domain.channelMessage.dto.request.ChannelMessageDeleteRequestDto;
@@ -19,8 +22,12 @@ import org.bookwoori.chat.domain.directMessage.repository.DirectMessageRepositor
 import org.bookwoori.chat.global.common.ActionType;
 import org.bookwoori.chat.global.common.EventType;
 import org.bookwoori.chat.global.common.MessageType;
+import org.bookwoori.chat.global.common.dto.MemberProfileDto;
 import org.bookwoori.chat.global.exception.CustomException;
 import org.bookwoori.chat.global.exception.ErrorCode;
+import org.bookwoori.chat.global.feignClient.CoreClient;
+import org.bookwoori.chat.global.feignClient.NotificationClient;
+import org.bookwoori.chat.global.feignClient.dto.MessageNotificationRequestDto;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -32,10 +39,35 @@ public class MessageSender { //토픽에 이벤트를 발행
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final DirectMessageRepository directMessageRepository;
     private final ChannelMessageRepository channelMessageRepository;
+    private final CoreClient coreClient;
+    private final NotificationClient notificationClient;
 
     public void sendDirectMessage(DirectMessageSendRequestDto requestDto, Long memberId) {
         DirectMessage directMessage = requestDto.toEntity(memberId);
         directMessageRepository.save(directMessage);
+
+        try {
+            //알림 전송에 필요한 데이터 구성
+            Map<Long, MemberProfileDto> participants = coreClient.getParticipantsByMessageRoom(
+                requestDto.messageRoomId());
+            List<Long> target = new ArrayList<>();
+            for (Long key : participants.keySet()) {
+                if (key.equals(memberId)) {
+                    continue;
+                }
+                target.add(key);
+            }
+            directMessage.setProfile(participants.get(directMessage.getMemberId()));
+            directMessage.setTarget(target);
+
+            //알림 전송
+            notificationClient.sendDirectNotification(
+                MessageNotificationRequestDto.from(directMessage));
+        } catch (Exception e) {
+            log.error("Direct Message notification send Failed: {}", directMessage.getId());
+            log.error(e.getMessage());
+        }
+
         kafkaTemplate.send(KafkaConstants.DIRECT_CHAT_TOPIC, directMessage);
     }
 
@@ -98,6 +130,28 @@ public class MessageSender { //토픽에 이벤트를 발행
     public void sendChannelMessage(ChannelMessageSendRequestDto requestDto, Long memberId) {
         ChannelMessage channelMessage = requestDto.toEntity(memberId);
         channelMessageRepository.save(channelMessage);
+
+        try {
+            //알림 전송에 필요한 데이터 구성
+            Map<Long, MemberProfileDto> participants = coreClient.getParticipantsByChannel(
+                requestDto.channelId());
+            List<Long> target = new ArrayList<>();
+            for (Long key : participants.keySet()) {
+                if (key.equals(memberId)) {
+                    continue;
+                }
+                target.add(key);
+            }
+            channelMessage.setProfile(participants.get(channelMessage.getMemberId()));
+            channelMessage.setTarget(target);
+            //알림 전송
+            notificationClient.sendChannelNotification(
+                MessageNotificationRequestDto.from(channelMessage));
+        } catch (Exception e) {
+            log.error("Channel Message notification send Failed: {}", channelMessage.getId());
+            log.error(e.getMessage());
+        }
+
         kafkaTemplate.send(KafkaConstants.CHANNEL_CHAT_TOPIC, channelMessage);
     }
 

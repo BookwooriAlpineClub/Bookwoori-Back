@@ -1,5 +1,8 @@
 package org.bookwoori.core.domain.channel.facade;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.category.entity.Category;
 import org.bookwoori.core.domain.category.service.CategoryService;
@@ -7,6 +10,10 @@ import org.bookwoori.core.domain.channel.dto.request.ChannelCreateRequestDto;
 import org.bookwoori.core.domain.channel.dto.request.ChannelModifyRequestDto;
 import org.bookwoori.core.domain.channel.entity.Channel;
 import org.bookwoori.core.domain.channel.service.ChannelService;
+import org.bookwoori.core.domain.member.dto.response.MemberProfileResponseDto;
+import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.server.entity.Server;
+import org.bookwoori.core.domain.serverMember.service.ServerMemberService;
 import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
@@ -18,6 +25,7 @@ public class ChannelFacade {
 
     private final ChannelService channelService;
     private final CategoryService categoryService;
+    private final ServerMemberService serverMemberService;
 
     @Transactional
     public void createChannel(ChannelCreateRequestDto requestDto) {
@@ -53,5 +61,19 @@ public class ChannelFacade {
         Channel channel = channelService.getChannelById(channelId);
         channelService.detach(channel);
         channelService.deleteChannel(channel);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, MemberProfileResponseDto> getParticipants(Long channelId) {
+        Server server = channelService.getChannelById(channelId).getCategory().getServer();
+        return createProfileMap(serverMemberService.getMembersByServer(server));
+    }
+
+    private Map<Long, MemberProfileResponseDto> createProfileMap(List<Member> members) {
+        Map<Long, MemberProfileResponseDto> map = new HashMap<>();
+        for (Member member : members) {
+            map.put(member.getMemberId(), MemberProfileResponseDto.from(member));
+        }
+        return map;
     }
 }

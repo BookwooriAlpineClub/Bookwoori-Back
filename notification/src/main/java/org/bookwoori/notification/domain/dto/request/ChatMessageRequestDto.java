@@ -16,7 +16,6 @@ public record ChatMessageRequestDto(
         @NotNull
         String content,
 
-        @NotNull
         String channelName,
 
         @NotNull

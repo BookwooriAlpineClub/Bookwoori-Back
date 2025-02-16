@@ -1,8 +1,10 @@
 package org.bookwoori.chat.domain.directMessage.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.AccessLevel;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 import org.bookwoori.chat.global.common.EmojiType;
 import org.bookwoori.chat.global.common.EventType;
 import org.bookwoori.chat.global.common.MessageType;
+import org.bookwoori.chat.global.common.dto.MemberProfileDto;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -46,6 +49,16 @@ public class DirectMessage {
     /*
      * 데이터베이스에 저장되지 않는 필드
      */
+
+    @Transient
+    private String nickname;
+
+    @Transient
+    private String profileImg;
+
+    @Transient
+    private List<Long> target = new ArrayList<>();
+
     @Transient
     private Long parentMemberId;
 
@@ -75,6 +88,15 @@ public class DirectMessage {
     public void modifyContent(String content) {
         this.content = content;
         this.modifiedAt = LocalDateTime.now();
+    }
+
+    public void setProfile(MemberProfileDto profile) {
+        this.nickname = profile.nickname();
+        this.profileImg = profile.profileImg();
+    }
+
+    public void setTarget(List<Long> target) {
+        this.target = target;
     }
 
     public void setEventType(EventType eventType) {

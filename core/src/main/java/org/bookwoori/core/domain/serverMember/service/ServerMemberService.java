@@ -58,6 +58,11 @@ public class ServerMemberService {
     }
 
     @Transactional(readOnly = true)
+    public List<Member> getMembersByServer(Server server) {
+        return serverMemberRepository.findMembersByServer(server);
+    }
+
+    @Transactional(readOnly = true)
     public List<Server> getServerListByMember(Member member) {
         return serverMemberRepository.findAllByMember(member).stream()
             .map(ServerMember::getServer).toList();

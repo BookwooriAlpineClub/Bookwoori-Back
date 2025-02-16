@@ -1,6 +1,7 @@
 package org.bookwoori.core.domain.messageRoom.facade;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -83,6 +84,20 @@ public class MessageRoomFacade {
                 Comparator.nullsLast(Comparator.reverseOrder())
             )).toList();
         return new MessageRoomListResponseDto(messageRoomItems);
+    }
+
+    @Transactional(readOnly = true)
+    public Map<Long, MemberProfileResponseDto> getParticipants(Long messageRoomId) {
+        MessageRoom messageRoom = messageRoomService.getMessageRoomById(messageRoomId);
+        return createProfileMap(messageRoom.getSender(), messageRoom.getReceiver());
+    }
+
+    private Map<Long, MemberProfileResponseDto> createProfileMap(Member... members) {
+        Map<Long, MemberProfileResponseDto> map = new HashMap<>();
+        for (Member member : members) {
+            map.put(member.getMemberId(), MemberProfileResponseDto.from(member));
+        }
+        return map;
     }
 
 }

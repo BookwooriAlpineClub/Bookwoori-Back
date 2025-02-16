@@ -16,7 +16,6 @@ public record DirectMessageRequestDto(
         @NotNull
         String content,
 
-        @NotNull
         String roomName,
 
         @NotNull
