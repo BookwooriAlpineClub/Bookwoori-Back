@@ -2,11 +2,9 @@ package org.bookwoori.core.domain.climbing.facade;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
-import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.book.service.BookService;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelCreateRequestDto;
 import org.bookwoori.core.domain.climbing.dto.request.ClimbingChannelUpdateRequestDto;
@@ -92,7 +90,7 @@ public class ClimbingFacade {
     private void updateEndClimbingMemberFinalData(Climbing climbing, List<ClimbingMember> climbingMemberList){
         for (ClimbingMember member : climbingMemberList) {
             recordService.getRecordOptByMemberAndBook(member.getMember(), climbing.getBook())
-                .ifPresent(record -> member.updateFinalDate(record.getMaxPage(), record.getStatus()));
+                .ifPresent(record -> member.updateFinalData(record.getMaxPage(), record.getStatus()));
         }
     }
 
