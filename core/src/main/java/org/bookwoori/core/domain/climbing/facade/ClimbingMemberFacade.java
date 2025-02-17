@@ -22,6 +22,7 @@ import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiListDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiMemberListResponseDto;
 import org.bookwoori.core.domain.climbing.dto.response.ReviewEmojiMemberUnitDto;
 import org.bookwoori.core.domain.climbing.entity.Climbing;
+import org.bookwoori.core.domain.climbing.entity.ClimbingStatus;
 import org.bookwoori.core.domain.climbing.service.ClimbingService;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingRole;
@@ -87,9 +88,16 @@ public class ClimbingMemberFacade {
             .map(member -> {
                 Optional<Record> record = recordService.getClimbingMemberRecordOpt(member,
                     climbing.getBook());
-                ReadingStatus status = record.map(Record::getStatus).orElse(ReadingStatus.UNREAD);
                 boolean isMine = member.getMember().equals(currentMember);
-                int currentPage = record.map(Record::getCurrentPage).orElse(0);
+                ReadingStatus status;
+                int currentPage;
+                if(climbing.getStatus() != ClimbingStatus.FAILED && climbing.getStatus() != ClimbingStatus.FINISHED){
+                    status = record.map(Record::getStatus).orElse(ReadingStatus.UNREAD);
+                    currentPage = record.map(Record::getCurrentPage).orElse(0);
+                } else {
+                    status = member.getFinalStatus();
+                    currentPage = member.getFinalPage();
+                }
                 return ClimbingMemberUnitDto.from(isMine, member, status, currentPage);
             })
             .collect(Collectors.toList());
