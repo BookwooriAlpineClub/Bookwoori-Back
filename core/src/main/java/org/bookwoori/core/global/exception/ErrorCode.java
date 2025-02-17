@@ -78,9 +78,9 @@ public enum ErrorCode {
     RECORD_NOT_FOUND(404, 3600, "레코드를 찾을 수 없습니다."),
     RECORD_NOT_FINISHED(409, 3601, "다 읽은 책이 아닙니다."),
     ALREADY_EXIST_RECORD(409, 3602, "이미 존재하는 레코드입니다."),
-    RECORD_INVALID_START_DATE(400, 3406, "시작 날짜는 오늘 이전이어야 합니다."),
-    RECORD_INVALID_END_DATE(400, 3407, "종료 날짜는 오늘 이전이어야 합니다."),
-    RECORD_INVALID_INPUT_DATE(400, 3408, "종료 날짜는 시작 날짜와 같거나 이후여야 합니다."),
+    RECORD_INVALID_START_DATE(400, 3606, "시작 날짜는 오늘 이전이어야 합니다."),
+    RECORD_INVALID_END_DATE(400, 3607, "종료 날짜는 오늘 이전이어야 합니다."),
+    RECORD_INVALID_INPUT_DATE(400, 3608, "종료 날짜는 시작 날짜와 같거나 이후여야 합니다."),
 
     // Review (3700 ~ 3799)
     REVIEW_NOT_FOUND(404, 3700, "리뷰를 찾을 수 없습니다."),
