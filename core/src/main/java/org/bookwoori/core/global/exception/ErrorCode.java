@@ -65,15 +65,22 @@ public enum ErrorCode {
     OWNER_CANNOT_LEAVE(409, 3403, "OWNER는 클라이밍 채널을 떠날 수 없습니다."),
     CLIMBING_MEMBER_NOT_FOUND(404, 3404, "클라이밍 멤버를 찾을 수 없습니다."),
     CLIMBING_NOT_RUNNING(409, 3405, "진행 중인 클라이밍이 아닙니다."),
+    CLIMBING_INVALID_START_DATE(400, 3406, "시작 날짜는 최소 오늘 이후여야 합니다."),
+    CLIMBING_INVALID_END_DATE(400, 3407, "종료 날짜는 최소 오늘 이후여야 합니다."),
+    CLIMBING_INVALID_INPUT_DATE(400, 3408, "종료 날짜는 시작 날짜 이후여야 합니다."),
 
     // Book (3500 ~ 3599)
     BOOK_NOT_FOUND(404, 3500, "책을 찾을 수 없습니다."),
     ALADIN_API_EXCEPTION(404, 3501, "알라딘 API 호출에 실패했습니다."),
+    INVALID_INPUT_PAGE(400, 3502, "책의 최대 페이지를 초과할 수 없습니다."),
 
     // Record (3600 ~ 3699)
     RECORD_NOT_FOUND(404, 3600, "레코드를 찾을 수 없습니다."),
     RECORD_NOT_FINISHED(409, 3601, "다 읽은 책이 아닙니다."),
     ALREADY_EXIST_RECORD(409, 3602, "이미 존재하는 레코드입니다."),
+    RECORD_INVALID_START_DATE(400, 3606, "시작 날짜는 오늘 이전이어야 합니다."),
+    RECORD_INVALID_END_DATE(400, 3607, "종료 날짜는 오늘 이전이어야 합니다."),
+    RECORD_INVALID_INPUT_DATE(400, 3608, "종료 날짜는 시작 날짜와 같거나 이후여야 합니다."),
 
     // Review (3700 ~ 3799)
     REVIEW_NOT_FOUND(404, 3700, "리뷰를 찾을 수 없습니다."),
@@ -82,7 +89,9 @@ public enum ErrorCode {
     ALREADY_EXIST_REVIEW(409, 3703, "이미 레코드에 대한 리뷰가 존재합니다."),
 
     // MessageRoom (3800 ~ 3899)
-    MESSAGE_ROOM_NOT_FOUND(404, 3800, "채팅방을 찾을 수 없습니다.");
+    MESSAGE_ROOM_NOT_FOUND(404, 3800, "채팅방을 찾을 수 없습니다."),
+
+    ;
 
     private final int status;
     private final int code;

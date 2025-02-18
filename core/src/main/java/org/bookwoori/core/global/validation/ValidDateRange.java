@@ -1,4 +1,4 @@
-package org.bookwoori.core.domain.climbing.dto.validation;
+package org.bookwoori.core.global.validation;
 
 
 import jakarta.validation.Constraint;

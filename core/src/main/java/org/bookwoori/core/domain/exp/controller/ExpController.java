@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Tag(name = "Exp")
 @RequiredArgsConstructor
-@RequestMapping("/explog")
+@RequestMapping("/expLog")
 public class ExpController {
 
   private final ExpFacade expFacade;
 
-  @Operation(summary = "경험지 기록 목록 조회", description = "경험지 기록 목록을 조회합니다.")
+  @Operation(summary = "경험치 기록 목록 조회", description = "경험치 기록 목록을 조회합니다.")
   @GetMapping
   public ResponseEntity<?> getExpLogs() {
     return ResponseEntity.ok(expFacade.getExpLogs());

@@ -82,4 +82,12 @@ public class ClimbingMemberService {
     public List<Long> getSharedClimbingMemberIds(Climbing climbing) {
         return climbingMemberRepository.findSharedClimbingMemberIdsByClimbing(climbing);
     }
+
+    @Transactional(readOnly = true)
+    public ClimbingMember getClimbingMemberById(Long climbingMemberId){
+        return climbingMemberRepository.findById(climbingMemberId)
+            .orElseThrow(() -> new CustomException(ErrorCode.CLIMBING_MEMBER_NOT_FOUND));
+    }
+
+
 }

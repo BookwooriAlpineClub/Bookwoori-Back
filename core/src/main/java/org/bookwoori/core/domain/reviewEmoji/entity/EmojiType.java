@@ -5,11 +5,11 @@ import org.bookwoori.core.global.exception.CustomException;
 import org.bookwoori.core.global.exception.ErrorCode;
 
 public enum EmojiType {
-    GOOD,
-    HEART,
-    SMILE,
-    CRY,
-    THINK;
+    THUMBS_UP,
+    HEART_HANDS,
+    SMILING_FACE,
+    CRYING_FACE,
+    THINKING_FACE;
 
     @JsonCreator
     public static EmojiType from(String s) {
