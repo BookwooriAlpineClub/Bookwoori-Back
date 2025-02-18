@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.book.facade;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -18,7 +19,14 @@ public class BookFacade {
 
     @Transactional(readOnly = true)
     public List<BookResponseDto> getBooksByKeyword(String keyword) {
-        return bookService.getBooksByKeyword(keyword);
+        List<BookResponseDto> bookList = bookService.getBooksByKeyword(keyword);
+        List<BookResponseDto> filteredBooks = new ArrayList<>();
+        for (BookResponseDto book : bookList) {
+            if (book.isbn13() != null && !book.isbn13().isEmpty()) {
+                filteredBooks.add(book);
+            }
+        }
+        return filteredBooks;
     }
 
     @Transactional(readOnly = true)

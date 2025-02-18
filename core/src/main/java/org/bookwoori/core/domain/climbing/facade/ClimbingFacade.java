@@ -75,15 +75,23 @@ public class ClimbingFacade {
                 else {
                     climbing.updateStatus(ClimbingStatus.FAILED);
                 }
+                // 클라이밍 종료 시점의 climbingMember 데이터 저장
+                updateEndClimbingMemberFinalData(climbing, climbingMemberList);
             }
             climbingService.saveClimbingChannel(climbing);
         }
     }
 
-    @Transactional
     @GrantExp(type = ExpType.FINISHED_CLIMBING)
     public void updateFinishedClimbingStatus(Climbing climbing){
         climbing.updateStatus(ClimbingStatus.FINISHED);
+    }
+
+    private void updateEndClimbingMemberFinalData(Climbing climbing, List<ClimbingMember> climbingMemberList){
+        for (ClimbingMember member : climbingMemberList) {
+            recordService.getRecordOptByMemberAndBook(member.getMember(), climbing.getBook())
+                .ifPresent(record -> member.updateFinalData(record.getMaxPage(), record.getStatus()));
+        }
     }
 
     public void createClimbing(ClimbingChannelCreateRequestDto requestDto) {

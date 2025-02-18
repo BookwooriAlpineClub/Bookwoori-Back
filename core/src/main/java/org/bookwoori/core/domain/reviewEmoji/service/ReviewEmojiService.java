@@ -30,9 +30,8 @@ public class ReviewEmojiService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewEmoji> getEmojisByClimbingAndReviews(Climbing climbing,
-        List<Review> sharedReviews) {
-        return reviewEmojiRepository.findByClimbingAndReviewIn(climbing, sharedReviews);
+    public List<ReviewEmoji> getEmojisByReviews(List<Review> sharedReviews) {
+        return reviewEmojiRepository.findByReviewIn(sharedReviews);
     }
 
     @Transactional(readOnly = true)

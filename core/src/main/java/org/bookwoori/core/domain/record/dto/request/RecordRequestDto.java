@@ -1,5 +1,6 @@
 package org.bookwoori.core.domain.record.dto.request;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -11,8 +12,11 @@ import org.bookwoori.core.domain.record.entity.ReadingStatus;
 import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.review.dto.response.ReviewUnitDto;
 import org.bookwoori.core.domain.review.entity.Review;
+import org.bookwoori.core.global.exception.CustomException;
+import org.bookwoori.core.global.exception.ErrorCode;
+import org.bookwoori.core.global.validation.ValidDateRange;
 
-
+@ValidDateRange
 public record RecordRequestDto(
     @NotBlank
     @Size(min = 13, max = 13)
@@ -25,14 +29,32 @@ public record RecordRequestDto(
 ) {
 
     public Record toRecordEntity(Member currentMember, Book book) {
-        return Record.builder()
-            .member(currentMember)
-            .book(book)
-            .status(status)
-            .startDate(startDate)
-            .endDate(endDate)
-            .currentPage(currentPage)
-            .build();
+        if (currentPage > book.getItemPage()) {
+            throw new CustomException(ErrorCode.INVALID_INPUT_PAGE);
+        }
+        else if(status == ReadingStatus.UNREAD){
+            throw new CustomException(ErrorCode.INVALID_ENUM_VALUE);
+        }
+        else if(status == ReadingStatus.FINISHED){
+            return Record.builder()
+                .member(currentMember)
+                .book(book)
+                .status(status)
+                .startDate(startDate)
+                .endDate(endDate)
+                .currentPage(book.getItemPage())
+                .build();
+        }
+        else {
+            return Record.builder()
+                .member(currentMember)
+                .book(book)
+                .status(status)
+                .startDate(startDate)
+                .endDate(endDate)
+                .currentPage(currentPage)
+                .build();
+        }
     }
 
 }

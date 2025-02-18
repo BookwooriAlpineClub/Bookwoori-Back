@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewEmojiRepository extends JpaRepository<ReviewEmoji, Long> {
 
-    List<ReviewEmoji> findByClimbingAndReviewIn(Climbing climbing, List<Review> sharedReviews);
+    List<ReviewEmoji> findByReviewIn(List<Review> sharedReviews);
 
     Optional<ReviewEmoji> findByMemberAndClimbingAndReviewAndEmoji(Member member, Climbing climbing,
         Review review, EmojiType emoji);

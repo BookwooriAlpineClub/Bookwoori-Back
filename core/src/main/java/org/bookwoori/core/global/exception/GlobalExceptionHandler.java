@@ -30,21 +30,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDto, HttpStatusCode.valueOf(e.getErrorCode().getStatus()));
     }
 
-    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
-    protected ResponseEntity<ErrorDto> handleValidationException(Exception e,
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    protected ResponseEntity<ErrorDto> handleValidationException(MethodArgumentNotValidException e,
         HttpServletRequest request) {
-        BindingResult bindingResult = null;
+        BindingResult bindingResult = e.getBindingResult();
+        String errorMessage = "Validation error";
 
-        if (e instanceof BindException) {
-            bindingResult = ((BindException) e).getBindingResult();
-        } else if (e instanceof MethodArgumentNotValidException) {
-            bindingResult = ((MethodArgumentNotValidException) e).getBindingResult();
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                errorMessage = fieldError.getDefaultMessage();
+            }
         }
-        FieldError fieldError = bindingResult != null ? bindingResult.getFieldError() : null;
-
-        String errorMessage = fieldError != null
-            ? fieldError.getField() + ": " + fieldError.getDefaultMessage()
-            : "Validation error";
 
         ErrorDto errorDto = ErrorDto.builder()
             .timestamp(LocalDateTime.now().toString())
@@ -54,7 +51,6 @@ public class GlobalExceptionHandler {
             .path(request.getRequestURI())
             .build();
 
-        return new ResponseEntity<>(errorDto,
-            HttpStatusCode.valueOf(ErrorCode.BAD_REQUEST.getStatus()));
+        return new ResponseEntity<>(errorDto, HttpStatusCode.valueOf((ErrorCode.BAD_REQUEST.getStatus())));
     }
 }

@@ -69,7 +69,7 @@ public class ClimbingReviewFacade {
     List<ClimbingReview> climbingReviews = sharedClimbingMemberIds.stream()
         .map(climbingReviewService::findByClimbingMemberId)
         .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+        .toList();
 
     if (climbingReviews.isEmpty()) {
       return new ClimbingReviewListResponseDto(true, Collections.emptyList());
@@ -83,7 +83,7 @@ public class ClimbingReviewFacade {
     // 리뷰가 있을 때만 이모지 데이터 조회
     List<ReviewEmoji> sharedReviewEmojis = reviews.isEmpty()
         ? Collections.emptyList()
-        : reviewEmojiService.getEmojisByClimbingAndReviews(climbing, reviews);
+        : reviewEmojiService.getEmojisByReviews(reviews);
 
     // 리뷰 ID 기준으로 이모지 그룹화
     Map<Long, Map<EmojiType, Long>> reviewEmojiCounts = sharedReviewEmojis.stream()
@@ -105,7 +105,6 @@ public class ClimbingReviewFacade {
           return climbingReviewOpt.map(climbingReview -> {
             Review review = climbingReview.getReview();
             Map<EmojiType, Long> emojiCounts = reviewEmojiCounts.getOrDefault(review.getReviewId(), Collections.emptyMap());
-
             List<ReviewEmojiListCountDto> reviewEmojiList = emojiCounts.entrySet().stream()
                 .map(entry -> new ReviewEmojiListCountDto(
                     reviewEmojiService.hasClickedEmoji(review, memberService.getCurrentMember(), entry.getKey()),
@@ -114,8 +113,7 @@ public class ClimbingReviewFacade {
                 ))
                 .collect(Collectors.toList());
 
-//            ClimbingMember climbingMember = climbingMemberService.getClimbingMemberWithMember(climbingId, memberId);
-            Member member = memberService.getMemberById(memberId);
+            Member member = climbingMemberService.getClimbingMemberById(memberId).getMember();
             return ClimbingMemberReviewUnitDto.from(member, review, reviewEmojiList);
           }).orElse(null);
         })
@@ -124,6 +122,4 @@ public class ClimbingReviewFacade {
 
     return new ClimbingReviewListResponseDto(true, climbingMemberReviewUnits);
   }
-
-
 }

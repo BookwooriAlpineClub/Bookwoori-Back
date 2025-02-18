@@ -20,7 +20,8 @@ public enum Grade {
     Mudeungsan(4, "무등산", 997),
     Bukhansan(3, "북한산", 727),
     Achasan(2, "아차산", 296),
-    Dongsan(1, "동산", 100);
+    Dongsan(1, "동산", 100),
+    Flatland(0, "평지", 0);
 
     private final int level;
     private final String mountain;
@@ -41,6 +42,6 @@ public enum Grade {
                 return grade;
             }
         }
-        return Grade.Dongsan;
+        return Grade.Flatland;
     }
 }

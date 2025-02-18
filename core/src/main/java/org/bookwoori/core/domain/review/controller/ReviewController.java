@@ -41,7 +41,7 @@ public class ReviewController {
   }
 
   @Operation(summary = "책 감상평 삭제", description = "수정 페이지_책기록 에서 기존 감상평을 삭제합니다.")
-  @DeleteMapping
+  @DeleteMapping("/{reviewId}")
   public ResponseEntity<?> deleteReview(@PathVariable Long reviewId) {
     reviewFacade.deleteReview(reviewId);
     return ResponseEntity.ok().build();
