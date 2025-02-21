@@ -2,8 +2,10 @@ package org.bookwoori.core.domain.record.service;
 
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
+import org.bookwoori.core.domain.book.repository.BookRepository;
 import org.bookwoori.core.domain.climbingMember.entity.ClimbingMember;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
@@ -20,11 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecordService {
 
     private final RecordRepository recordRepository;
+    private final BookRepository bookRepository;
 
     @Transactional(readOnly = true)
     public Record getMemberRecord(Member member, Book book) {
         return recordRepository.findByMemberAndBook(member, book)
-            .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
@@ -35,7 +38,7 @@ public class RecordService {
 
     @Transactional
     public Record saveRecord(Record record) {
-        if (recordRepository.findByMemberAndBook(record.getMember(), record.getBook()).isPresent()){
+        if (recordRepository.findByMemberAndBook(record.getMember(), record.getBook()).isPresent()) {
             throw new CustomException(ErrorCode.RECORD_ALREADY_EXISTS);
         }
         return recordRepository.save(record);
@@ -44,13 +47,13 @@ public class RecordService {
     @Transactional
     public Record getRecordById(Long recordId) {
         return recordRepository.findById(recordId)
-            .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
     }
 
     @Transactional
     public Record getRecordByMemberAndBook(Member member, Book book) {
         return recordRepository.findByMemberAndBook(member, book)
-            .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.RECORD_NOT_FOUND));
     }
 
     @Transactional
@@ -67,6 +70,9 @@ public class RecordService {
     public List<Record> getRecordsByMember(Member member) {
         return recordRepository.findAllByMember(member);
     }
+
+    @Transactional
+    public List<Record> getRecordsByBook(Book book) { return recordRepository.findAllByBook(book); }
 
 
 }

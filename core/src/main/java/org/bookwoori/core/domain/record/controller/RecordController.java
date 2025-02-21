@@ -71,6 +71,12 @@ public class RecordController {
         return ResponseEntity.ok(recordFacade.getRecordsByStatus(status));
     }
 
+    @Operation(summary = "책 기록 상세 조회", description = "내 서재의 책기록을 상세 조회합니다.")
+    @GetMapping("/{isbn13}")
+    public ResponseEntity<?> getRecordDetail(@PathVariable String isbn13) { // isbn으로 책기록 상세 조회
+        return ResponseEntity.ok(recordFacade.getRecordDetail(isbn13));
+    }
+
     @Operation(summary = "책 평가 목록 조회", description = "내 서재의 책평가 목록을 조회합니다.")
     @GetMapping("/reviews")
     public ResponseEntity<?> getReviews() {

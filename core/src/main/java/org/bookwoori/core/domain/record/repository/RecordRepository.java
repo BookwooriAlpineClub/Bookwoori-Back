@@ -15,4 +15,6 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
     List<Record> findAllByStatus(ReadingStatus status);
 
     List<Record> findAllByMember(Member member);
+
+    List<Record> findAllByBook(Book book);
 }

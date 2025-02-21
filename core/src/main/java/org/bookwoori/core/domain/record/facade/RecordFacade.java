@@ -82,6 +82,22 @@ public class RecordFacade {
         return recordResponseDtoList;
     }
 
+    public List<RecordResponseDto> getRecordDetail(String isbn13) {
+
+        Book book = bookService.getBookByIsbn(isbn13).toEntity();
+
+        List<RecordResponseDto> recordResponseDtoList = new ArrayList<>();
+        List<Record> recordList = recordService.getRecordsByBook(book);
+
+        recordList.stream().forEach(record -> {
+            RecordResponseDto recordResponseDto = RecordResponseDto.from(record);
+            recordResponseDtoList.add(recordResponseDto);
+        });
+
+        return recordResponseDtoList;
+
+    }
+
     @Transactional(readOnly = true)
     public List<ReviewResponseDto> getReviews() {
         List<ReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
