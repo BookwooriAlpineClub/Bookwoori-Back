@@ -3,8 +3,8 @@ package org.bookwoori.notification.domain.device.service;
 
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.notification.domain.device.entity.Device;
+import org.bookwoori.notification.domain.device.entity.Platform;
 import org.bookwoori.notification.domain.device.repository.DeviceRepository;
-import org.bookwoori.notification.domain.device.dto.request.RegisterRequestDto;
 import org.bookwoori.notification.domain.device.dto.response.DeviceResponseDto;
 import org.bookwoori.notification.global.exception.CustomException;
 import org.springframework.stereotype.Service;
@@ -28,15 +28,15 @@ public class DeviceService {
     }
 
     @Transactional
-    public void register(RegisterRequestDto request) {
-        Optional<Device> device = deviceRepository.findBymemberId(request.memberId());
+    public void register(Long memberId, Platform platform, String token) {
+        Optional<Device> device = deviceRepository.findBymemberId(memberId);
 
         if (device.isPresent()) {
-            device.get().renew(request.platform(), request.token());
+            device.get().renew(platform, token);
             return;
         }
 
-        Device newDevice = Device.register(request.memberId(), request.platform(), request.token());
+        Device newDevice = Device.register(memberId, platform, token);
         deviceRepository.save(newDevice);
     }
 
