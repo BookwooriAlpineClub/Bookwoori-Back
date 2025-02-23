@@ -1,4 +1,4 @@
-package org.bookwoori.notification.domain;
+package org.bookwoori.notification.global;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

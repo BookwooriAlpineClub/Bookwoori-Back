@@ -1,7 +1,7 @@
-package org.bookwoori.notification.domain.repository;
+package org.bookwoori.notification.domain.device.repository;
 
 
-import org.bookwoori.notification.domain.Device;
+import org.bookwoori.notification.domain.device.entity.Device;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,4 +1,4 @@
-package org.bookwoori.notification.domain.dto.request;
+package org.bookwoori.notification.domain.notification.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 

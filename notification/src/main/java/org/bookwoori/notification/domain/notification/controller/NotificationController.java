@@ -1,4 +1,4 @@
-package org.bookwoori.notification.domain.controller;
+package org.bookwoori.notification.domain.notification.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -6,13 +6,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bookwoori.notification.domain.dto.request.ChannelMessageRequestDto;
-import org.bookwoori.notification.domain.dto.request.ChatMessageRequestDto;
-import org.bookwoori.notification.domain.dto.request.DirectMessageRequestDto;
-import org.bookwoori.notification.domain.dto.request.EmojiMessageRequestDto;
-import org.bookwoori.notification.domain.dto.response.CommonResponseDto;
-import org.bookwoori.notification.domain.service.NotificationService;
-import org.bookwoori.notification.domain.service.ResponseService;
+import org.bookwoori.notification.domain.notification.service.NotificationService;
+import org.bookwoori.notification.domain.notification.dto.request.ChannelMessageRequestDto;
+import org.bookwoori.notification.domain.notification.dto.request.ChatMessageRequestDto;
+import org.bookwoori.notification.domain.notification.dto.request.DirectMessageRequestDto;
+import org.bookwoori.notification.domain.notification.dto.request.EmojiMessageRequestDto;
+import org.bookwoori.notification.domain.notification.dto.response.CommonResponseDto;
+import org.bookwoori.notification.domain.device.service.ResponseService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

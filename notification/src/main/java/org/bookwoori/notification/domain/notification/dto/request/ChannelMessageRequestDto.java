@@ -1,9 +1,10 @@
-package org.bookwoori.notification.domain.dto.request;
+package org.bookwoori.notification.domain.notification.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 
 
-public record DirectMessageRequestDto(
+public record ChannelMessageRequestDto(
+
         @NotNull
         Long memberId,
 
@@ -17,14 +18,16 @@ public record DirectMessageRequestDto(
         String content,
 
         @NotNull
-        String roomName,
+        String channelName,
 
         @NotNull
-        Long roomId,
+        Long communityId,
+
+        @NotNull
+        Long channelId,
 
         @NotNull
         String target
 ) {
-
 
 }
