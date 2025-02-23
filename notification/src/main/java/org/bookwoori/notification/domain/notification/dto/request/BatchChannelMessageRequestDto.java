@@ -1,4 +1,4 @@
-package org.bookwoori.notification.domain.dto.request;
+package org.bookwoori.notification.domain.notification.dto.request;
 
 import java.time.LocalDateTime;
 

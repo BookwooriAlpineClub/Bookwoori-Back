@@ -1,4 +1,4 @@
-package org.bookwoori.notification.domain;
+package org.bookwoori.notification.domain.notification.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

@@ -1,4 +1,4 @@
-package org.bookwoori.notification.domain.service;
+package org.bookwoori.notification.domain.device.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

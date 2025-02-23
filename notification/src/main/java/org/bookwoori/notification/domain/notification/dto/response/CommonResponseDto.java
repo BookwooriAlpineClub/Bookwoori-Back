@@ -1,4 +1,4 @@
-package org.bookwoori.notification.domain.dto.response;
+package org.bookwoori.notification.domain.notification.dto.response;
 
 import lombok.Builder;
 

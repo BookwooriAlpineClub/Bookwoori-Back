@@ -1,11 +1,11 @@
-package org.bookwoori.notification.domain;
+package org.bookwoori.notification.domain.device.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bookwoori.notification.domain.type.Platform;
+import org.bookwoori.notification.global.BaseTimeEntity;
 
 
 @Entity

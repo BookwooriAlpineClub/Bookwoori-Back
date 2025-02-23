@@ -1,4 +1,4 @@
-package org.bookwoori.notification.domain.service;
+package org.bookwoori.notification.domain.notification.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -7,15 +7,15 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MulticastMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bookwoori.notification.domain.Device;
-import org.bookwoori.notification.domain.Notification;
-import org.bookwoori.notification.domain.dto.request.ChannelMessageRequestDto;
-import org.bookwoori.notification.domain.dto.request.ChatMessageRequestDto;
-import org.bookwoori.notification.domain.dto.request.DirectMessageRequestDto;
-import org.bookwoori.notification.domain.dto.request.EmojiMessageRequestDto;
-import org.bookwoori.notification.domain.dto.response.DeviceTokenResponseDto;
+import org.bookwoori.notification.domain.device.entity.Device;
+import org.bookwoori.notification.domain.device.repository.DeviceRepository;
+import org.bookwoori.notification.domain.notification.entity.Notification;
+import org.bookwoori.notification.domain.notification.dto.request.ChannelMessageRequestDto;
+import org.bookwoori.notification.domain.notification.dto.request.ChatMessageRequestDto;
+import org.bookwoori.notification.domain.notification.dto.request.DirectMessageRequestDto;
+import org.bookwoori.notification.domain.notification.dto.request.EmojiMessageRequestDto;
+import org.bookwoori.notification.domain.device.dto.response.DeviceTokenResponseDto;
 import org.bookwoori.notification.global.exception.CustomException;
-import org.bookwoori.notification.domain.repository.DeviceRepository;
 import org.bookwoori.notification.global.util.FcmUtil;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.core.RedisTemplate;

@@ -1,19 +1,18 @@
-package org.bookwoori.notification.domain.controller;
+package org.bookwoori.notification.domain.device.controller;
 
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bookwoori.notification.domain.dto.request.RegisterRequestDto;
-import org.bookwoori.notification.domain.dto.response.CommonResponseDto;
-import org.bookwoori.notification.domain.dto.response.DataResponseDto;
-import org.bookwoori.notification.domain.dto.response.DeviceResponseDto;
-import org.bookwoori.notification.domain.service.DeviceService;
-import org.bookwoori.notification.domain.service.MemberService;
-import org.bookwoori.notification.domain.service.ResponseService;
+import org.bookwoori.notification.domain.device.entity.Platform;
+import org.bookwoori.notification.domain.device.service.DeviceService;
+import org.bookwoori.notification.domain.device.service.MemberService;
+import org.bookwoori.notification.domain.device.service.ResponseService;
+import org.bookwoori.notification.domain.notification.dto.response.CommonResponseDto;
+import org.bookwoori.notification.domain.device.dto.response.DataResponseDto;
+import org.bookwoori.notification.domain.device.dto.response.DeviceResponseDto;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -37,14 +36,18 @@ public class DeviceController {
     }
 
     @Operation(summary = "기기 등록", description = "기기를 등록합니다.")
-    @PostMapping
-    public CommonResponseDto register(@Valid @RequestBody RegisterRequestDto request) {
-        deviceService.register(request);
+    @PostMapping("/{platform}")
+    public CommonResponseDto getDevice(
+            @RequestBody HttpServletRequest request,
+            @PathVariable("platform") Platform platform,
+            @RequestParam(value = "token") String token) {
+        Long userId = memberService.getCurrentMemberId(request);
+        deviceService.register(userId, platform, token);
         return responseService.getSuccessResponse();
     }
 
     @Operation(summary = "기기 삭제", description = "기기를 삭제합니다.")
-    @DeleteMapping({"/{id}"})
+    @DeleteMapping
     public CommonResponseDto delete(HttpServletRequest request) {
         Long userId = memberService.getCurrentMemberId(request);
         deviceService.delete(userId);
