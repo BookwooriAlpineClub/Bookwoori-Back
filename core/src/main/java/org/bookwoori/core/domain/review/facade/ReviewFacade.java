@@ -57,10 +57,7 @@ public class ReviewFacade {
         .map(record -> {
           List<ReviewUnitDto> reviewList = reviewService.getReviewListByRecordId(record.getRecordId()).stream()
               .map(ReviewUnitDto::from)
-              .sorted(Comparator
-                  .comparing((ReviewUnitDto review) -> record.getEndDate(), Comparator.nullsLast(Comparator.reverseOrder()))
-                  .thenComparing(ReviewUnitDto::reviewId, Comparator.reverseOrder())
-              )
+              .sorted(Comparator.comparing(ReviewUnitDto::reviewId, Comparator.reverseOrder()))
               .collect(Collectors.toList());
           if (reviewList.isEmpty()) {
             return null;

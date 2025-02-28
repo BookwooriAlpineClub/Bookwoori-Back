@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,4 +29,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("SELECT r FROM Review r WHERE r.record.member = :member AND r.record.book = :book")
     List<Review> findAllByMemberAndBook(@Param("member") Member member, @Param("book") Book book);
+
+    @Query("SELECT AVG(r.star) FROM Review r WHERE r.record = :record")
+    Double findAverageStarByRecord(@Param("record") Record record);
 }
