@@ -35,7 +35,7 @@ public class ReviewController {
   @Operation(summary = "책 감상평 수정", description = "수정 페이지_책기록 에서 기존 감상평을 수정합니다.")
   @PatchMapping("/{reviewId}")
   public ResponseEntity<?> updateReview(@RequestBody @Valid ReviewRequestDto requestDto) {
-    reviewFacade.updateReview(requestDto);
+    reviewFacade.updateReview(reviewId, requestDto);
     return ResponseEntity.ok().build();
   }
 

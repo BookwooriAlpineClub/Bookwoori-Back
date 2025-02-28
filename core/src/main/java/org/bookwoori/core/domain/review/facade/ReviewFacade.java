@@ -41,8 +41,8 @@ public class ReviewFacade {
       @GrantExp(type = ExpType.ADD_STAR),
       @GrantExp(type = ExpType.WRITE_REVIEW)
   })
-  public void updateReview(ReviewRequestDto requestDto) {
-    Review review = reviewService.getReviewById(requestDto.recordId());
+  public void updateReview(Long reviewId, ReviewRequestDto requestDto) {
+    Review review = reviewService.getReviewById(reviewId);
     review.updateReview(requestDto.star(), requestDto.content());
   }
 
