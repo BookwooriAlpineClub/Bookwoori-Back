@@ -91,8 +91,7 @@ public class RecordFacade {
             .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public RecordDetailsResponseDto getReviewsDetails(String isbn13) {
+    public RecordDetailsResponseDto getRecordDetails(String isbn13) {
         Member member = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(isbn13);
         Record record = recordService.getRecordByMemberAndBook(member, book);
