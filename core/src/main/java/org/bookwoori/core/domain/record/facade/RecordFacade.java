@@ -68,7 +68,8 @@ public class RecordFacade {
 
     @Transactional(readOnly = true)
     public List<RecordListResponseDto> getRecordsByStatus(ReadingStatus status) {
-        List<Record> recordList = recordService.getRecordsByStatus(status);
+        Member currentMember = memberService.getCurrentMember();
+        List<Record> recordList = recordService.getRecordsByStatusAndMember(status, currentMember);
         if (recordList.isEmpty()) {
             return Collections.emptyList();
         }
@@ -79,7 +80,8 @@ public class RecordFacade {
 
     @Transactional(readOnly = true)
     public List<FinishedRecordListResponseDto> getFinishedRecords(ReadingStatus status) {
-        List<Record> recordList = recordService.getRecordsByStatus(status);
+        Member currentMember = memberService.getCurrentMember();
+        List<Record> recordList = recordService.getRecordsByStatusAndMember(status, currentMember);
         if (recordList.isEmpty()) {
             return Collections.emptyList();
         }
