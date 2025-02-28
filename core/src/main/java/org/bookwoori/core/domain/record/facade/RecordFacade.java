@@ -1,6 +1,7 @@
 package org.bookwoori.core.domain.record.facade;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -76,10 +77,13 @@ public class RecordFacade {
     }
 
     @Transactional(readOnly = true)
-    public RecordDetailsResponseDto getReviewsDetails(Long recordId) {
-        Record record = recordService.getRecordById(recordId);
-        List<Review> reviewList = reviewService.getReviewListByRecordId(recordId);
+    public RecordDetailsResponseDto getReviewsDetails(String isbn13) {
+        Member member = memberService.getCurrentMember();
+        Book book = bookService.getOrCreateBookByIsbn(isbn13);
+        Record record = recordService.getRecordByMemberAndBook(member, book);
+        List<Review> reviewList = reviewService.getReviewListByRecordId(record.getRecordId());
         List<ReviewUnitDto> reviewDtoList = reviewList.stream()
+            .sorted(Comparator.comparing(Review::getReviewId).reversed()) // reviewId DESC
             .map(ReviewUnitDto::from)
             .collect(Collectors.toList());
         return RecordDetailsResponseDto.from(record, reviewDtoList);
