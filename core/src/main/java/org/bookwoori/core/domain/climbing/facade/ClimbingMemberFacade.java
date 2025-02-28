@@ -122,6 +122,9 @@ public class ClimbingMemberFacade {
     @Transactional(readOnly = true)
     public boolean getHasShared(Long climbingId) {
         Member currentMember = memberService.getCurrentMember();
+        if (!climbingMemberService.isMemberInClimbing(currentMember, climbingId)){
+            throw new CustomException(ErrorCode.MEMBER_NOT_IN_CLIMBING);
+        }
         ClimbingMember climbingMember = climbingMemberService.getMemberInClimbing(currentMember,
             climbingId);
         return climbingMember.isHasShared();
