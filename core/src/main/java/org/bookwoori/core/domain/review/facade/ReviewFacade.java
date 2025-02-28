@@ -41,8 +41,8 @@ public class ReviewFacade {
       @GrantExp(type = ExpType.ADD_STAR),
       @GrantExp(type = ExpType.WRITE_REVIEW)
   })
-  public void updateReview(Long reviewId, ReviewRequestDto requestDto) {
-    Review review = reviewService.getReviewById(reviewId);
+  public void updateReview(ReviewRequestDto requestDto) {
+    Review review = reviewService.getReviewById(requestDto.recordId());
     review.updateReview(requestDto.star(), requestDto.content());
   }
 
@@ -57,10 +57,7 @@ public class ReviewFacade {
         .map(record -> {
           List<ReviewUnitDto> reviewList = reviewService.getReviewListByRecordId(record.getRecordId()).stream()
               .map(ReviewUnitDto::from)
-              .sorted(Comparator
-                  .comparing((ReviewUnitDto review) -> record.getEndDate(), Comparator.nullsLast(Comparator.reverseOrder()))
-                  .thenComparing(ReviewUnitDto::reviewId, Comparator.reverseOrder())
-              )
+              .sorted(Comparator.comparing(ReviewUnitDto::reviewId, Comparator.reverseOrder()))
               .collect(Collectors.toList());
           if (reviewList.isEmpty()) {
             return null;
