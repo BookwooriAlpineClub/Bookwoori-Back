@@ -14,6 +14,7 @@ import org.bookwoori.core.domain.exp.entity.ExpType;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.record.dto.request.RecordRequestDto;
+import org.bookwoori.core.domain.record.dto.response.FinishedRecordListResponseDto;
 import org.bookwoori.core.domain.record.dto.response.RecordDetailsResponseDto;
 import org.bookwoori.core.domain.record.dto.response.RecordListResponseDto;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
@@ -77,6 +78,22 @@ public class RecordFacade {
     }
 
     @Transactional(readOnly = true)
+    public List<FinishedRecordListResponseDto> getFinishedRecords(ReadingStatus status) {
+        List<Record> recordList = recordService.getRecordsByStatus(status);
+        if (recordList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return recordList.stream()
+            .map(record -> {
+                double reviewStarAve = reviewService.getAverageStarByRecord(record);
+                return FinishedRecordListResponseDto.from(record, reviewStarAve);
+            })
+            .collect(Collectors.toList());
+    }
+
+
+
+    @Transactional(readOnly = true)
     public RecordDetailsResponseDto getReviewsDetails(String isbn13) {
         Member member = memberService.getCurrentMember();
         Book book = bookService.getOrCreateBookByIsbn(isbn13);
@@ -88,4 +105,5 @@ public class RecordFacade {
             .collect(Collectors.toList());
         return RecordDetailsResponseDto.from(record, reviewDtoList);
     }
+
 }

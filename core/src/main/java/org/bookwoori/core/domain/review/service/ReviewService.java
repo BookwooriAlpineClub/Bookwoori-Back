@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.bookwoori.core.domain.book.entity.Book;
 import org.bookwoori.core.domain.member.entity.Member;
+import org.bookwoori.core.domain.record.entity.Record;
 import org.bookwoori.core.domain.review.entity.Review;
 import org.bookwoori.core.domain.review.repository.ReviewRepository;
 import org.bookwoori.core.global.exception.CustomException;
@@ -50,6 +51,7 @@ public class ReviewService {
     return reviewRepository.findAllByRecord_RecordId(recordId);
   }
 
+
   public void deleteReviewByRecordId(Long recordId) {
     reviewRepository.deleteByRecord_RecordId(recordId);
   }
@@ -58,4 +60,9 @@ public class ReviewService {
     reviewRepository.deleteById(reviewId);
   }
 
+  @Transactional(readOnly = true)
+  public double getAverageStarByRecord(Record record) {
+    Double average = reviewRepository.findAverageStarByRecord(record);
+    return average != null ? average : 0.0;
+  }
 }

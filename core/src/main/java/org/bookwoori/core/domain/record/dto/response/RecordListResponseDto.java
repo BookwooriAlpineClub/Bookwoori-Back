@@ -10,9 +10,6 @@ public record RecordListResponseDto(
   String title,
   String author,
   String cover,
-  String publisher,
-  LocalDate pubDate,
-  String description,
   int itemPage,
   RecordResponseDto record
 ){
@@ -23,9 +20,6 @@ public record RecordListResponseDto(
         .title(record.getBook().getTitle())
         .author(record.getBook().getAuthor())
         .cover(record.getBook().getCoverImg())
-        .publisher(record.getBook().getPublisher())
-        .pubDate(record.getBook().getPubDate())
-        .description(record.getBook().getDescription())
         .itemPage(record.getBook().getItemPage())
         .record(RecordResponseDto.from(record))
         .build();
