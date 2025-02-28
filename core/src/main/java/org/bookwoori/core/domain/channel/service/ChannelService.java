@@ -27,13 +27,13 @@ public class ChannelService {
             .channelType(ChannelType.CHAT)
             .build();
         channelRepository.save(chatChannel);
-        Channel voiceChannel = Channel.builder()
-            .category(category)
-            .name("일반")
-            .channelType(ChannelType.VOICE)
-            .build();
-        voiceChannel.setBeforeNode(chatChannel);
-        channelRepository.save(voiceChannel);
+//        Channel voiceChannel = Channel.builder()
+//            .category(category)
+//            .name("일반")
+//            .channelType(ChannelType.VOICE)
+//            .build();
+//        voiceChannel.setBeforeNode(chatChannel);
+//        channelRepository.save(voiceChannel);
     }
 
     public void deleteChannel(Channel channel) {
