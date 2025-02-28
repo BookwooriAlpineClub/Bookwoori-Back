@@ -13,7 +13,6 @@ public record ReviewListResponseDto(
   String cover,
   String publisher,
   LocalDate pubDate,
-  String description,
   int itemPage,
   List<ReviewUnitDto> reviewList
 ){
@@ -26,7 +25,6 @@ public static ReviewListResponseDto from(Record record, List<ReviewUnitDto> revi
       .cover(record.getBook().getCoverImg())
       .publisher(record.getBook().getPublisher())
       .pubDate(record.getBook().getPubDate())
-      .description(record.getBook().getDescription())
       .itemPage(record.getBook().getItemPage())
       .reviewList(reviewList)
       .build();

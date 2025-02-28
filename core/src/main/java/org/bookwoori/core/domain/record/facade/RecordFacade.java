@@ -1,6 +1,7 @@
 package org.bookwoori.core.domain.record.facade;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.bookwoori.core.domain.exp.entity.ExpType;
 import org.bookwoori.core.domain.member.entity.Member;
 import org.bookwoori.core.domain.member.service.MemberService;
 import org.bookwoori.core.domain.record.dto.request.RecordRequestDto;
+import org.bookwoori.core.domain.record.dto.response.FinishedRecordListResponseDto;
 import org.bookwoori.core.domain.record.dto.response.RecordDetailsResponseDto;
 import org.bookwoori.core.domain.record.dto.response.RecordListResponseDto;
 import org.bookwoori.core.domain.record.entity.ReadingStatus;
@@ -76,12 +78,30 @@ public class RecordFacade {
     }
 
     @Transactional(readOnly = true)
-    public RecordDetailsResponseDto getReviewsDetails(Long recordId) {
-        Record record = recordService.getRecordById(recordId);
-        List<Review> reviewList = reviewService.getReviewListByRecordId(recordId);
+    public List<FinishedRecordListResponseDto> getFinishedRecords(ReadingStatus status) {
+        List<Record> recordList = recordService.getRecordsByStatus(status);
+        if (recordList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return recordList.stream()
+            .map(record -> {
+                double reviewStarAve = reviewService.getAverageStarByRecord(record);
+                return FinishedRecordListResponseDto.from(record, reviewStarAve);
+            })
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public RecordDetailsResponseDto getReviewsDetails(String isbn13) {
+        Member member = memberService.getCurrentMember();
+        Book book = bookService.getOrCreateBookByIsbn(isbn13);
+        Record record = recordService.getRecordByMemberAndBook(member, book);
+        List<Review> reviewList = reviewService.getReviewListByRecordId(record.getRecordId());
         List<ReviewUnitDto> reviewDtoList = reviewList.stream()
+            .sorted(Comparator.comparing(Review::getReviewId).reversed()) // reviewId DESC
             .map(ReviewUnitDto::from)
             .collect(Collectors.toList());
         return RecordDetailsResponseDto.from(record, reviewDtoList);
     }
+
 }
