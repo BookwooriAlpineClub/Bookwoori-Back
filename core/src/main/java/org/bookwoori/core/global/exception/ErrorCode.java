@@ -68,6 +68,7 @@ public enum ErrorCode {
     CLIMBING_INVALID_START_DATE(400, 3406, "시작 날짜는 최소 오늘 이후여야 합니다."),
     CLIMBING_INVALID_END_DATE(400, 3407, "종료 날짜는 최소 오늘 이후여야 합니다."),
     CLIMBING_INVALID_INPUT_DATE(400, 3408, "종료 날짜는 시작 날짜 이후여야 합니다."),
+    MEMBER_NOT_IN_CLIMBING(403, 3409, "참여하지 않은 클라이밍입니다."),
 
     // Book (3500 ~ 3599)
     BOOK_NOT_FOUND(404, 3500, "책을 찾을 수 없습니다."),

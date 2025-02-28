@@ -32,4 +32,6 @@ public interface ClimbingMemberRepository extends JpaRepository<ClimbingMember, 
 
     @Query("SELECT cm.climbingMemberId FROM ClimbingMember cm WHERE cm.climbing = :climbing AND cm.hasShared = true ")
     List<Long> findSharedClimbingMemberIdsByClimbing(Climbing climbing);
+
+    boolean existsByMemberAndClimbing_ClimbingId(Member member, Long climbingId);
 }
