@@ -12,7 +12,7 @@ public interface RecordRepository extends JpaRepository<Record, Long> {
 
     Optional<Record> findByMemberAndBook(Member climbingMember, Book book);
 
-    List<Record> findAllByStatus(ReadingStatus status);
+    List<Record> findAllByStatusAndMember(ReadingStatus status, Member member);
 
     List<Record> findAllByMember(Member member);
 
