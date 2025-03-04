@@ -59,8 +59,8 @@ public class RecordService {
     }
 
     @Transactional(readOnly = true)
-    public List<Record> getRecordsByStatus(ReadingStatus status) {
-        return recordRepository.findAllByStatus(status);
+    public List<Record> getRecordsByStatusAndMember(ReadingStatus status, Member member) {
+        return recordRepository.findAllByStatusAndMember(status, member);
     }
 
     @Transactional(readOnly = true)
@@ -77,4 +77,5 @@ public class RecordService {
     public Optional<Record> getRecordOptByMemberAndBook(Member currentMember, Book book) {
         return recordRepository.findByMemberAndBook(currentMember, book);
     }
+
 }

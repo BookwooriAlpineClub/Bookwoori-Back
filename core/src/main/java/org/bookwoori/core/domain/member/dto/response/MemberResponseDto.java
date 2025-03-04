@@ -22,7 +22,7 @@ public record MemberResponseDto(
             .backgroundImg(member.getBackgroundImg())
             .level(member.getGrade().getLevel())
             .mountain(member.getGrade().getMountain())
-            .totalHeight(member.getTotalHeight())
+            .totalHeight(Math.round(member.getTotalHeight() * 100.0) / 100.0)
             .totalPage(member.getTotalPage())
             .build();
     }
