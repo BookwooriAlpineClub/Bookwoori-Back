@@ -13,6 +13,6 @@
 ## 팀원 및 역할 소개
 | 프로필 | GitHub | 역할 |
 | :---: | :---: | :---: |
-| <img src="https://avatars.githubusercontent.com/u/87927105?v=4" width="100" height="100"/> | [@황채린](https://github.com/crHwang0822) | Core 서버 개발<br>Chat 서버 개발 |
+| <img src="https://avatars.githubusercontent.com/u/87927105?v=4" width="100" height="100"/> | [@황채린](https://github.com/crhwang822) | Core 서버 개발<br>Chat 서버 개발 |
 | <img src="https://avatars.githubusercontent.com/u/124586544?v=4" width="100" height="100"/> | [@문하영](https://github.com/gkdudans) | Core 서버 개발<br>Auth 서버 개발<br>Gateway 서버 개발<br>MSA 배포 및 CI/CD 구축 |
 | <img src="https://avatars.githubusercontent.com/u/144665079?v=4" width="100" height="100"/> | [@손민서](https://github.com/minseoooooo) | Core 서버 개발<br>Notification 서버 개발 |
