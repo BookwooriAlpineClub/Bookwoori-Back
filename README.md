@@ -1,4 +1,5 @@
 # Bookwoori Backend Repository
+안녕하세요! 프로젝트와 관련된 상세 내용은 [Github Wiki](https://github.com/BookwooriAlpineClub/Bookwoori-Back/wiki) 페이지에 잘 정리되어 있습니다. 😸
 
 ## 프로젝트 소개
 <div align="center">
